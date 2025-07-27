@@ -65,7 +65,7 @@ export const getCourseBySlug = async (slug) => {
  */
 export const getPublishedCourses = async (filters = {}) => {
   const queryParams = new URLSearchParams();
-  
+
   if (filters.page) queryParams.append('page', filters.page);
   if (filters.limit) queryParams.append('limit', filters.limit);
   if (filters.sort) queryParams.append('sort', filters.sort);
@@ -75,7 +75,7 @@ export const getPublishedCourses = async (filters = {}) => {
   if (filters.type) queryParams.append('type', filters.type);
   if (filters.search) queryParams.append('search', filters.search);
   if (filters.rating) queryParams.append('rating', filters.rating);
-  
+
   return handleApiCall(
     () => api.get(`/api/courses?${queryParams.toString()}`),
     'Failed to fetch published courses.'
@@ -116,7 +116,7 @@ export const getFeaturedCourses = async (limit = 6, category = '') => {
   const queryParams = new URLSearchParams();
   queryParams.append('limit', limit);
   if (category && category !== 'All') queryParams.append('category', category);
-  
+
   return handleApiCall(
     () => api.get(`/api/courses/featured?${queryParams.toString()}`),
     'Failed to fetch featured courses.'
@@ -225,10 +225,10 @@ export const uploadMultipleCourseMaterials = async (files, courseId, onProgress,
   }
 
   const results = [];
-  
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    
+
     try {
       const result = await uploadCourseMaterial(file, courseId, (progress) => {
         if (onProgress) {
@@ -242,7 +242,7 @@ export const uploadMultipleCourseMaterials = async (files, courseId, onProgress,
           file: file,
           data: result.data
         });
-        
+
         if (onFileComplete) {
           onFileComplete(i, result, file.name);
         }
@@ -253,7 +253,7 @@ export const uploadMultipleCourseMaterials = async (files, courseId, onProgress,
           error: result.error
         });
       }
-      
+
     } catch (error) {
       console.error(`Failed to upload material: ${file.name}`, error);
       results.push({
@@ -279,7 +279,7 @@ export const uploadVideoWithMaterials = async (videoFile, courseId, materialFile
   try {
     // Import upload utils
     const { uploadVideoChunked } = await import('@/utils/uploadUtils');
-    
+
     // Use the enhanced chunked upload from utils
     const result = await uploadVideoChunked(
       videoFile,
@@ -326,7 +326,7 @@ export const uploadFile = async (file, onProgress, fileType = 'video', courseId 
   const formData = new FormData();
   formData.append('file', file);
   formData.append('type', fileType);
-  
+
   return handleApiCall(
     () => api.post('/api/course/upload', formData, {
       headers: {
@@ -353,9 +353,9 @@ export const uploadFile = async (file, onProgress, fileType = 'video', courseId 
 export const uploadVideo = async (file, courseId, onProgress) => {
   try {
     const { uploadVideoChunked } = await import('@/utils/uploadUtils');
-    
+
     const result = await uploadVideoChunked(file, courseId, [], onProgress);
-    
+
     return {
       success: true,
       data: {
@@ -429,12 +429,13 @@ export const cancelUpload = async (uploadId) => {
 };
 
 /**
- * Manage live session
+ * Enhanced Live Session Management
  * @param {string} courseId - Course identifier
- * @param {Object} data - Session data
+ * @param {Object} data - Session management data
  * @returns {Promise<Object>} Operation result
  */
 export const manageLiveSession = async (courseId, data) => {
+  console.log(courseId, 'courseId')
   return handleApiCall(
     () => api.post(`/api/course/${courseId}/live-session`, data),
     'Failed to manage live session.'
@@ -442,19 +443,102 @@ export const manageLiveSession = async (courseId, data) => {
 };
 
 /**
- * Get live session data
+ * Get live session data for instructor
  * @param {string} courseId - Course identifier
  * @param {number|null} slotIndex - Optional slot index
  * @returns {Promise<Object>} Session data
  */
 export const getLiveSessionData = async (courseId, slotIndex = null) => {
-  const url = slotIndex !== null 
+  const url = slotIndex !== null
     ? `/api/course/${courseId}/live-session?slotIndex=${slotIndex}`
     : `/api/course/${courseId}/live-session`;
-    
+
   return handleApiCall(
     () => api.get(url),
     'Failed to fetch live session data.'
+  );
+};
+
+
+/**
+ * Create a new live session
+ * @param {string} courseId - Course identifier
+ * @param {Object} sessionData - Session configuration
+ * @returns {Promise<Object>} Creation result
+ */
+export const createLiveSession = async (courseId, sessionData = {}) => {
+  return handleApiCall(
+    () => api.post(`/api/course/${courseId}/live-session`, {
+      action: 'create-session',
+      sessionDate: sessionData.sessionDate || new Date().toISOString(),
+      sessionTitle: sessionData.sessionTitle || 'Live Session'
+    }),
+    'Failed to create live session.'
+  );
+};
+
+
+/**
+ * Start a live session
+ * @param {string} courseId - Course identifier
+ * @param {number} slotIndex - Time slot index
+ * @returns {Promise<Object>} Start result
+ */
+export const startLiveSession = async (courseId, slotIndex) => {
+  return handleApiCall(
+    () => api.post(`/api/course/${courseId}/live-session`, {
+      action: 'start',
+      slotIndex
+    }),
+    'Failed to start live session.'
+  );
+};
+
+
+/**
+ * End a live session
+ * @param {string} courseId - Course identifier
+ * @param {number} slotIndex - Time slot index
+ * @param {string} recordingUrl - Optional recording URL
+ * @returns {Promise<Object>} End result
+ */
+export const endLiveSession = async (courseId, slotIndex, recordingUrl = '') => {
+  return handleApiCall(
+    () => api.post(`/api/course/${courseId}/live-session`, {
+      action: 'end',
+      slotIndex,
+      recordingUrl
+    }),
+    'Failed to end live session.'
+  );
+};
+
+
+/**
+ * Cancel a live session
+ * @param {string} courseId - Course identifier
+ * @param {number} slotIndex - Time slot index
+ * @returns {Promise<Object>} Cancellation result
+ */
+export const cancelLiveSession = async (courseId, slotIndex) => {
+  return handleApiCall(
+    () => api.post(`/api/course/${courseId}/live-session`, {
+      action: 'cancel',
+      slotIndex
+    }),
+    'Failed to cancel live session.'
+  );
+};
+
+
+/**
+ * Get all instructor live sessions with status
+ * @returns {Promise<Object>} List of live sessions
+ */
+export const getInstructorLiveSessions = async () => {
+  return handleApiCall(
+    () => api.get('/api/instructor/live-sessions'),
+    'Failed to fetch instructor live sessions.'
   );
 };
 
@@ -592,6 +676,11 @@ export default {
   manageLiveSession,
   getLiveSessionData,
   convertToRecorded,
+  createLiveSession,
+  startLiveSession,
+  endLiveSession,
+  cancelLiveSession,
+  getInstructorLiveSessions,
 
   // Course management
   getInstructorCourses,

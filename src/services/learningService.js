@@ -1,3 +1,4 @@
+// src/services/learningService.js - FINAL UPDATED VERSION
 import axios from 'axios';
 import { handleApiCall } from '@/utils/apiUtils';
 import { getAuthToken } from './authService';
@@ -58,14 +59,50 @@ export const getCourseMaterials = async (courseId) => {
 };
 
 /**
- * Join a live session
- * @param {string} sessionId - The session ID to join
- * @returns {Promise<Object>} Session joining details
+ * UPDATED: Join a live session
+ * @param {string} courseId - The course ID
+ * @param {string} itemId - The scheduled item ID
+ * @param {string} slotId - The time slot ID (optional)
+ * @returns {Promise<Object>} Session joining details with Matrix room info
  */
-export const joinLiveSession = async (sessionId) => {
+export const joinLiveSession = async (courseId, itemId, slotId = null) => {
+  const payload = { itemId };
+  if (slotId) payload.slotId = slotId;
+  
   return handleApiCall(
-    () => api.post('/api/learning/join-live-session', { sessionId }),
+    () => api.post(`/api/course/${courseId}/join-session`, payload),
     'Failed to join live session.'
+  );
+};
+
+/**
+ * Get live session join information
+ * @param {string} courseId - The course ID
+ * @param {string} itemId - The scheduled item ID
+ * @param {string} slotId - The time slot ID (optional)
+ * @returns {Promise<Object>} Session information and join eligibility
+ */
+export const getSessionJoinInfo = async (courseId, itemId, slotId = null) => {
+  const queryParams = new URLSearchParams();
+  queryParams.append('itemId', itemId);
+  if (slotId) queryParams.append('slotId', slotId);
+  
+  return handleApiCall(
+    () => api.get(`/api/course/${courseId}/join-session?${queryParams.toString()}`),
+    'Failed to get session information.'
+  );
+};
+
+/**
+ * Check if user can join a specific session
+ * @param {string} courseId - The course ID
+ * @param {string} itemId - The scheduled item ID
+ * @returns {Promise<Object>} Join eligibility status
+ */
+export const checkSessionJoinEligibility = async (courseId, itemId) => {
+  return handleApiCall(
+    () => api.get(`/api/course/${courseId}/join-session?itemId=${itemId}`),
+    'Failed to check session join eligibility.'
   );
 };
 
@@ -74,5 +111,7 @@ export default {
   getNextLearningDay,
   markItemCompleted,
   getCourseMaterials,
-  joinLiveSession
+  joinLiveSession,
+  getSessionJoinInfo,
+  checkSessionJoinEligibility
 };

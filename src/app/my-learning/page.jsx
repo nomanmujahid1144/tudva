@@ -332,6 +332,26 @@ const MyLearning = () => {
                                                                         />
                                                                     </div>
 
+                                                                    {/* For Testing */}
+                                                                    <Button
+                                                                        variant="primary"
+                                                                        size="sm"
+                                                                        onClick={() => handleJoinCourse(course)}
+                                                                        className="d-flex align-items-center"
+                                                                    >
+                                                                        {courseType === 'live' ? (
+                                                                            <>
+                                                                                <FaUsers className="me-1" size={12} />
+                                                                                Join
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <FaPlay className="me-1" size={12} />
+                                                                                Watch Video
+                                                                            </>
+                                                                        )}
+                                                                    </Button>
+
                                                                     {!course.isCompleted ? (
                                                                         canJoin ? (
                                                                             <Button

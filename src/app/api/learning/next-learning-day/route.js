@@ -130,8 +130,10 @@ export async function GET(request) {
         } else if (item.type === 'live') {
           joinUrl = `/live-session/${scheduledCourse.course}/${item.itemId}`;
         } else {
-          joinUrl = `/course/${scheduledCourse.course}/lesson/${item.itemId}`;
+          joinUrl = `/live-session/${scheduledCourse.course}/${item.itemId}`;
         }
+
+        console.log(joinUrl, 'joinUrl')
 
         nextWednesdayItems.push({
           _id: item._id,
