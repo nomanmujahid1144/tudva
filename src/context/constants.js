@@ -1,0 +1,9 @@
+export const currency = '$';
+export const currentYear = new Date().getFullYear();
+export const developedByLink = 'https://coderthemes.com/';
+export const developedBy = 'Coderthemes';
+export const contactUs = 'mailto:support@coderthemes.com';
+export const buyLink = '';
+export const basePath = '';
+export const DEFAULT_PAGE_TITLE = 'Eduport Next | LMS,Education and Course Theme';
+export const colorVariants = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark', 'light'];

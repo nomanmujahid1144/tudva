@@ -1,0 +1,40 @@
+{
+  "reviews": [
+    {
+      "id": "5d5e1e2d-f5cf-4267-be11-86beaf840f13",
+      "user_id": "b5b3c8d0-bad3-486c-85ff-40dbb5391d43",
+      "userName": "Abdullah Khan",
+      "courseId": "c4fcbd81-cafe-4517-9a88-0743baec558a",
+      "content": "Hello Friend really love your voice",
+      "rating": 4,
+      "isVisible": true,
+      "helpfulCount": 0,
+      "createdAt": "2025-04-09T22:46:13.976Z",
+      "updatedAt": "2025-04-09T22:46:13.976Z"
+    },
+    {
+      "id": "49b0005b-9cb9-4b80-8357-75f2b9a61447",
+      "user_id": "b5b3c8d0-bad3-486c-85ff-40dbb5391d43",
+      "userName": "Abdullah Khan",
+      "courseId": "708f8650-5dc0-412b-b3e8-837639123147",
+      "content": "Good Course",
+      "rating": 4,
+      "isVisible": true,
+      "helpfulCount": 0,
+      "createdAt": "2025-04-16T17:55:45.808Z",
+      "updatedAt": "2025-04-16T17:55:45.808Z"
+    },
+    {
+      "id": "d8521170-cf6f-4a19-b1b0-c05868f5a292",
+      "user_id": "cf9f4239-cdc4-4955-a1cb-7d4bdce89d97",
+      "userName": "Abdullah Student",
+      "courseId": "457c27f9-2bf0-4cb7-b816-f02d3af3614f",
+      "content": "Bad course",
+      "rating": 3,
+      "isVisible": true,
+      "helpfulCount": 0,
+      "createdAt": "2025-04-17T20:48:28.640Z",
+      "updatedAt": "2025-04-17T20:48:28.640Z"
+    }
+  ]
+}

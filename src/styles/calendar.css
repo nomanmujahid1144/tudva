@@ -1,0 +1,183 @@
+/* Enhanced Calendar Styles */
+
+/* Weekly Calendar Layout */
+.weekly-calendar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: auto;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.calendar-header {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.time-column-header {
+  width: 80px;
+  min-width: 80px;
+  border-right: 1px solid #dee2e6;
+  padding: 10px 0;
+}
+
+.day-column-header {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 10px;
+  border-right: 1px solid #dee2e6;
+}
+
+.day-column-header.today {
+  background-color: rgba(13, 110, 253, 0.1);
+  font-weight: bold;
+}
+
+.day-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.day-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.calendar-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-row {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+  min-height: 80px;
+}
+
+.time-label {
+  width: 80px;
+  min-width: 80px;
+  padding: 5px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #6c757d;
+  border-right: 1px solid #dee2e6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.calendar-cell {
+  flex: 1;
+  min-width: 120px;
+  padding: 5px;
+  border-right: 1px solid #dee2e6;
+  position: relative;
+  min-height: 80px;
+  height: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-cell.today {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.calendar-cell:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.valid-drop-target {
+  background-color: rgba(40, 167, 69, 0.1) !important;
+  border: 2px dashed rgba(40, 167, 69, 0.5) !important;
+}
+
+.invalid-drop-target {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border: 2px dashed rgba(220, 53, 69, 0.5) !important;
+}
+
+/* Course Card Styles */
+.draggable-course-card {
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: default;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  width: calc(100% - 10px);
+  height: 60px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.draggable-course-card.draggable {
+  cursor: grab;
+}
+
+.draggable-course-card.draggable:active {
+  cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.draggable-course-card:hover {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.course-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 60px; /* Make room for the badge */
+}
+
+.course-progress {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
+  margin-top: 4px;
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+
+.course-type {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.course-badge {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .time-column-header, .time-label {
+    width: 60px;
+    min-width: 60px;
+  }
+  
+  .day-column-header, .calendar-cell {
+    min-width: 100px;
+  }
+  
+  .course-title {
+    font-size: 0.8rem;
+  }
+  
+  .course-progress {
+    font-size: 0.7rem;
+  }
+}
