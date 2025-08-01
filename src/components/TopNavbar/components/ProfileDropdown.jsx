@@ -66,7 +66,6 @@ const ProfileDropdown = ({ className }) => {
   return <Dropdown drop="start" className={`profile-dropdown ${className}`}>
     <DropdownToggle as='a' className="avatar avatar-sm p-0 arrow-none" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
       {/* Always use regular img tag for better compatibility */}
-      {console.log(profilePicture, 'profilePicture')}
       {profilePicture ? (
         <img
           className="avatar-img border rounded-circle"

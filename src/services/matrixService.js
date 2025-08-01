@@ -1,5 +1,5 @@
 // src/services/matrixService.js
-// Enhanced Matrix service with better sync debugging
+// FIXED: Server-side Matrix proxy approach
 
 let createClient;
 
@@ -25,10 +25,11 @@ class MatrixService {
     this.statusListeners = new Set();
     this.typingListeners = new Set();
     this.isInitializing = false;
+    this.useServerProxy = true; // Use server-side Matrix operations
   }
 
   /**
-   * Initialize Matrix client with enhanced debugging
+   * Initialize Matrix client with server proxy
    */
   async initialize(userId, accessToken, homeServerUrl = 'https://chat.151.hu') {
     try {
@@ -42,211 +43,137 @@ class MatrixService {
       }
 
       this.isInitializing = true;
-      console.log('🔄 Initializing Matrix client...');
-      console.log('📋 Config:', { userId, homeServerUrl, hasToken: !!accessToken });
+      console.log('🔄 Initializing Matrix with server proxy...');
       
-      // Dynamically load Matrix SDK
-      const matrixCreateClient = await initializeMatrixSDK();
-      if (!matrixCreateClient) {
-        throw new Error('Failed to load Matrix SDK');
+      // Instead of direct Matrix connection, use server proxy
+      if (this.useServerProxy) {
+        return await this.initializeServerProxy(userId);
       }
 
-      // Test Matrix server connectivity first
-      console.log('🔍 Testing Matrix server connectivity...');
-      try {
-        const testResponse = await fetch(`${homeServerUrl}/_matrix/client/versions`);
-        if (!testResponse.ok) {
-          console.error('❌ Matrix server not reachable:', testResponse.status);
-          throw new Error(`Matrix server not reachable: ${testResponse.status}`);
-        }
-        console.log('✅ Matrix server is reachable');
-      } catch (networkError) {
-        console.error('❌ Matrix server connectivity test failed:', networkError);
-        throw new Error('Cannot connect to Matrix server');
-      }
-
-      // Create Matrix client
-      this.client = matrixCreateClient({
-        baseUrl: homeServerUrl,
-        accessToken: accessToken,
-        userId: userId,
-      });
-
-      console.log('✅ Matrix client created successfully');
-
-      // Set up event listeners before starting
-      this.setupEventListeners();
-
-      // Start the client with detailed options
-      console.log('🔄 Starting Matrix client...');
-      await this.client.startClient({
-        initialSyncLimit: 10, // Reduced for faster sync
-        pollTimeout: 20000,   // Reduced timeout
-      });
-
-      // Enhanced sync waiting with detailed logging
-      await new Promise((resolve, reject) => {
-        let syncTimeout;
-        let syncAttempts = 0;
-        const maxAttempts = 3;
-        
-        const onSync = (state, prevState, data) => {
-          syncAttempts++;
-          console.log(`🔄 Matrix sync attempt ${syncAttempts}/${maxAttempts} - State: ${state}`);
-          
-          if (data && data.error) {
-            console.error('❌ Sync data error:', data.error);
-          }
-          
-          if (state === 'PREPARED') {
-            this.isConnected = true;
-            console.log('✅ Matrix client connected and synced successfully');
-            clearTimeout(syncTimeout);
-            this.client.removeListener('sync', onSync);
-            resolve();
-          } else if (state === 'ERROR') {
-            console.error('❌ Matrix sync error state:', data);
-            
-            if (syncAttempts < maxAttempts) {
-              console.log(`🔄 Retrying sync (${syncAttempts}/${maxAttempts})...`);
-              // Don't reject immediately, let it retry
-              return;
-            }
-            
-            clearTimeout(syncTimeout);
-            this.client.removeListener('sync', onSync);
-            reject(new Error(`Matrix sync failed after ${maxAttempts} attempts: ${data?.error || 'Unknown error'}`));
-          } else if (state === 'SYNCING') {
-            console.log('🔄 Matrix is syncing...');
-          } else if (state === 'RECONNECTING') {
-            console.log('🔄 Matrix is reconnecting...');
-          }
-        };
-
-        this.client.on('sync', onSync);
-
-        // Extended timeout for slower connections
-        syncTimeout = setTimeout(() => {
-          this.client.removeListener('sync', onSync);
-          reject(new Error('Matrix sync timeout - connection took too long'));
-        }, 45000); // 45 seconds
-      });
-
-      this.isInitializing = false;
-      return { success: true, message: 'Matrix client initialized successfully' };
+      // Legacy direct connection (not recommended for your use case)
+      return await this.initializeDirect(userId, accessToken, homeServerUrl);
       
     } catch (error) {
-      this.isInitializing = false;
       console.error('❌ Matrix initialization failed:', error);
-      
-      // Cleanup on failure
-      if (this.client) {
-        try {
-          this.client.stopClient();
-        } catch (stopError) {
-          console.error('Error stopping client:', stopError);
-        }
-        this.client = null;
-      }
-      
+      this.isInitializing = false;
       return { success: false, error: error.message };
     }
   }
 
   /**
-   * Set up Matrix event listeners with better error handling
+   * Initialize using server-side Matrix proxy
    */
-  setupEventListeners() {
-    if (!this.client) return;
-
-    console.log('🔄 Setting up Matrix event listeners...');
-
-    // Listen for new messages
-    this.client.on('Room.timeline', (event, room, toStartOfTimeline) => {
-      try {
-        if (toStartOfTimeline) return;
-        if (event.getType() !== 'm.room.message') return;
-        if (room.roomId !== this.currentRoomId) return;
-
-        console.log('📨 New message received:', event.getContent().body);
-        const message = this.formatMessage(event, room);
-        this.notifyMessageListeners(message);
-      } catch (error) {
-        console.error('Error handling message event:', error);
-      }
-    });
-
-    // Enhanced sync status listening
-    this.client.on('sync', (state, prevState, data) => {
-      console.log('🔄 Matrix sync status changed:', state);
-      this.notifyStatusListeners(state);
+  async initializeServerProxy(userId) {
+    try {
+      console.log('🔄 Using server proxy for Matrix operations');
       
-      if (state === 'ERROR') {
-        console.error('❌ Sync error details:', data);
-      }
-    });
+      // Test server connectivity
+      const response = await fetch('/api/matrix/test-connection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId })
+      });
 
-    // Listen for connection errors
-    this.client.on('event', (event) => {
-      if (event.getType() === 'm.room.message' && event.roomId === this.currentRoomId) {
-        console.log('📨 Event received:', event.getContent());
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error);
       }
-    });
 
-    console.log('✅ Event listeners set up successfully');
+      this.isConnected = true;
+      this.userId = userId;
+      console.log('✅ Server proxy Matrix connection established');
+      
+      // Set up polling for messages
+      this.startMessagePolling();
+      
+      return { success: true };
+      
+    } catch (error) {
+      console.error('❌ Server proxy initialization failed:', error);
+      throw error;
+    } finally {
+      this.isInitializing = false;
+    }
   }
 
   /**
-   * Join a Matrix room with better error handling
+   * Start polling for messages from server
+   */
+  startMessagePolling() {
+    // Poll every 2 seconds for new messages
+    this.pollingInterval = setInterval(async () => {
+      if (this.currentRoomId) {
+        await this.fetchMessages();
+      }
+    }, 2000);
+  }
+
+  /**
+   * Fetch messages from server proxy
+   */
+  async fetchMessages() {
+    try {
+      const response = await fetch('/api/matrix/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          roomId: this.currentRoomId,
+          userId: this.userId 
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success && result.data.messages) {
+        // Update messages and notify listeners
+        this.notifyMessageListeners(result.data.messages);
+      }
+      
+    } catch (error) {
+      console.error('❌ Failed to fetch messages:', error);
+    }
+  }
+
+  /**
+   * Join room using server proxy
    */
   async joinRoom(roomId) {
     try {
-      if (!this.client) {
-        throw new Error('Matrix client not initialized');
-      }
+      console.log('🔄 Joining room via server proxy:', roomId);
 
-      if (!this.isConnected) {
-        console.log('⚠️ Matrix not fully connected yet, attempting anyway...');
-      }
+      const response = await fetch('/api/matrix/join-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          roomId,
+          userId: this.userId 
+        })
+      });
 
-      console.log('🔄 Joining Matrix room:', roomId);
+      const result = await response.json();
       
-      // Try to join the room
-      try {
-        await this.client.joinRoom(roomId);
-        console.log('✅ Successfully joined room via API');
-      } catch (joinError) {
-        console.log('ℹ️ Join room API call failed (might already be in room):', joinError.message);
-        // Continue anyway - might already be in the room
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
       this.currentRoomId = roomId;
-
-      // Give it a moment to settle
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const room = this.client.getRoom(roomId);
-      console.log('🔍 Room object after join:', room ? 'Found' : 'Not found');
-
-      if (room) {
-        console.log('📊 Room details:', {
-          name: room.name,
-          members: room.getJoinedMemberCount(),
-          roomId: room.roomId
-        });
-      }
-
-      const messages = room ? this.getRecentMessages(room) : [];
-      console.log(`📨 Loaded ${messages.length} recent messages`);
+      console.log('✅ Joined room successfully');
       
       return {
         success: true,
         roomId,
-        roomName: room?.name || 'Live Session',
-        messages,
-        memberCount: room?.getJoinedMemberCount() || 1
+        messages: result.data.messages || [],
+        roomName: result.data.roomName,
+        memberCount: result.data.memberCount
       };
-
+      
     } catch (error) {
       console.error('❌ Failed to join room:', error);
       return { success: false, error: error.message };
@@ -254,36 +181,35 @@ class MatrixService {
   }
 
   /**
-   * Send a message with enhanced error handling
+   * Send message using server proxy
    */
   async sendMessage(content, msgType = 'm.text') {
+    if (!content.trim() || !this.currentRoomId) {
+      return { success: false, error: 'No content or room' };
+    }
+
     try {
-      if (!this.client) {
-        throw new Error('Matrix client not initialized');
+      const response = await fetch('/api/matrix/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          roomId: this.currentRoomId,
+          userId: this.userId,
+          content: content.trim(),
+          msgType
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
-      if (!this.currentRoomId) {
-        throw new Error('Not connected to a room');
-      }
-
-      if (!this.isConnected) {
-        console.log('⚠️ Matrix not fully connected, attempting to send anyway...');
-      }
-
-      console.log('📤 Sending message:', content);
-
-      const result = await this.client.sendEvent(
-        this.currentRoomId,
-        'm.room.message',
-        {
-          msgtype: msgType,
-          body: content
-        }
-      );
-
-      console.log('✅ Message sent successfully:', result.event_id);
-      return { success: true, eventId: result.event_id };
-
+      return { success: true, eventId: result.data.eventId };
+      
     } catch (error) {
       console.error('❌ Failed to send message:', error);
       return { success: false, error: error.message };
@@ -291,73 +217,32 @@ class MatrixService {
   }
 
   /**
-   * Get recent messages from room
+   * Send typing indicator using server proxy
    */
-  getRecentMessages(room, limit = 20) {
-    if (!room) {
-      console.log('⚠️ No room object provided for message history');
-      return [];
-    }
-
+  async sendTyping(isTyping = true, timeout = 10000) {
     try {
-      const timeline = room.getLiveTimeline();
-      const events = timeline.getEvents();
+      if (!this.currentRoomId) return { success: false };
       
-      const messageEvents = events.filter(event => event.getType() === 'm.room.message');
-      const recentEvents = messageEvents.slice(-limit);
-      
-      console.log(`📨 Found ${messageEvents.length} total messages, returning ${recentEvents.length} recent ones`);
-      
-      return recentEvents.map(event => this.formatMessage(event, room));
-    } catch (error) {
-      console.error('Error getting recent messages:', error);
-      return [];
-    }
-  }
+      const response = await fetch('/api/matrix/typing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roomId: this.currentRoomId,
+          userId: this.userId,
+          isTyping,
+          timeout
+        })
+      });
 
-  /**
-   * Format Matrix event as message object
-   */
-  formatMessage(event, room) {
-    try {
-      const sender = event.getSender();
-      const content = event.getContent();
-      const senderMember = room?.getMember(sender);
+      const result = await response.json();
+      return { success: result.success };
       
-      return {
-        id: event.getId(),
-        sender: senderMember?.name || sender || 'Unknown',
-        senderId: sender,
-        content: content.body || '',
-        timestamp: new Date(event.getTs()).toISOString(),
-        type: this.getUserType(sender),
-        avatar: null,
-        reactions: []
-      };
     } catch (error) {
-      console.error('Error formatting message:', error);
-      return {
-        id: Date.now().toString(),
-        sender: 'Unknown',
-        senderId: 'unknown',
-        content: 'Error loading message',
-        timestamp: new Date().toISOString(),
-        type: 'system',
-        avatar: null,
-        reactions: []
-      };
+      console.error('❌ Failed to send typing indicator:', error);
+      return { success: false, error: error.message };
     }
-  }
-
-  /**
-   * Determine user type based on user ID
-   */
-  getUserType(userId) {
-    if (!userId) return 'unknown';
-    if (userId.includes('instructor_')) return 'instructor';
-    if (userId.includes('student_')) return 'student';
-    if (userId.includes('@nom:')) return 'system';
-    return 'unknown';
   }
 
   /**
@@ -378,10 +263,14 @@ class MatrixService {
     return () => this.typingListeners.delete(callback);
   }
 
-  notifyMessageListeners(message) {
+  notifyMessageListeners(messages) {
     this.messageListeners.forEach(callback => {
       try {
-        callback(message);
+        if (Array.isArray(messages)) {
+          messages.forEach(message => callback(message));
+        } else {
+          callback(messages);
+        }
       } catch (error) {
         console.error('Error in message listener:', error);
       }
@@ -409,27 +298,22 @@ class MatrixService {
   }
 
   /**
-   * Send typing indicator
-   */
-  async sendTyping(isTyping = true, timeout = 10000) {
-    try {
-      if (!this.client || !this.currentRoomId) return { success: false };
-      
-      await this.client.sendTyping(this.currentRoomId, isTyping, timeout);
-      return { success: true };
-    } catch (error) {
-      console.error('❌ Failed to send typing indicator:', error);
-      return { success: false, error: error.message };
-    }
-  }
-
-  /**
-   * Leave current room and cleanup
+   * Leave room and cleanup
    */
   async leaveRoom() {
     try {
-      if (this.client && this.currentRoomId) {
-        await this.client.leave(this.currentRoomId);
+      if (this.currentRoomId) {
+        const response = await fetch('/api/matrix/leave-room', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            roomId: this.currentRoomId,
+            userId: this.userId
+          })
+        });
+
         console.log('✅ Left Matrix room:', this.currentRoomId);
       }
       this.currentRoomId = null;
@@ -445,10 +329,11 @@ class MatrixService {
    */
   async disconnect() {
     try {
-      if (this.client) {
-        this.client.stopClient();
-        this.client = null;
+      if (this.pollingInterval) {
+        clearInterval(this.pollingInterval);
+        this.pollingInterval = null;
       }
+      
       this.isConnected = false;
       this.currentRoomId = null;
       this.isInitializing = false;
@@ -473,7 +358,7 @@ class MatrixService {
     return {
       isConnected: this.isConnected,
       currentRoomId: this.currentRoomId,
-      userId: this.client?.getUserId() || null
+      userId: this.userId || null
     };
   }
 }

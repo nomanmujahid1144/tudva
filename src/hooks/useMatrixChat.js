@@ -1,5 +1,5 @@
 // src/hooks/useMatrixChat.js
-// Real-time chat hook for Matrix integration
+// FIXED: Real-time chat hook for Matrix integration
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { matrixService } from '@/services/matrixService';
@@ -18,28 +18,22 @@ export const useMatrixChat = (roomId, userCredentials) => {
   const messageUnsubscribe = useRef(null);
   const statusUnsubscribe = useRef(null);
   const typingUnsubscribe = useRef(null);
-  const typingTimeout = useRef(null);
 
   /**
    * Initialize Matrix connection
    */
   const initializeMatrix = useCallback(async () => {
-    if (!userCredentials?.userId || !userCredentials?.accessToken) {
-      setError('Missing user credentials');
-      return;
-    }
+    // For server proxy approach, we just need a user identifier
+    const userId = userCredentials?.userId || `user_${Date.now()}`;
 
     try {
       setIsJoining(true);
       setError(null);
       
-      console.log('🔄 Initializing Matrix for user:', userCredentials.userId);
+      console.log('🔄 Initializing Matrix for user:', userId);
       
-      // Initialize Matrix client
-      const initResult = await matrixService.initialize(
-        userCredentials.userId,
-        userCredentials.accessToken
-      );
+      // Initialize Matrix client (will use server proxy)
+      const initResult = await matrixService.initialize(userId);
 
       if (!initResult.success) {
         throw new Error(initResult.error);
@@ -52,6 +46,7 @@ export const useMatrixChat = (roomId, userCredentials) => {
       setupEventListeners();
       
       console.log('✅ Matrix initialized successfully');
+      toast.success('Connected to chat');
 
     } catch (error) {
       console.error('❌ Matrix initialization failed:', error);
@@ -116,8 +111,8 @@ export const useMatrixChat = (roomId, userCredentials) => {
         return [...prev, message];
       });
 
-      // Show notification for new messages (except own messages)
-      if (message.senderId !== userCredentials?.userId && message.type !== 'system') {
+      // Show notification for new messages
+      if (message.type !== 'system') {
         toast(`${message.sender}: ${message.content.substring(0, 50)}${message.content.length > 50 ? '...' : ''}`, {
           icon: '💬',
           duration: 3000
@@ -143,7 +138,7 @@ export const useMatrixChat = (roomId, userCredentials) => {
       setTypingUsers(users);
     });
 
-  }, [userCredentials?.userId]);
+  }, []);
 
   /**
    * Send a message
@@ -175,17 +170,6 @@ export const useMatrixChat = (roomId, userCredentials) => {
 
     try {
       await matrixService.sendTyping(isTyping, 10000);
-      
-      // Clear typing after 8 seconds
-      if (isTyping) {
-        if (typingTimeout.current) {
-          clearTimeout(typingTimeout.current);
-        }
-        typingTimeout.current = setTimeout(() => {
-          matrixService.sendTyping(false);
-        }, 8000);
-      }
-
     } catch (error) {
       console.error('❌ Failed to send typing indicator:', error);
     }
@@ -243,19 +227,13 @@ export const useMatrixChat = (roomId, userCredentials) => {
       typingUnsubscribe.current();
       typingUnsubscribe.current = null;
     }
-    if (typingTimeout.current) {
-      clearTimeout(typingTimeout.current);
-      typingTimeout.current = null;
-    }
   }, []);
 
   /**
    * Initialize on mount
    */
   useEffect(() => {
-    if (userCredentials?.userId && userCredentials?.accessToken) {
-      initializeMatrix();
-    }
+    initializeMatrix();
 
     return () => {
       cleanupListeners();
