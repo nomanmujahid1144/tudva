@@ -2,10 +2,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, Form } from 'react-bootstrap';
-import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaComments, FaUsers, FaPlay, FaStop, FaRecordVinyl } from 'react-icons/fa';
+import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
+import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaRecordVinyl } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import ChatPanel from '@/components/LiveSession/ChatPanel';
 
 const InstructorLiveSessionPage = ({ params }) => {
   const router = useRouter();
@@ -14,6 +15,7 @@ const InstructorLiveSessionPage = ({ params }) => {
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
   
   // Session controls
   const [isLive, setIsLive] = useState(false);
@@ -21,46 +23,71 @@ const InstructorLiveSessionPage = ({ params }) => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
   
-  // Chat and students
-  const [messages, setMessages] = useState([]);
+  // Students data
   const [connectedStudents, setConnectedStudents] = useState([]);
-  const [newResponse, setNewResponse] = useState('');
+
+  // Matrix credentials for instructor
+  const matrixCredentials = user ? {
+    userId: `@instructor_${user.id}:chat.151.hu`,
+    accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN || 'syt_bm9t_KyFOAOqQXtogCcGbRktX_0UliGS'
+  } : null;
 
   // Initialize session
   useEffect(() => {
     initializeSession();
-    
-    // Mock connected students
-    setConnectedStudents([
-      { id: '1', name: 'Alice Johnson', joinedAt: new Date() },
-      { id: '2', name: 'Bob Smith', joinedAt: new Date() },
-      { id: '3', name: 'Carol Davis', joinedAt: new Date() }
-    ]);
-
-    // Mock initial messages
-    setMessages([
-      {
-        id: 'system_1',
-        sender: 'System',
-        content: 'Live session room created. Students can now join.',
-        timestamp: new Date().toISOString(),
-        type: 'system'
-      }
-    ]);
   }, [courseId, sessionId]);
 
   const initializeSession = async () => {
     try {
       setIsLoading(true);
       
-      // Mock session data (in real app, fetch from API)
-      setSessionData({
-        sessionTitle: 'Introduction to React Hooks',
-        courseTitle: 'Advanced React Development',
-        roomId: `room_${courseId}_${sessionId}`,
-        maxStudents: 25,
-        sessionStatus: 'scheduled'
+      // Get user info from localStorage or API
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+      
+      // Fetch session data from API
+      const response = await fetch(`/api/course/${courseId}/live-session`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSessionData({
+          sessionTitle: data.sessionTitle || 'Live Session',
+          courseTitle: data.courseTitle || 'Course',
+          roomId: data.roomId,
+          sessionStatus: data.sessionStatus,
+          maxStudents: 25
+        });
+        
+        // If session is already live, update UI state
+        if (data.sessionStatus === 'live') {
+          setIsLive(true);
+          setIsCameraOn(true);
+          setIsMicOn(true);
+          setIsRecording(true);
+        }
+      } else {
+        // Mock data for testing
+        setSessionData({
+          sessionTitle: 'Introduction to React Hooks',
+          courseTitle: 'Advanced React Development',
+          roomId: `!test_room_${courseId}:chat.151.hu`,
+          maxStudents: 25,
+          sessionStatus: 'scheduled'
+        });
+      }
+      
+      // Mock connected students (in real app, this would come from Matrix room members)
+      setConnectedStudents([
+        { id: '1', name: 'Alice Johnson', joinedAt: new Date() },
+        { id: '2', name: 'Bob Smith', joinedAt: new Date() },
+        { id: '3', name: 'Carol Davis', joinedAt: new Date() }
+      ]);
       
     } catch (err) {
       console.error('Error initializing session:', err);
@@ -73,32 +100,37 @@ const InstructorLiveSessionPage = ({ params }) => {
   // Start live session
   const handleStartSession = async () => {
     try {
-      setIsLive(true);
-      setIsCameraOn(true);
-      setIsMicOn(true);
-      setIsRecording(true);
-      
-      toast.success('Live session started!');
-      
-      // Add system message
-      setMessages(prev => [...prev, {
-        id: `system_${Date.now()}`,
-        sender: 'System',
-        content: '🔴 Live session has started! Students can now see and hear you.',
-        timestamp: new Date().toISOString(),
-        type: 'system'
-      }]);
-      
-      // Simulate student questions
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: `student_${Date.now()}`,
-          sender: 'Alice Johnson',
-          content: 'Can you explain the difference between useState and useEffect?',
-          timestamp: new Date().toISOString(),
-          type: 'student'
-        }]);
-      }, 5000);
+      // Call API to start session
+      const response = await fetch(`/api/course/${courseId}/live-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'start',
+          slotIndex: 0
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        setIsLive(true);
+        setIsCameraOn(true);
+        setIsMicOn(true);
+        setIsRecording(true);
+        
+        // Update session data with room ID from API
+        setSessionData(prev => ({
+          ...prev,
+          roomId: data.data?.roomId || prev.roomId,
+          sessionStatus: 'live'
+        }));
+        
+        toast.success('Live session started! 🔴');
+      } else {
+        throw new Error('Failed to start session');
+      }
       
     } catch (err) {
       console.error('Error starting session:', err);
@@ -109,21 +141,34 @@ const InstructorLiveSessionPage = ({ params }) => {
   // End live session
   const handleEndSession = async () => {
     try {
-      setIsLive(false);
-      setIsCameraOn(false);
-      setIsMicOn(false);
-      setIsRecording(false);
-      
-      toast.success('Live session ended');
-      
-      // Add system message
-      setMessages(prev => [...prev, {
-        id: `system_${Date.now()}`,
-        sender: 'System',
-        content: '✅ Live session ended. Recording has been saved.',
-        timestamp: new Date().toISOString(),
-        type: 'system'
-      }]);
+      // Call API to end session
+      const response = await fetch(`/api/course/${courseId}/live-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          action: 'end',
+          slotIndex: 0
+        })
+      });
+
+      if (response.ok) {
+        setIsLive(false);
+        setIsCameraOn(false);
+        setIsMicOn(false);
+        setIsRecording(false);
+        
+        setSessionData(prev => ({
+          ...prev,
+          sessionStatus: 'completed'
+        }));
+        
+        toast.success('Live session ended ✅');
+      } else {
+        throw new Error('Failed to end session');
+      }
       
     } catch (err) {
       console.error('Error ending session:', err);
@@ -141,24 +186,6 @@ const InstructorLiveSessionPage = ({ params }) => {
   const toggleMicrophone = () => {
     setIsMicOn(!isMicOn);
     toast.info(isMicOn ? 'Microphone muted' : 'Microphone unmuted');
-  };
-
-  // Send text response (optional - instructor can type responses too)
-  const handleSendResponse = (e) => {
-    e.preventDefault();
-    
-    if (!newResponse.trim()) return;
-    
-    const message = {
-      id: `instructor_${Date.now()}`,
-      sender: 'Instructor',
-      content: newResponse.trim(),
-      timestamp: new Date().toISOString(),
-      type: 'instructor'
-    };
-    
-    setMessages(prev => [...prev, message]);
-    setNewResponse('');
   };
 
   if (isLoading) {
@@ -240,6 +267,11 @@ const InstructorLiveSessionPage = ({ params }) => {
                       </div>
                       <h4>Your Video Feed</h4>
                       <p className="text-muted">Students can see you</p>
+                      {isLive && (
+                        <Badge bg="success" className="mt-2">
+                          🔴 Broadcasting Live
+                        </Badge>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center">
@@ -272,6 +304,7 @@ const InstructorLiveSessionPage = ({ params }) => {
                           variant={isCameraOn ? "success" : "outline-secondary"}
                           onClick={toggleCamera}
                           disabled={!isLive}
+                          title={isCameraOn ? "Turn off camera" : "Turn on camera"}
                         >
                           {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
                         </Button>
@@ -279,6 +312,7 @@ const InstructorLiveSessionPage = ({ params }) => {
                           variant={isMicOn ? "success" : "outline-secondary"}
                           onClick={toggleMicrophone}
                           disabled={!isLive}
+                          title={isMicOn ? "Mute microphone" : "Unmute microphone"}
                         >
                           {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
                         </Button>
@@ -303,10 +337,10 @@ const InstructorLiveSessionPage = ({ params }) => {
             </Card>
           </Col>
 
-          {/* Chat and Students Section */}
+          {/* Chat Section */}
           <Col lg={4} className="h-100">
             <div className="d-flex flex-column h-100 gap-3">
-              {/* Connected Students */}
+              {/* Connected Students Panel */}
               <Card className="border-0 shadow">
                 <Card.Header className="bg-light border-0">
                   <div className="d-flex align-items-center">
@@ -315,69 +349,43 @@ const InstructorLiveSessionPage = ({ params }) => {
                   </div>
                 </Card.Header>
                 <Card.Body className="p-2" style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                  {connectedStudents.map(student => (
-                    <div key={student.id} className="d-flex align-items-center justify-content-between py-1 px-2 small">
-                      <span>{student.name}</span>
-                      <Badge bg="success" className="rounded-circle" style={{ width: '8px', height: '8px' }}></Badge>
+                  {connectedStudents.length === 0 ? (
+                    <div className="text-center text-muted py-2">
+                      <small>No students connected yet</small>
                     </div>
-                  ))}
+                  ) : (
+                    connectedStudents.map(student => (
+                      <div key={student.id} className="d-flex align-items-center justify-content-between py-1 px-2 small">
+                        <span>{student.name}</span>
+                        <Badge bg="success" className="rounded-circle" style={{ width: '8px', height: '8px' }}></Badge>
+                      </div>
+                    ))
+                  )}
                 </Card.Body>
               </Card>
 
-              {/* Chat Messages */}
-              <Card className="border-0 shadow flex-grow-1">
-                <Card.Header className="bg-light border-0">
-                  <div className="d-flex align-items-center">
-                    <FaComments className="me-2 text-primary" />
-                    <span className="fw-bold">Student Questions</span>
-                  </div>
-                </Card.Header>
-                <Card.Body className="p-0 d-flex flex-column h-100">
-                  {/* Messages */}
-                  <div className="flex-grow-1 p-3 overflow-auto">
-                    {messages.map(message => (
-                      <div key={message.id} className="mb-3">
-                        <div className={`rounded-3 p-2 ${
-                          message.type === 'system' ? 'bg-light text-muted fst-italic' :
-                          message.type === 'student' ? 'bg-primary bg-opacity-10 border border-primary border-opacity-25' :
-                          'bg-success bg-opacity-10 border border-success border-opacity-25'
-                        }`}>
-                          {message.type !== 'system' && (
-                            <div className="small fw-bold text-primary mb-1">
-                              {message.sender}
-                            </div>
-                          )}
-                          <div>{message.content}</div>
-                          <div className="small text-muted mt-1">
-                            {new Date(message.timestamp).toLocaleTimeString()}
-                          </div>
-                        </div>
+              {/* Real-time Matrix Chat Panel */}
+              <div className="flex-grow-1">
+                {matrixCredentials && sessionData?.roomId ? (
+                  <ChatPanel
+                    roomId={sessionData.roomId}
+                    userCredentials={matrixCredentials}
+                    height="calc(100vh - 400px)"
+                    className="shadow"
+                    showHeader={true}
+                    allowFileUpload={false}
+                  />
+                ) : (
+                  <Card className="h-100 border-0 shadow">
+                    <Card.Body className="d-flex align-items-center justify-content-center">
+                      <div className="text-center text-muted">
+                        <Spinner className="mb-3" />
+                        <p>Setting up chat...</p>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Quick Response (Optional) */}
-                  <div className="border-top p-2">
-                    <Form onSubmit={handleSendResponse}>
-                      <div className="input-group input-group-sm">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Quick text response..."
-                          value={newResponse}
-                          onChange={(e) => setNewResponse(e.target.value)}
-                        />
-                        <button type="submit" className="btn btn-outline-primary">
-                          Send
-                        </button>
-                      </div>
-                    </Form>
-                    <small className="text-muted">
-                      You can respond by speaking or typing
-                    </small>
-                  </div>
-                </Card.Body>
-              </Card>
+                    </Card.Body>
+                  </Card>
+                )}
+              </div>
             </div>
           </Col>
         </Row>

@@ -15,32 +15,30 @@ const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
  */
 async function createMatrixRoom(courseName, sessionDate, instructorId) {
   try {
-    const response = await axios.post(
+    console.log('🔄 Creating Matrix room for:', courseName);
+
+    // Step 1: Create the room
+    const createResponse = await axios.post(
       `${MATRIX_HOME_SERVER}/_matrix/client/r0/createRoom`,
       {
         name: `${courseName} - Live Session`,
         topic: `Live session for ${courseName} on ${sessionDate}`,
-        preset: 'public_chat',
+        preset: 'private_chat', // Changed from public_chat for better control
         visibility: 'private',
-        // Configure room for education use
         power_levels: {
           users: {
-            [instructorId]: 100, // Instructor has admin power
+            [`@instructor_${instructorId}:chat.151.hu`]: 100, // Instructor admin
+            [`@nom:chat.151.hu`]: 100, // API user admin (for management)
           },
-          users_default: 0, // Students can only read and send messages
+          users_default: 0,
           events_default: 0,
           state_default: 50,
           ban: 50,
           kick: 50,
           redact: 50,
-          invite: 0, // Students can't invite others
+          invite: 0,
         },
         initial_state: [
-          {
-            type: 'm.room.guest_access',
-            state_key: '',
-            content: { guest_access: 'forbidden' }
-          },
           {
             type: 'm.room.history_visibility',
             state_key: '',
@@ -61,10 +59,10 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
       }
     );
 
-    const roomId = response.data.room_id;
+    const roomId = createResponse.data.room_id;
     console.log('✅ Matrix room created:', roomId);
 
-    // Automatically join the room (in case the creator isn't auto-joined)
+    // Step 2: Ensure the API user (creator) is joined
     try {
       await axios.post(
         `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
@@ -76,16 +74,36 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
           }
         }
       );
-      console.log('✅ Successfully joined newly created room');
+      console.log('✅ API user joined room successfully');
     } catch (joinError) {
-      console.log('ℹ️ Join room after creation (might already be joined):', joinError.response?.data?.errcode);
-      // This is often normal - the creator is usually auto-joined
+      console.log('ℹ️ API user already in room (normal)');
     }
 
-    return roomId;
+    // Step 3: Send initial message to verify room is working
+    await axios.post(
+      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+      {
+        msgtype: 'm.text',
+        body: `🎓 Live session room created for "${courseName}". Session will begin when instructor starts it.`
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log('✅ Initial message sent successfully');
+
+    return {
+      success: true,
+      roomId,
+      message: 'Room created and verified'
+    };
+
   } catch (error) {
-    console.error('❌ Error creating Matrix room:', error.response?.data || error.message);
-    throw new Error('Failed to create Matrix room for live session');
+    console.error('❌ Error in Matrix room creation:', error.response?.data || error.message);
+    throw new Error(`Matrix room creation failed: ${error.response?.data?.errcode || error.message}`);
   }
 }
 
@@ -277,88 +295,28 @@ export async function POST(request, { params }) {
         console.log('=== START SESSION DEBUG ===');
         console.log('courseId:', courseId);
         console.log('slotIndex received:', slotIndex, 'type:', typeof slotIndex);
-        console.log('course.liveCourseMeta exists:', !!course.liveCourseMeta);
-        console.log('timeSlots array:', course.liveCourseMeta?.timeSlots);
-        console.log('timeSlots length:', course.liveCourseMeta?.timeSlots?.length);
 
-        // Check if we have liveCourseMeta and timeSlots
-        if (!course.liveCourseMeta || !course.liveCourseMeta.timeSlots) {
+        // Validate course meta and time slots
+        if (!course.liveCourseMeta || !course.liveCourseMeta.timeSlots || course.liveCourseMeta.timeSlots.length === 0) {
           return NextResponse.json({
             success: false,
-            error: 'No live course metadata found. Please create a session first.',
-            debug: {
-              hasLiveCourseMeta: !!course.liveCourseMeta,
-              hasTimeSlots: !!(course.liveCourseMeta?.timeSlots)
-            }
+            error: 'No sessions found. Please create a session first.',
+            action: 'create_session_first'
           }, { status: 400 });
         }
 
-        // If no time slots exist, return specific error
-        if (course.liveCourseMeta.timeSlots.length === 0) {
+        // Convert slotIndex to number and validate
+        const actualSlotIndex = Number(slotIndex) || 0;
+
+        if (actualSlotIndex >= course.liveCourseMeta.timeSlots.length) {
           return NextResponse.json({
             success: false,
-            error: 'No time slots found. Please create a session first.',
-            debug: {
-              timeSlotsLength: course.liveCourseMeta.timeSlots.length
-            }
-          }, { status: 400 });
-        }
-
-        // Handle slotIndex - if undefined or null, use the first available slot
-        let actualSlotIndex = slotIndex;
-        if (actualSlotIndex === undefined || actualSlotIndex === null) {
-          actualSlotIndex = 0;
-          console.log('slotIndex was undefined, defaulting to 0');
-        }
-
-        // Convert to integer if it's a string
-        actualSlotIndex = parseInt(actualSlotIndex);
-
-        // Validate slot index
-        if (isNaN(actualSlotIndex) || actualSlotIndex < 0 || actualSlotIndex >= course.liveCourseMeta.timeSlots.length) {
-          return NextResponse.json({
-            success: false,
-            error: `Invalid slot index ${actualSlotIndex}. Available slots: 0 to ${course.liveCourseMeta.timeSlots.length - 1}`,
-            debug: {
-              providedSlotIndex: slotIndex,
-              actualSlotIndex: actualSlotIndex,
-              availableSlots: course.liveCourseMeta.timeSlots.length,
-              isNaN: isNaN(actualSlotIndex)
-            }
+            error: `Invalid slot index. Available slots: 0 to ${course.liveCourseMeta.timeSlots.length - 1}`
           }, { status: 400 });
         }
 
         const startTimeSlot = course.liveCourseMeta.timeSlots[actualSlotIndex];
         console.log('Selected time slot:', startTimeSlot);
-        console.log('Matrix room ID:', startTimeSlot.matrixRoomId);
-
-        // Check if the time slot has a Matrix room
-        if (!startTimeSlot.matrixRoomId) {
-          // Try to find any time slot with a Matrix room (fallback)
-          const slotWithRoom = course.liveCourseMeta.timeSlots.find(slot => slot.matrixRoomId);
-
-          if (slotWithRoom) {
-            console.log('Found alternative slot with room:', slotWithRoom);
-            // Use the slot that has a room
-            actualSlotIndex = course.liveCourseMeta.timeSlots.indexOf(slotWithRoom);
-            startTimeSlot.matrixRoomId = slotWithRoom.matrixRoomId;
-            startTimeSlot.sessionStatus = slotWithRoom.sessionStatus || 'scheduled';
-          } else {
-            return NextResponse.json({
-              success: false,
-              error: `No Matrix room found for slot ${actualSlotIndex}. Please create a session first.`,
-              debug: {
-                slotIndex: actualSlotIndex,
-                timeSlot: startTimeSlot,
-                allTimeSlots: course.liveCourseMeta.timeSlots.map(slot => ({
-                  hasRoomId: !!slot.matrixRoomId,
-                  status: slot.sessionStatus,
-                  roomId: slot.matrixRoomId
-                }))
-              }
-            }, { status: 400 });
-          }
-        }
 
         // Check if session is already live
         if (startTimeSlot.sessionStatus === 'live') {
@@ -374,24 +332,58 @@ export async function POST(request, { params }) {
           });
         }
 
+        // If no Matrix room exists, create one automatically
+        if (!startTimeSlot.matrixRoomId || startTimeSlot.matrixRoomId === '') {
+          console.log('🔄 No Matrix room found, creating new one...');
+
+          try {
+            const roomResult = await createMatrixRoom(
+              course.title,
+              new Date().toLocaleDateString(),
+              auth.user.id
+            );
+
+            startTimeSlot.matrixRoomId = roomResult.roomId;
+            startTimeSlot.sessionDate = new Date();
+            console.log('✅ New Matrix room created and assigned:', roomResult.roomId);
+
+          } catch (roomError) {
+            return NextResponse.json({
+              success: false,
+              error: 'Failed to create session room',
+              details: roomError.message
+            }, { status: 500 });
+          }
+        }
+
         // Start the session
         try {
           startTimeSlot.sessionStatus = 'live';
           startTimeSlot.sessionStartedAt = new Date();
 
-          console.log('Saving course with updated time slot...');
           await course.save();
-          console.log('Course saved successfully');
+          console.log('✅ Session status updated to live');
 
-          // Announce session start
-          console.log('Sending announcement to Matrix room...');
-          const messageSuccess = await sendMessageToRoom(
-            startTimeSlot.matrixRoomId,
-            `🔴 LIVE: The session has started! Welcome everyone. Feel free to ask questions in the chat.`
-          );
-          console.log('Matrix message sent:', messageSuccess);
+          // Send session start announcement
+          try {
+            await axios.post(
+              `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${startTimeSlot.matrixRoomId}/send/m.room.message`,
+              {
+                msgtype: 'm.text',
+                body: `🔴 LIVE: "${course.title}" session has started! Welcome everyone. Feel free to ask questions in the chat.`
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            console.log('✅ Session start announcement sent');
+          } catch (msgError) {
+            console.log('ℹ️ Announcement failed but session started:', msgError.response?.data?.errcode);
+          }
 
-          console.log('=== SESSION STARTED SUCCESSFULLY ===');
           return NextResponse.json({
             success: true,
             message: 'Live session started successfully',
@@ -401,19 +393,17 @@ export async function POST(request, { params }) {
               sessionStatus: 'live',
               sessionStartedAt: startTimeSlot.sessionStartedAt,
               courseTitle: course.title,
-              matrixIntegration: messageSuccess ? 'active' : 'room_created_messaging_pending'
+              matrixRoomUrl: `${MATRIX_HOME_SERVER}/#/room/${startTimeSlot.matrixRoomId}`,
+              roomCreated: !startTimeSlot.matrixRoomId // Indicates if new room was created
             }
           });
 
-
-        } catch (saveError) {
-          console.error('Error saving course or sending message:', saveError);
+        } catch (error) {
+          console.error('❌ Error starting session:', error);
           return NextResponse.json({
             success: false,
-            error: 'Failed to start session due to database or Matrix error',
-            debug: {
-              error: saveError.message
-            }
+            error: 'Failed to start session',
+            details: error.message
           }, { status: 500 });
         }
       case 'end':
