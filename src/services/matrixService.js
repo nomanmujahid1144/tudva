@@ -1,5 +1,5 @@
 // src/services/matrixService.js
-// FIXED: Server-side Matrix proxy approach
+// FIXED: Stop infinite polling and fix Matrix permissions
 
 let createClient;
 
@@ -25,7 +25,15 @@ class MatrixService {
     this.statusListeners = new Set();
     this.typingListeners = new Set();
     this.isInitializing = false;
-    this.useServerProxy = true; // Use server-side Matrix operations
+    this.useServerProxy = true;
+    this.userId = null;
+    
+    // FIXED: Prevent infinite polling
+    this.pollingInterval = null;
+    this.lastMessageTime = 0;
+    this.isPolling = false;
+    this.maxPollInterval = 30000; // Max 30 seconds between polls
+    this.minPollInterval = 5000;  // Min 5 seconds between polls
   }
 
   /**
@@ -43,15 +51,12 @@ class MatrixService {
       }
 
       this.isInitializing = true;
+      this.userId = userId;
+      
       console.log('🔄 Initializing Matrix with server proxy...');
       
-      // Instead of direct Matrix connection, use server proxy
-      if (this.useServerProxy) {
-        return await this.initializeServerProxy(userId);
-      }
-
-      // Legacy direct connection (not recommended for your use case)
-      return await this.initializeDirect(userId, accessToken, homeServerUrl);
+      // Use server proxy approach
+      return await this.initializeServerProxy(userId);
       
     } catch (error) {
       console.error('❌ Matrix initialization failed:', error);
@@ -65,77 +70,22 @@ class MatrixService {
    */
   async initializeServerProxy(userId) {
     try {
-      console.log('🔄 Using server proxy for Matrix operations');
-      
-      // Test server connectivity
-      const response = await fetch('/api/matrix/test-connection', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId })
-      });
-
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error);
-      }
-
-      this.isConnected = true;
       this.userId = userId;
-      console.log('✅ Server proxy Matrix connection established');
-      
-      // Set up polling for messages
-      this.startMessagePolling();
-      
-      return { success: true };
-      
-    } catch (error) {
-      console.error('❌ Server proxy initialization failed:', error);
-      throw error;
-    } finally {
+      this.isConnected = true;
       this.isInitializing = false;
-    }
-  }
-
-  /**
-   * Start polling for messages from server
-   */
-  startMessagePolling() {
-    // Poll every 2 seconds for new messages
-    this.pollingInterval = setInterval(async () => {
-      if (this.currentRoomId) {
-        await this.fetchMessages();
-      }
-    }, 2000);
-  }
-
-  /**
-   * Fetch messages from server proxy
-   */
-  async fetchMessages() {
-    try {
-      const response = await fetch('/api/matrix/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          roomId: this.currentRoomId,
-          userId: this.userId 
-        })
-      });
-
-      const result = await response.json();
       
-      if (result.success && result.data.messages) {
-        // Update messages and notify listeners
-        this.notifyMessageListeners(result.data.messages);
-      }
+      console.log('✅ Matrix server proxy initialized for:', userId);
+      
+      // Emit status update
+      this.emitStatus('PREPARED');
+      
+      return { success: true, message: 'Server proxy initialized' };
       
     } catch (error) {
-      console.error('❌ Failed to fetch messages:', error);
+      this.isInitializing = false;
+      this.isConnected = false;
+      console.error('❌ Server proxy initialization failed:', error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -164,6 +114,10 @@ class MatrixService {
       }
 
       this.currentRoomId = roomId;
+      
+      // FIXED: Start controlled polling instead of infinite polling
+      this.startControlledPolling();
+      
       console.log('✅ Joined room successfully');
       
       return {
@@ -177,6 +131,90 @@ class MatrixService {
     } catch (error) {
       console.error('❌ Failed to join room:', error);
       return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * FIXED: Start controlled polling (not infinite)
+   */
+  startControlledPolling() {
+    // Stop any existing polling first
+    this.stopPolling();
+    
+    if (!this.currentRoomId || this.isPolling) {
+      return;
+    }
+    
+    this.isPolling = true;
+    console.log('🔄 Starting controlled message polling (every 10 seconds)');
+    
+    // Poll every 10 seconds (not continuously)
+    this.pollingInterval = setInterval(() => {
+      this.pollMessages();
+    }, 10000); // 10 second intervals
+    
+    // Initial poll
+    this.pollMessages();
+  }
+
+  /**
+   * FIXED: Controlled message polling
+   */
+  async pollMessages() {
+    if (!this.currentRoomId || !this.isPolling) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/matrix/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          roomId: this.currentRoomId
+        })
+      });
+
+      console.log(response, 'Response')
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success && result.data.messages) {
+          // Filter only new messages since last poll
+          const newMessages = result.data.messages.filter(msg => {
+            const msgTime = new Date(msg.timestamp).getTime();
+            return msgTime > this.lastMessageTime;
+          });
+
+          if (newMessages.length > 0) {
+            // Update last message time
+            this.lastMessageTime = Math.max(...newMessages.map(msg => 
+              new Date(msg.timestamp).getTime()
+            ));
+
+            // Emit new messages
+            newMessages.forEach(message => {
+              this.emitMessage(message);
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('❌ Polling error:', error);
+    }
+  }
+
+  /**
+   * Stop polling
+   */
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+      this.isPolling = false;
+      console.log('⏹️ Stopped message polling');
     }
   }
 
@@ -220,28 +258,22 @@ class MatrixService {
    * Send typing indicator using server proxy
    */
   async sendTyping(isTyping = true, timeout = 10000) {
+    if (!this.currentRoomId) return;
+
     try {
-      if (!this.currentRoomId) return { success: false };
-      
-      const response = await fetch('/api/matrix/typing', {
+      await fetch('/api/matrix/typing', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           roomId: this.currentRoomId,
-          userId: this.userId,
           isTyping,
           timeout
         })
       });
-
-      const result = await response.json();
-      return { success: result.success };
-      
     } catch (error) {
       console.error('❌ Failed to send typing indicator:', error);
-      return { success: false, error: error.message };
     }
   }
 
@@ -263,36 +295,32 @@ class MatrixService {
     return () => this.typingListeners.delete(callback);
   }
 
-  notifyMessageListeners(messages) {
+  emitMessage(message) {
     this.messageListeners.forEach(callback => {
       try {
-        if (Array.isArray(messages)) {
-          messages.forEach(message => callback(message));
-        } else {
-          callback(messages);
-        }
+        callback(message);
       } catch (error) {
-        console.error('Error in message listener:', error);
+        console.error('❌ Error in message listener:', error);
       }
     });
   }
 
-  notifyStatusListeners(status) {
+  emitStatus(status) {
     this.statusListeners.forEach(callback => {
       try {
         callback(status);
       } catch (error) {
-        console.error('Error in status listener:', error);
+        console.error('❌ Error in status listener:', error);
       }
     });
   }
 
-  notifyTypingListeners(typingUsers) {
+  emitTyping(users) {
     this.typingListeners.forEach(callback => {
       try {
-        callback(typingUsers);
+        callback(users);
       } catch (error) {
-        console.error('Error in typing listener:', error);
+        console.error('❌ Error in typing listener:', error);
       }
     });
   }
@@ -302,6 +330,8 @@ class MatrixService {
    */
   async leaveRoom() {
     try {
+      this.stopPolling();
+      
       if (this.currentRoomId) {
         const response = await fetch('/api/matrix/leave-room', {
           method: 'POST',
@@ -329,14 +359,12 @@ class MatrixService {
    */
   async disconnect() {
     try {
-      if (this.pollingInterval) {
-        clearInterval(this.pollingInterval);
-        this.pollingInterval = null;
-      }
+      this.stopPolling();
       
       this.isConnected = false;
       this.currentRoomId = null;
       this.isInitializing = false;
+      this.lastMessageTime = 0;
       
       // Clear all listeners
       this.messageListeners.clear();
@@ -358,7 +386,8 @@ class MatrixService {
     return {
       isConnected: this.isConnected,
       currentRoomId: this.currentRoomId,
-      userId: this.userId || null
+      userId: this.userId || null,
+      isPolling: this.isPolling
     };
   }
 }

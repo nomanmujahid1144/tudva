@@ -3,130 +3,112 @@
 
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Alert, Spinner, Badge, Button } from 'react-bootstrap';
-import { FaVideo, FaComments, FaSignOutAlt, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaVideo, FaComments, FaSignOutAlt, FaVolumeUp, FaVolumeMute, FaUsers } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { joinLiveSession, getSessionJoinInfo } from '@/services/learningService';
+import ChatPanel from '@/components/LiveSession/ChatPanel';
+import { useAuth } from '@/context/AuthContext';
 
 const LiveSessionPage = ({ params }) => {
   const router = useRouter();
   const { courseId, sessionId } = params;
+  const { user, loading } = useAuth();
   
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isJoined, setIsJoined] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ name: 'Student', id: 'student_123' });
 
-  // Join session on page load
+  console.log(user, 'User')
+
+  // Matrix credentials for student
+  const matrixCredentials = user ? {
+    userId: `@student_${user.id}:chat.151.hu`,
+    accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN || 'syt_bm9t_KyFOAOqQXtogCcGbRktX_0UliGS'
+  } : null;
+
+  // Initialize user and join session on page load
   useEffect(() => {
-    joinSession();
-  }, [courseId, sessionId]);
+    initializeUserAndJoinSession();
+  }, [courseId, sessionId, user]);
 
-  const joinSession = async () => {
+  const initializeUserAndJoinSession = async () => {
     try {
       setIsLoading(true);
       
-      // Join the session
-      const result = await joinLiveSession(courseId, sessionId);
-      
-      if (result.success) {
-        setSessionData(result.data);
-        setIsJoined(true);
-        toast.success('Joined live session successfully!');
-        
-        // Add welcome message
-        setMessages([{
-          id: 'welcome',
-          sender: 'System',
-          content: `Welcome to ${result.data.sessionTitle}! You can ask questions in the chat.`,
-          timestamp: new Date().toISOString(),
-          type: 'system'
-        }]);
-      } else {
-        setError(result.error);
+      if(!user){
+        return
       }
+      
+      // Join the session
+      await joinSession();
+      
     } catch (err) {
-      console.error('Error joining session:', err);
-      setError('Failed to join the live session. Please try again.');
+      console.error('Error initializing:', err);
+      setError('Failed to initialize the session');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Send message
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    
-    if (!newMessage.trim()) return;
-    
+  const joinSession = async () => {
     try {
-      setIsSending(true);
+      // Try to join via API
+      const result = await joinLiveSession(courseId, sessionId);
       
-      const message = {
-        id: `msg_${Date.now()}`,
-        sender: currentUser.name,
-        content: newMessage.trim(),
-        timestamp: new Date().toISOString(),
-        type: 'student'
-      };
-      
-      setMessages(prev => [...prev, message]);
-      setNewMessage('');
-      
-      // Simulate instructor response (in real app, this comes from Matrix)
-      setTimeout(() => {
-        const responses = [
-          "Thank you for your question! Let me address that now.",
-          "Great question! I'll explain this in detail.",
-          "That's exactly what we'll cover next.",
-          "Excellent point! Let me clarify that.",
-          "I'm glad you asked about that topic."
-        ];
-        
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        
-        setMessages(prev => [...prev, {
-          id: `instructor_${Date.now()}`,
-          sender: 'Instructor',
-          content: randomResponse,
-          timestamp: new Date().toISOString(),
-          type: 'instructor'
-        }]);
-      }, Math.random() * 2000 + 1000);
-      
+      console.log(result, 'result')
+
+      if (result.success) {
+        setSessionData(result.data);
+        setIsJoined(true);
+        toast.success('Joined live session successfully!');
+      } else {
+        // Fallback to mock data for testing
+        console.log('API join failed, using mock data');
+        setSessionData({
+          sessionTitle: 'Introduction to React Hooks',
+          courseTitle: 'Advanced React Development',
+          roomId: `!test_room_${courseId}:chat.151.hu`,
+          sessionStatus: 'live',
+          sessionTime: new Date().toISOString(),
+          matrixRoomUrl: `https://chat.151.hu/#/room/!test_room_${courseId}:chat.151.hu`,
+          user: {
+            id: user?.id || 'student_123',
+            name: user?.fullName || 'John Student',
+            matrixUserId: `@student_${user?.id || 'student_123'}:chat.151.hu`
+          }
+        });
+        setIsJoined(true);
+        toast.success('Connected to demo session');
+      }
     } catch (err) {
-      console.error('Error sending message:', err);
-      toast.error('Failed to send message');
-    } finally {
-      setIsSending(false);
+      console.error('Error joining session:', err);
+      setError('Failed to join the live session. Please try again.');
     }
   };
 
   // Leave session
   const handleLeaveSession = () => {
-    toast.success('Left the session');
     router.push('/my-learning');
+    toast.info('Left the session');
   };
 
-  // Toggle mute
-  const toggleMute = () => {
+  // Toggle audio mute
+  const toggleAudio = () => {
     setIsMuted(!isMuted);
     toast.info(isMuted ? 'Audio unmuted' : 'Audio muted');
   };
 
   if (isLoading) {
     return (
-      <Container fluid className="vh-100 d-flex align-items-center justify-content-center bg-dark">
+      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
         <Card className="border-0 shadow-lg text-center p-4">
           <Card.Body>
             <Spinner animation="border" variant="primary" className="mb-3" />
             <h5>Joining Live Session...</h5>
-            <p className="text-muted mb-0">Please wait while we connect you to the session.</p>
+            <p className="text-muted mb-0">Please wait while we connect you</p>
           </Card.Body>
         </Card>
       </Container>
@@ -135,35 +117,33 @@ const LiveSessionPage = ({ params }) => {
 
   if (error) {
     return (
-      <Container fluid className="vh-100 d-flex align-items-center justify-content-center bg-light">
-        <Card className="border-0 shadow-lg text-center p-4" style={{ maxWidth: '500px' }}>
-          <Card.Body>
-            <Alert variant="danger" className="mb-3">
-              <h5>Unable to Join Session</h5>
-              <p className="mb-0">{error}</p>
-            </Alert>
-            <Button variant="primary" onClick={() => router.push('/my-learning')}>
+      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
+        <Alert variant="danger" className="text-center p-4">
+          <h5>Connection Error</h5>
+          <p>{error}</p>
+          <div className="mt-3">
+            <Button variant="primary" onClick={() => window.location.reload()} className="me-2">
+              Try Again
+            </Button>
+            <Button variant="outline-secondary" onClick={() => router.push('/my-learning')}>
               Back to My Learning
             </Button>
-          </Card.Body>
-        </Card>
+          </div>
+        </Alert>
       </Container>
     );
   }
 
   return (
-    <div className="vh-100 bg-dark text-white">
+    <div className="vh-100 bg-light">
       {/* Header */}
-      <div className="bg-primary py-3">
+      <div className="bg-dark text-white py-3">
         <Container fluid>
           <Row className="align-items-center">
             <Col>
-              <div className="d-flex align-items-center">
-                <FaVideo className="me-2" />
-                <div>
-                  <h5 className="mb-0">{sessionData?.sessionTitle || 'Live Session'}</h5>
-                  <small className="opacity-75">{sessionData?.courseTitle}</small>
-                </div>
+              <div>
+                <h5 className="mb-0">{sessionData?.sessionTitle || 'Live Session'}</h5>
+                <small className="opacity-75">{sessionData?.courseTitle || 'Course'}</small>
               </div>
             </Col>
             <Col xs="auto">
@@ -174,10 +154,7 @@ const LiveSessionPage = ({ params }) => {
                     LIVE
                   </div>
                 </Badge>
-                <Button variant="outline-light" size="sm" onClick={toggleMute}>
-                  {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-                </Button>
-                <Button variant="danger" size="sm" onClick={handleLeaveSession}>
+                <Button variant="outline-light" size="sm" onClick={handleLeaveSession}>
                   <FaSignOutAlt className="me-1" />
                   Leave
                 </Button>
@@ -188,45 +165,55 @@ const LiveSessionPage = ({ params }) => {
       </div>
 
       {/* Main Content */}
-      <Container fluid className="flex-grow-1 p-3" style={{ height: 'calc(100vh - 80px)' }}>
+      <Container fluid className="p-3" style={{ height: 'calc(100vh - 80px)' }}>
         <Row className="h-100 g-3">
           {/* Video Section */}
           <Col lg={8} className="h-100">
-            <Card className="border-0 shadow-lg h-100 bg-dark text-white">
-              <Card.Body className="p-0 position-relative h-100">
-                {/* Video Player Placeholder */}
-                <div className="w-100 h-100 bg-black rounded d-flex align-items-center justify-content-center position-relative">
-                  {/* Instructor Video Feed (Placeholder) */}
+            <Card className="border-0 shadow h-100">
+              <Card.Body className="p-0 d-flex flex-column h-100">
+                {/* Video Stream */}
+                <div className="flex-grow-1 bg-dark text-white rounded-top d-flex align-items-center justify-content-center position-relative">
                   <div className="text-center">
                     <div className="bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                         style={{ width: '80px', height: '80px' }}>
-                      <FaVideo size={30} />
+                         style={{ width: '120px', height: '120px' }}>
+                      <FaVideo size={50} />
                     </div>
-                    <h4>Instructor Video</h4>
-                    <p className="text-muted">WebRTC video stream will appear here</p>
+                    <h3>Instructor Video Stream</h3>
+                    <p className="text-muted mb-0">Watching live session</p>
+                    <Badge bg="success" className="mt-3">
+                      🔴 LIVE
+                    </Badge>
                   </div>
                   
-                  {/* Video Controls Overlay */}
-                  <div className="position-absolute bottom-0 start-0 end-0 p-3">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="d-flex align-items-center gap-2">
-                        <Badge bg="dark" className="bg-opacity-75 px-2 py-1">
-                          <FaVideo className="me-1" />
-                          HD Quality
-                        </Badge>
-                      </div>
+                  {/* Session info overlay */}
+                  <div className="position-absolute top-0 start-0 m-3">
+                    <Badge bg="dark" bg-opacity="75" className="px-3 py-2">
+                      <FaUsers className="me-1" />
+                      You are attending
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Student Controls */}
+                <div className="p-4 bg-white border-top">
+                  <Row className="align-items-center">
+                    <Col>
                       <div className="d-flex gap-2">
                         <Button 
-                          variant={isMuted ? "danger" : "dark"} 
-                          size="sm" 
-                          className="bg-opacity-75"
-                          onClick={toggleMute}
+                          variant={isMuted ? "outline-secondary" : "success"}
+                          onClick={toggleAudio}
+                          title={isMuted ? "Unmute audio" : "Mute audio"}
                         >
                           {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
                         </Button>
                       </div>
-                    </div>
-                  </div>
+                    </Col>
+                    <Col xs="auto">
+                      <div className="text-muted small">
+                        Session Status: <Badge bg="success">Live</Badge>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
               </Card.Body>
             </Card>
@@ -234,88 +221,48 @@ const LiveSessionPage = ({ params }) => {
 
           {/* Chat Section */}
           <Col lg={4} className="h-100">
-            <Card className="border-0 shadow-lg h-100">
-              <Card.Header className="bg-light border-0 py-3">
-                <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex flex-column h-100">
+              {/* Session Info Panel */}
+              <Card className="border-0 shadow mb-3">
+                <Card.Header className="bg-light border-0">
                   <div className="d-flex align-items-center">
                     <FaComments className="me-2 text-primary" />
-                    <span className="fw-bold text-dark">Live Chat</span>
+                    <span className="fw-bold">Session Chat</span>
                   </div>
-                  <Badge bg="secondary">{messages.length}</Badge>
-                </div>
-              </Card.Header>
-              
-              <Card.Body className="p-0 d-flex flex-column h-100">
-                {/* Messages */}
-                <div className="flex-grow-1 p-3 overflow-auto" style={{ maxHeight: 'calc(100% - 80px)' }}>
-                  {messages.length === 0 ? (
-                    <div className="text-center text-muted py-4">
-                      <FaComments className="display-4 mb-3 opacity-25" />
-                      <p>No messages yet. Ask your first question!</p>
-                    </div>
-                  ) : (
-                    <div className="d-flex flex-column gap-3">
-                      {messages.map((message) => (
-                        <div key={message.id} className={`d-flex ${message.type === 'student' ? 'justify-content-end' : 'justify-content-start'}`}>
-                          <div 
-                            className={`rounded-3 px-3 py-2 max-width-75 ${
-                              message.type === 'system' ? 'bg-light text-muted fst-italic' :
-                              message.type === 'instructor' ? 'bg-primary text-white' :
-                              'bg-secondary text-white'
-                            }`}
-                            style={{ maxWidth: '85%' }}
-                          >
-                            {message.type !== 'system' && (
-                              <div className="small fw-bold mb-1 opacity-75">
-                                {message.sender}
-                              </div>
-                            )}
-                            <div>{message.content}</div>
-                            <div className="small opacity-50 mt-1">
-                              {new Date(message.timestamp).toLocaleTimeString('en-US', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Message Input */}
-                <div className="border-top p-3">
-                  <form onSubmit={handleSendMessage}>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control border-0 bg-light"
-                        placeholder="Ask a question..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        disabled={isSending}
-                        maxLength={500}
-                      />
-                      <button 
-                        type="submit" 
-                        className="btn btn-primary"
-                        disabled={isSending || !newMessage.trim()}
-                      >
-                        {isSending ? (
-                          <Spinner animation="border" size="sm" />
-                        ) : (
-                          'Send'
-                        )}
-                      </button>
-                    </div>
+                </Card.Header>
+                <Card.Body className="p-3">
+                  <div className="text-center">
                     <small className="text-muted">
-                      Your questions will be visible to everyone
+                      You can ask questions and interact with the instructor and other students in the chat below.
                     </small>
-                  </form>
-                </div>
-              </Card.Body>
-            </Card>
+                  </div>
+                </Card.Body>
+              </Card>
+
+              {/* Real-time Matrix Chat Panel */}
+              <div className="flex-grow-1">
+                {matrixCredentials && sessionData?.roomId ? (
+                  <ChatPanel
+                    roomId={sessionData.roomId}
+                    userCredentials={matrixCredentials}
+                    height="calc(100vh - 300px)"
+                    className="shadow"
+                    showHeader={true}
+                    allowFileUpload={false}
+                  />
+                ) : (
+                  <Card className="h-100 border-0 shadow">
+                    <Card.Body className="d-flex align-items-center justify-content-center">
+                      <div className="text-center text-muted">
+                        <Spinner className="mb-3" />
+                        <p>Connecting to chat...</p>
+                        <small>Setting up real-time messaging</small>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                )}
+              </div>
+            </div>
           </Col>
         </Row>
       </Container>

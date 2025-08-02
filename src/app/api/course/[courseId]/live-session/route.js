@@ -17,18 +17,20 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
   try {
     console.log('🔄 Creating Matrix room for:', courseName);
 
-    // Step 1: Create the room
+    // Step 1: Create the room with the API user as creator (auto-joins)
     const createResponse = await axios.post(
       `${MATRIX_HOME_SERVER}/_matrix/client/r0/createRoom`,
       {
         name: `${courseName} - Live Session`,
         topic: `Live session for ${courseName} on ${sessionDate}`,
-        preset: 'private_chat', // Changed from public_chat for better control
+        preset: 'private_chat',
         visibility: 'private',
+        // CRITICAL FIX: Set API user as creator with admin rights
+        creator: '@nom:chat.151.hu',
         power_levels: {
           users: {
             [`@instructor_${instructorId}:chat.151.hu`]: 100, // Instructor admin
-            [`@nom:chat.151.hu`]: 100, // API user admin (for management)
+            [`@nom:chat.151.hu`]: 100, // API user admin (CRITICAL)
           },
           users_default: 0,
           events_default: 0,
@@ -62,11 +64,51 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
     const roomId = createResponse.data.room_id;
     console.log('✅ Matrix room created:', roomId);
 
-    // Step 2: Ensure the API user (creator) is joined
+    // Step 2: FORCE join the API user to ensure access (CRITICAL FIX)
+    let joinAttempts = 0;
+    const maxJoinAttempts = 3;
+
+    while (joinAttempts < maxJoinAttempts) {
+      try {
+        console.log(`🔄 Join attempt ${joinAttempts + 1}/${maxJoinAttempts} for API user...`);
+
+        const joinResponse = await axios.post(
+          `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        console.log('✅ API user successfully joined room');
+        break; // Success, exit loop
+
+      } catch (joinError) {
+        joinAttempts++;
+        console.error(`❌ Join attempt ${joinAttempts} failed:`, joinError.response?.data);
+
+        if (joinAttempts >= maxJoinAttempts) {
+          throw new Error(`API user failed to join room after ${maxJoinAttempts} attempts: ${joinError.response?.data?.errcode}`);
+        }
+
+        // Wait 1 second before retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    // Step 3: Verify API user can send messages by sending test message
     try {
+      console.log('🔄 Verifying API user can send messages...');
+
       await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
-        {},
+        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+        {
+          msgtype: 'm.text',
+          body: `🎓 Live session room created for "${courseName}". Session will begin when instructor starts it.`
+        },
         {
           headers: {
             'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
@@ -74,18 +116,59 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
           }
         }
       );
-      console.log('✅ API user joined room successfully');
-    } catch (joinError) {
-      console.log('ℹ️ API user already in room (normal)');
+
+      console.log('✅ API user can send messages - room is fully functional');
+
+    } catch (msgError) {
+      console.error('❌ CRITICAL: API user cannot send messages:', msgError.response?.data);
+      throw new Error(`API user cannot send messages: ${msgError.response?.data?.errcode}`);
     }
 
-    // Step 3: Send initial message to verify room is working
+    // Step 4: Set up room for instructor (invite them)
+    try {
+      console.log('🔄 Inviting instructor to room...');
+
+      await axios.post(
+        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/invite`,
+        {
+          user_id: `@instructor_${instructorId}:chat.151.hu`
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('✅ Instructor invited to room');
+
+    } catch (inviteError) {
+      console.log('ℹ️ Instructor invite failed (they can join later):', inviteError.response?.data?.errcode);
+      // Don't fail room creation for this
+    }
+
+    return {
+      success: true,
+      roomId,
+      message: 'Room created and API user verified'
+    };
+
+  } catch (error) {
+    console.error('❌ CRITICAL Matrix room creation error:', error.response?.data || error.message);
+    throw new Error(`Matrix room creation failed: ${error.response?.data?.errcode || error.message}`);
+  }
+}
+
+/**
+ * ALSO ADD: Fixed function to ensure user joins room before sending messages
+ */
+async function ensureUserInRoom(roomId, userId) {
+  try {
+    // Try to join the room first
     await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
-      {
-        msgtype: 'm.text',
-        body: `🎓 Live session room created for "${courseName}". Session will begin when instructor starts it.`
-      },
+      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
+      {},
       {
         headers: {
           'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
@@ -93,17 +176,13 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
         }
       }
     );
-    console.log('✅ Initial message sent successfully');
 
-    return {
-      success: true,
-      roomId,
-      message: 'Room created and verified'
-    };
+    console.log('✅ User joined room successfully');
+    return true;
 
   } catch (error) {
-    console.error('❌ Error in Matrix room creation:', error.response?.data || error.message);
-    throw new Error(`Matrix room creation failed: ${error.response?.data?.errcode || error.message}`);
+    console.error('❌ Failed to ensure user in room:', error.response?.data);
+    return false;
   }
 }
 

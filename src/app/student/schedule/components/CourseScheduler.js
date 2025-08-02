@@ -125,7 +125,7 @@ const CourseScheduler = () => {
       const sessionMatch = item.itemId.match(/session_(\d+)/);
       if (sessionMatch && sessionMatch[1]) {
         const sessionNumber = parseInt(sessionMatch[1], 10);
-        const totalSessions = item.totalSessions || 10;
+        const totalSessions = item.totalSessions || 5;
         return `${sessionNumber}/${totalSessions}`;
       }
     }
@@ -160,19 +160,14 @@ const CourseScheduler = () => {
 
   const updateLessonOrdering = async (courseId) => {
     try {
-      console.log("Starting updateLessonOrdering for course:", courseId);
-
       // Get all items for this course from the current state
       const courseItems = getAllItemsForCourse(courseId);
-      console.log(`Found ${courseItems.length} total items for courseId ${courseId}`);
 
       // Filter to only include recorded items
       const recordedItems = courseItems.filter(item => item.type === 'recorded');
-      console.log(`Found ${recordedItems.length} recorded items for courseId ${courseId}`);
 
       // Skip if no items or only one item (nothing to reorder)
       if (recordedItems.length <= 1) {
-        console.log("Not enough recorded items to reorder:", recordedItems.length);
         return true;
       }
 
@@ -195,30 +190,14 @@ const CourseScheduler = () => {
         .filter(item => !item.isTemporary) // Exclude temporary items
         .map(item => item.id);
 
-      console.log("Ordered recorded item IDs:", orderedItemIds);
-
       // Skip if no items to update
       if (orderedItemIds.length === 0) {
-        console.log("No permanent recorded items to reorder");
         return true;
       }
 
-      // Print state before API call
-      console.log("Current scheduledItems state BEFORE API call:",
-        scheduledItems.filter(item => item.courseId === courseId).map(item => ({
-          id: item.id,
-          title: item.title,
-          slot: item.slotId,
-          date: new Date(item.date).toLocaleDateString()
-        }))
-      );
-
-      // Call the API to reorder items
-      console.log(`Calling updateItemsOrder API with courseId=${courseId} and ${orderedItemIds.length} items`);
       const result = await schedulerService.updateItemsOrder(courseId, orderedItemIds);
 
       if (result.success) {
-        console.log("Successfully reordered items via API");
 
         // Update local data immediately for better UX
         for (let i = 0; i < sortedItems.length; i++) {
@@ -250,16 +229,6 @@ const CourseScheduler = () => {
 
         // Complete reload of schedule to ensure DB and UI are in sync
         await loadUserSchedule();
-
-        console.log("Current scheduledItems state AFTER API call:",
-          scheduledItems.filter(item => item.courseId === courseId).map(item => ({
-            id: item.id,
-            title: item.title,
-            slot: item.slotId,
-            lessonNumber: item.lessonNumber,
-            date: new Date(item.date).toLocaleDateString()
-          }))
-        );
 
         return true;
       } else {
@@ -311,7 +280,6 @@ const CourseScheduler = () => {
     try {
       const result = await schedulerService.getUserSchedule();
       if (result.success) {
-        console.log(result.data.scheduledItems, 'result.data.scheduledItems')
         setScheduledItems(result.data.scheduledItems || []);
       } else {
         toast.error(result.error || 'Failed to load your schedule');
@@ -386,8 +354,6 @@ const CourseScheduler = () => {
 
   // Get all items for a course (from both scheduled and temporary items)
   const getAllItemsForCourse = (courseId) => {
-    console.log(`getAllItemsForCourse called with courseId: ${courseId}`);
-    console.log(`Total scheduledItems: ${scheduledItems.length}`);
 
     // Match items by courseId field
     const regularItems = scheduledItems.filter(item => {
@@ -395,11 +361,8 @@ const CourseScheduler = () => {
       return matches;
     });
 
-    console.log(`Found ${regularItems.length} regular items for course ${courseId}`);
-
     // Match temporary items
     const tempItems = temporaryItems.filter(item => item.courseId === courseId);
-    console.log(`Found ${tempItems.length} temporary items for course ${courseId}`);
 
     // Combine and return
     const allItems = [...regularItems, ...tempItems];
@@ -484,13 +447,6 @@ const CourseScheduler = () => {
       return false;
     }
 
-    // Debug output
-    console.log("DRAG START - Item from calendar:", {
-      title: item.title,
-      lessonNumber: item.lessonNumber,
-      type: item.type,
-      courseId: item.courseId
-    });
 
     // Save the source item information
     setDraggedItem(item);
@@ -518,14 +474,6 @@ const CourseScheduler = () => {
   const handleDragStartFromPanel = (e, course, item) => {
     e.stopPropagation();
 
-    console.log("DRAGGING LESSON FROM PANEL:", {
-      id: item.id,
-      title: item.title,
-      lessonNumber: item.lessonNumber,
-      totalLessons: item.totalLessons,
-      courseId: course._id
-    });
-
     // CRITICAL: Create a drag item with explicit lesson information
     const dragItem = {
       courseId: course._id,
@@ -540,12 +488,6 @@ const CourseScheduler = () => {
       iconUrl: course.iconUrl,
     };
 
-    // Debug output - confirm the dragItem has the correct lessonNumber
-    console.log("DRAG ITEM CREATED:", {
-      title: dragItem.title,
-      lessonNumber: dragItem.lessonNumber,
-      totalLessons: dragItem.totalLessons
-    });
 
     setDraggedItem(dragItem);
     draggedItemRef.current = dragItem;
@@ -559,7 +501,6 @@ const CourseScheduler = () => {
       totalLessons: item.totalLessons
     };
 
-    console.log("TRANSFER DATA:", transferData);
     e.dataTransfer.setData('text/plain', JSON.stringify(transferData));
 
     e.dataTransfer.effectAllowed = 'copy';
@@ -586,12 +527,6 @@ const CourseScheduler = () => {
     e.currentTarget.classList.remove('drag-over');
     e.currentTarget.classList.remove('live-conflict-slot');
 
-    // Debug - check the lesson number in the dragged item
-    console.log("DRAG OVER - Item being dragged:", {
-      title: item.title,
-      lessonNumber: item.lessonNumber,
-      type: item.type
-    });
 
     // Check for conflicts with live courses
     const hasLiveCourse = [...scheduledItems, ...temporaryItems].some(existingItem =>
@@ -651,7 +586,6 @@ const CourseScheduler = () => {
     try {
       const rawData = e.dataTransfer.getData('text/plain');
       data = JSON.parse(rawData);
-      console.log("DROP DATA:", data);
     } catch (error) {
       console.error('Invalid drag data:', error);
       return;
@@ -659,13 +593,6 @@ const CourseScheduler = () => {
 
     const item = draggedItemRef.current;
     if (!item) return;
-
-    console.log("DROP ITEM:", {
-      title: item.title,
-      lessonNumber: item.lessonNumber,
-      type: item.type,
-      courseId: item.courseId
-    });
 
     // Ensure lesson information is preserved
     const itemWithLessonInfo = {
@@ -748,12 +675,6 @@ const CourseScheduler = () => {
           );
         }
       } else if (item.isFromPanel) {
-        // For new items from the panel
-        console.log("ADDING COURSE ITEM TO API:", {
-          courseId: item.courseId,
-          itemId: item.itemId,
-          lessonNumber: itemWithLessonInfo.lessonNumber
-        });
 
         const result = await schedulerService.addCourseItem({
           courseId: item.courseId,
@@ -797,7 +718,6 @@ const CourseScheduler = () => {
 
       // Third step: If it's a recorded course, do the reordering
       if (isRecordedType && courseIdForReorder) {
-        console.log(`Handling reordering for course ${courseIdForReorder}`);
 
         // Get the latest data
         const currentSchedule = await schedulerService.getUserSchedule();
@@ -808,8 +728,6 @@ const CourseScheduler = () => {
           const courseItems = allItems.filter(item =>
             item.courseId === courseIdForReorder && item.type === 'recorded'
           );
-
-          console.log(`Found ${courseItems.length} recorded items for course ${courseIdForReorder}`);
 
           if (courseItems.length > 1) {
             // Sort the items by their position in the scheduler
@@ -828,13 +746,11 @@ const CourseScheduler = () => {
 
             // Get the ordered IDs
             const orderedItemIds = sortedItems.map(item => item.id);
-            console.log('Ordered item IDs for reordering:', orderedItemIds);
 
             // Directly call the reordering API
             const orderResult = await schedulerService.updateItemsOrder(courseIdForReorder, orderedItemIds);
 
             if (orderResult.success) {
-              console.log('Successfully updated course order');
               toast.success('Course order updated');
 
               // Final reload to get everything in sync
@@ -866,8 +782,6 @@ const CourseScheduler = () => {
   // Handle menu button click
   const handleMenuClick = (e) => {
     e.stopPropagation();
-    // Future implementation: Show options menu for the course
-    console.log('Menu clicked');
   };
 
   // Add course button click handler 
@@ -924,7 +838,6 @@ const CourseScheduler = () => {
 
         // If it's a recorded course, we need to update the order
         if (course.type === 'recorded') {
-          console.log('Added recorded course, forcing order update...');
 
           // Get all the recorded items for this course
           // We need to use this simpler approach to make sure we have the latest data
@@ -934,8 +847,6 @@ const CourseScheduler = () => {
             // Find all items for this course
             const allItems = currentSchedule.data.scheduledItems || [];
             const courseItems = allItems.filter(item => item.courseId === course._id && item.type === 'recorded');
-
-            console.log(`Found ${courseItems.length} recorded items for course ${course._id}`);
 
             if (courseItems.length > 1) {
               // Sort the items by their position in the scheduler
@@ -954,13 +865,11 @@ const CourseScheduler = () => {
 
               // Get the ordered IDs
               const orderedItemIds = sortedItems.map(item => item.id);
-              console.log('Ordered item IDs:', orderedItemIds);
 
               // Directly call the reordering API
               const orderResult = await schedulerService.updateItemsOrder(course._id, orderedItemIds);
 
               if (orderResult.success) {
-                console.log('Successfully updated course order');
                 toast.success('Course order updated');
               } else {
                 console.error('Failed to update course order:', orderResult.error);
@@ -1273,7 +1182,6 @@ const CourseScheduler = () => {
                                           )}
                                         </Col>
                                         <Col md={12} className="course-body p-2 d-flex align-items-center justify-content-center flex-grow-1">
-                                          {console.log(item, 'item')}
                                           <h5 className="fs-6 fw-bold text-center m-0">{item.courseTitle || item.courseTitle}</h5>
                                         </Col>
                                         <Col md={12} className="px-4 pb-2 d-flex justify-content-between align-items-center">
@@ -1555,7 +1463,6 @@ const CourseScheduler = () => {
                                               height: '13rem',
                                             }}
                                           >
-                                            {console.log('Rendering lesson:', lesson)}
                                             <div className='row m-0 h-100 w-auto'>
                                               <Col
                                                 className="d-flex py-1 justify-content-end align-items-center position-relative"

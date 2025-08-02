@@ -87,12 +87,15 @@ export async function GET(request) {
       if (!course) continue;
 
       // Process each scheduled item in the course
-      for (const item of scheduledCourse.scheduledItems) {
+
+      const totalLessons = scheduledCourse.scheduledItems?.length || 0;
+
+      scheduledCourse.scheduledItems.forEach((item, index) => {
         const itemDate = new Date(item.date);
 
         // Apply date filters if provided
-        if (startDate && itemDate < startDate) continue;
-        if (endDate && itemDate > endDate) continue;
+        if (startDate && itemDate < startDate) return;
+        if (endDate && itemDate > endDate) return;
 
         // Determine module title for recorded courses
         let moduleTitle = '';
@@ -124,8 +127,8 @@ export async function GET(request) {
           isCompleted: item.isCompleted,
           completedAt: item.completedAt,
           courseTitle: course.title,
-          lessonNumber: item.lessonNumber,
-          totalLessons: item.totalLessons,
+          lessonNumber: index + 1,
+          totalLessons: totalLessons,
           backgroundColorHex: course.backgroundColorHex,
           type: course.type,
           iconUrl: course.iconUrl || (course.type === CourseType.LIVE ?
@@ -134,7 +137,7 @@ export async function GET(request) {
         };
 
         scheduledItems.push(scheduledItem);
-      }
+      });
     }
 
     // Sort scheduled items by date and slot

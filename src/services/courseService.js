@@ -532,6 +532,34 @@ export const cancelLiveSession = async (courseId, slotIndex) => {
 
 
 /**
+ * Get scheduled sessions for instructor's courses
+ * @param {string} courseId - Optional specific course ID
+ * @returns {Promise<Object>} Scheduled sessions data
+ */
+export const getInstructorScheduledSessions = async (courseId = null) => {
+  try {
+    const queryParams = courseId ? `?courseId=${courseId}` : '';
+    const response = await api.get(`/api/instructor/scheduled-sessions${queryParams}`);
+    
+    if (response.data.success) {
+      return {
+        success: true,
+        data: response.data.data
+      };
+    }
+    
+    throw new Error(response.data.error || 'Failed to fetch scheduled sessions');
+    
+  } catch (error) {
+    console.error('Error fetching scheduled sessions:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message || 'Failed to fetch scheduled sessions'
+    };
+  }
+};
+
+/**
  * Get all instructor live sessions with status
  * @returns {Promise<Object>} List of live sessions
  */

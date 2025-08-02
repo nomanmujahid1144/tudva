@@ -52,7 +52,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Failed to fetch Matrix messages:', error);
+    // console.error('Failed to fetch Matrix messages:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch messages'
