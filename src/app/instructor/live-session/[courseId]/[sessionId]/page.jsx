@@ -1,30 +1,32 @@
-// src/app/instructor/live-session/[courseId]/[sessionId]/page.jsx
+// CLEAN VERSION: src/app/instructor/live-session/[courseId]/[slotIndex]/page.jsx
+// Real-time data, proper auth, no mock data
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
-import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaRecordVinyl } from 'react-icons/fa';
+import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaRecordVinyl, FaSignOutAlt } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { getLiveSessionData, manageLiveSession } from '@/services/courseService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
 
 const InstructorLiveSessionPage = ({ params }) => {
   const router = useRouter();
   const { courseId, sessionId } = params;
-  
+  const slotIndex = sessionId;
+  const { user, loading: authLoading } = useAuth();
+
+  // Session data state
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
-  
-  // Session controls
-  const [isLive, setIsLive] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isManaging, setIsManaging] = useState(false);
+
+  // Session controls state
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
-  
-  // Students data
-  const [connectedStudents, setConnectedStudents] = useState([]);
 
   // Matrix credentials for instructor
   const matrixCredentials = user ? {
@@ -32,185 +34,249 @@ const InstructorLiveSessionPage = ({ params }) => {
     accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN || 'syt_bm9t_KyFOAOqQXtogCcGbRktX_0UliGS'
   } : null;
 
-  // Initialize session
+  // Load session data when component mounts or user changes
   useEffect(() => {
-    initializeSession();
-  }, [courseId, sessionId]);
+    if (!authLoading && user) {
+      loadSessionData();
+    }
+  }, [courseId, slotIndex, user, authLoading]);
 
-  const initializeSession = async () => {
+  // Load real session data from API
+  const loadSessionData = async () => {
     try {
       setIsLoading(true);
-      
-      // Get user info from localStorage or API
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        setUser(JSON.parse(userData));
-      }
-      
-      // Fetch session data from API
-      const response = await fetch(`/api/course/${courseId}/live-session`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      setError(null);
+
+      console.log('🔄 Loading session data for course:', courseId);
+
+      const result = await getLiveSessionData(courseId);
+
+      if (result.success) {
+        const data = result.data;
+        const currentSlot = data.timeSlots?.[slotIndex];
+
+        if (!currentSlot) {
+          setError(`Session slot ${slotIndex} not found. Please create the session first.`);
+          return;
         }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSessionData({
-          sessionTitle: data.sessionTitle || 'Live Session',
-          courseTitle: data.courseTitle || 'Course',
-          roomId: data.roomId,
-          sessionStatus: data.sessionStatus,
-          maxStudents: 25
+
+        console.log('✅ Session data loaded:', {
+          courseTitle: data.courseTitle,
+          sessionStatus: currentSlot.sessionStatus,
+          hasMatrixRoom: !!currentSlot.matrixRoomId
         });
-        
-        // If session is already live, update UI state
-        if (data.sessionStatus === 'live') {
-          setIsLive(true);
+
+        // Set real session data
+        setSessionData({
+          sessionTitle: `Session ${parseInt(slotIndex) + 1}`,
+          courseTitle: data.courseTitle,
+          roomId: currentSlot.matrixRoomId,
+          sessionStatus: currentSlot.sessionStatus,
+          sessionDate: currentSlot.sessionDate,
+          matrixRoomId: currentSlot.matrixRoomId,
+          slotData: currentSlot
+        });
+
+        // Update UI state based on real session status
+        if (currentSlot.sessionStatus === 'live') {
           setIsCameraOn(true);
           setIsMicOn(true);
-          setIsRecording(true);
+          console.log('✅ Session is LIVE - updating UI state');
+        } else {
+          setIsCameraOn(false);
+          setIsMicOn(false);
+          console.log('ℹ️ Session not live - status:', currentSlot.sessionStatus);
         }
+
       } else {
-        // Mock data for testing
-        setSessionData({
-          sessionTitle: 'Introduction to React Hooks',
-          courseTitle: 'Advanced React Development',
-          roomId: `!test_room_${courseId}:chat.151.hu`,
-          maxStudents: 25,
-          sessionStatus: 'scheduled'
-        });
+        setError(result.error || 'Failed to load session data');
       }
-      
-      // Mock connected students (in real app, this would come from Matrix room members)
-      setConnectedStudents([
-        { id: '1', name: 'Alice Johnson', joinedAt: new Date() },
-        { id: '2', name: 'Bob Smith', joinedAt: new Date() },
-        { id: '3', name: 'Carol Davis', joinedAt: new Date() }
-      ]);
-      
     } catch (err) {
-      console.error('Error initializing session:', err);
-      setError('Failed to initialize the session');
+      console.error('❌ Error loading session data:', err);
+      setError('Failed to load session data');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Check if session is currently live
+  const isSessionLive = () => {
+    return sessionData?.sessionStatus === 'live';
+  };
+
   // Start live session
   const handleStartSession = async () => {
     try {
-      // Call API to start session
-      const response = await fetch(`/api/course/${courseId}/live-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'start',
-          slotIndex: 0
-        })
+      if (isSessionLive()) {
+        toast.info('Session is already live!');
+        return;
+      }
+
+      setIsManaging(true);
+
+      console.log('🚀 Starting live session:', {
+        courseId,
+        slotIndex: parseInt(slotIndex)
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        
-        setIsLive(true);
+      const result = await manageLiveSession(courseId, {
+        action: 'start',
+        slotIndex: parseInt(slotIndex),
+        sessionDate: new Date().toISOString(),
+        sessionTitle: `Session ${parseInt(slotIndex) + 1}`
+      });
+
+      if (result.success) {
+        toast.success('Live session started! 🔴');
+
+        // Update local state
         setIsCameraOn(true);
         setIsMicOn(true);
-        setIsRecording(true);
-        
-        // Update session data with room ID from API
-        setSessionData(prev => ({
-          ...prev,
-          roomId: data.data?.roomId || prev.roomId,
-          sessionStatus: 'live'
-        }));
-        
-        toast.success('Live session started! 🔴');
+
+        // Reload session data to get updated status
+        await loadSessionData();
       } else {
-        throw new Error('Failed to start session');
+        console.error('❌ Failed to start session:', result.error);
+        toast.error(result.error || 'Failed to start live session');
       }
-      
     } catch (err) {
-      console.error('Error starting session:', err);
-      toast.error('Failed to start session');
+      console.error('❌ Error starting session:', err);
+      toast.error('Failed to start live session');
+    } finally {
+      setIsManaging(false);
     }
   };
 
   // End live session
   const handleEndSession = async () => {
     try {
-      // Call API to end session
-      const response = await fetch(`/api/course/${courseId}/live-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          action: 'end',
-          slotIndex: 0
-        })
+      setIsManaging(true);
+
+      console.log('🔴 Ending live session:', {
+        courseId,
+        slotIndex: parseInt(slotIndex)
       });
 
-      if (response.ok) {
-        setIsLive(false);
+      const result = await manageLiveSession(courseId, {
+        action: 'end',
+        slotIndex: parseInt(slotIndex),
+        recordingUrl: ''
+      });
+
+      if (result.success) {
+        toast.success('Live session ended ✅');
+
+        // Update local state
         setIsCameraOn(false);
         setIsMicOn(false);
-        setIsRecording(false);
-        
-        setSessionData(prev => ({
-          ...prev,
-          sessionStatus: 'completed'
-        }));
-        
-        toast.success('Live session ended ✅');
+
+        // Reload session data to get updated status
+        await loadSessionData();
       } else {
-        throw new Error('Failed to end session');
+        console.error('❌ Failed to end session:', result.error);
+        toast.error(result.error || 'Failed to end session');
       }
-      
     } catch (err) {
-      console.error('Error ending session:', err);
+      console.error('❌ Error ending session:', err);
       toast.error('Failed to end session');
+    } finally {
+      setIsManaging(false);
     }
+  };
+
+  // Navigate back to dashboard
+  const handleBackToDashboard = () => {
+    router.push('/instructor/live-sessions');
   };
 
   // Toggle camera
   const toggleCamera = () => {
+    if (!isSessionLive()) {
+      toast.warning('Start the session first to control camera');
+      return;
+    }
     setIsCameraOn(!isCameraOn);
     toast.info(isCameraOn ? 'Camera turned off' : 'Camera turned on');
   };
 
   // Toggle microphone
   const toggleMicrophone = () => {
+    if (!isSessionLive()) {
+      toast.warning('Start the session first to control microphone');
+      return;
+    }
     setIsMicOn(!isMicOn);
     toast.info(isMicOn ? 'Microphone muted' : 'Microphone unmuted');
   };
 
-  if (isLoading) {
+  // Get session status badge
+  const getSessionStatusBadge = () => {
+    if (!sessionData) return <Badge bg="secondary">Loading...</Badge>;
+
+    switch (sessionData.sessionStatus) {
+      case 'live':
+        return (
+          <Badge bg="success" className="d-flex align-items-center gap-1">
+            <div className="rounded-circle bg-white" style={{ width: '8px', height: '8px' }}></div>
+            LIVE
+          </Badge>
+        );
+      case 'scheduled':
+        return <Badge bg="primary">Ready to Start</Badge>;
+      case 'completed':
+        return <Badge bg="info">Completed</Badge>;
+      case 'cancelled':
+        return <Badge bg="danger">Cancelled</Badge>;
+      default:
+        return <Badge bg="secondary">Unknown</Badge>;
+    }
+  };
+
+  // Show loading while auth is loading or session data is loading
+  if (authLoading || isLoading) {
     return (
       <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
         <Card className="border-0 shadow-lg text-center p-4">
           <Card.Body>
             <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>Setting up Live Session...</h5>
-            <p className="text-muted mb-0">Preparing your session room</p>
+            <h5>{authLoading ? 'Authenticating...' : 'Loading Session...'}</h5>
+            <p className="text-muted mb-0">Please wait</p>
           </Card.Body>
         </Card>
       </Container>
     );
   }
 
+  // Show error if auth failed or no user
+  if (!user) {
+    return (
+      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
+        <Alert variant="warning" className="text-center p-4">
+          <h5>Authentication Required</h5>
+          <p>Please log in to access the instructor session.</p>
+          <Button variant="primary" onClick={() => router.push('/login')}>
+            Go to Login
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  // Show error if session data failed to load
   if (error) {
     return (
       <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
         <Alert variant="danger" className="text-center p-4">
-          <h5>Session Setup Error</h5>
+          <h5>Session Error</h5>
           <p>{error}</p>
-          <Button variant="primary" onClick={() => router.push('/instructor/dashboard')}>
-            Back to Dashboard
-          </Button>
+          <div className="mt-3">
+            <Button variant="primary" onClick={loadSessionData} className="me-2">
+              Try Again
+            </Button>
+            <Button variant="outline-secondary" onClick={handleBackToDashboard}>
+              Back to Dashboard
+            </Button>
+          </div>
         </Alert>
       </Container>
     );
@@ -223,27 +289,32 @@ const InstructorLiveSessionPage = ({ params }) => {
         <Container fluid>
           <Row className="align-items-center">
             <Col>
-              <div>
-                <h5 className="mb-0">{sessionData?.sessionTitle}</h5>
-                <small className="opacity-75">{sessionData?.courseTitle}</small>
+              <div className="d-flex align-items-center gap-3">
+                <Button
+                  variant="outline-light"
+                  size="sm"
+                  onClick={handleBackToDashboard}
+                >
+                  <FaSignOutAlt className="me-1" />
+                  Back to Dashboard
+                </Button>
+                <div>
+                  <h5 className="mb-0">{sessionData?.sessionTitle}</h5>
+                  <small className="opacity-75">{sessionData?.courseTitle}</small>
+                </div>
               </div>
             </Col>
             <Col xs="auto">
               <div className="d-flex align-items-center gap-2">
-                <Badge bg={isLive ? "success" : "secondary"} className="px-3 py-2">
-                  {isLive ? (
-                    <>
-                      <div className="d-flex align-items-center">
-                        <div className="rounded-circle bg-white me-2" style={{ width: '8px', height: '8px' }}></div>
-                        LIVE
-                      </div>
-                    </>
-                  ) : 'OFFLINE'}
-                </Badge>
-                <Badge bg="info" className="px-2 py-1">
-                  <FaUsers className="me-1" />
-                  {connectedStudents.length} students
-                </Badge>
+                {getSessionStatusBadge()}
+                <Button
+                  variant="outline-light"
+                  size="sm"
+                  onClick={loadSessionData}
+                  disabled={isLoading}
+                >
+                  Refresh
+                </Button>
               </div>
             </Col>
           </Row>
@@ -261,13 +332,13 @@ const InstructorLiveSessionPage = ({ params }) => {
                 <div className="flex-grow-1 bg-dark text-white rounded-top d-flex align-items-center justify-content-center position-relative">
                   {isCameraOn ? (
                     <div className="text-center">
-                      <div className="bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                           style={{ width: '100px', height: '100px' }}>
+                      <div className="bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                        style={{ width: '100px', height: '100px' }}>
                         <FaVideo size={40} />
                       </div>
                       <h4>Your Video Feed</h4>
                       <p className="text-muted">Students can see you</p>
-                      {isLive && (
+                      {isSessionLive() && (
                         <Badge bg="success" className="mt-2">
                           🔴 Broadcasting Live
                         </Badge>
@@ -275,21 +346,23 @@ const InstructorLiveSessionPage = ({ params }) => {
                     </div>
                   ) : (
                     <div className="text-center">
-                      <div className="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                           style={{ width: '100px', height: '100px' }}>
+                      <div className="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                        style={{ width: '100px', height: '100px' }}>
                         <FaVideoSlash size={40} />
                       </div>
                       <h4>Camera Off</h4>
-                      <p className="text-muted">Turn on camera to start streaming</p>
+                      <p className="text-muted">
+                        {isSessionLive() ? 'Turn on camera to start streaming' : 'Start the session first'}
+                      </p>
                     </div>
                   )}
-                  
+
                   {/* Recording indicator */}
-                  {isRecording && (
+                  {isSessionLive() && (
                     <div className="position-absolute top-0 start-0 m-3">
                       <Badge bg="danger" className="d-flex align-items-center">
                         <FaRecordVinyl className="me-1" />
-                        Recording
+                        Live
                       </Badge>
                     </div>
                   )}
@@ -300,18 +373,18 @@ const InstructorLiveSessionPage = ({ params }) => {
                   <Row className="align-items-center">
                     <Col>
                       <div className="d-flex gap-2">
-                        <Button 
+                        <Button
                           variant={isCameraOn ? "success" : "outline-secondary"}
                           onClick={toggleCamera}
-                          disabled={!isLive}
+                          disabled={!isSessionLive()}
                           title={isCameraOn ? "Turn off camera" : "Turn on camera"}
                         >
                           {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
                         </Button>
-                        <Button 
+                        <Button
                           variant={isMicOn ? "success" : "outline-secondary"}
                           onClick={toggleMicrophone}
-                          disabled={!isLive}
+                          disabled={!isSessionLive()}
                           title={isMicOn ? "Mute microphone" : "Unmute microphone"}
                         >
                           {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
@@ -319,15 +392,25 @@ const InstructorLiveSessionPage = ({ params }) => {
                       </div>
                     </Col>
                     <Col xs="auto">
-                      {!isLive ? (
-                        <Button variant="success" size="lg" onClick={handleStartSession}>
+                      {!isSessionLive() ? (
+                        <Button
+                          variant="success"
+                          size="lg"
+                          onClick={handleStartSession}
+                          disabled={isManaging}
+                        >
                           <FaPlay className="me-2" />
-                          Start Live Session
+                          {isManaging ? 'Starting...' : 'Start Live Session'}
                         </Button>
                       ) : (
-                        <Button variant="danger" size="lg" onClick={handleEndSession}>
+                        <Button
+                          variant="danger"
+                          size="lg"
+                          onClick={handleEndSession}
+                          disabled={isManaging}
+                        >
                           <FaStop className="me-2" />
-                          End Session
+                          {isManaging ? 'Ending...' : 'End Session'}
                         </Button>
                       )}
                     </Col>
@@ -340,38 +423,47 @@ const InstructorLiveSessionPage = ({ params }) => {
           {/* Chat Section */}
           <Col lg={4} className="h-100">
             <div className="d-flex flex-column h-100 gap-3">
-              {/* Connected Students Panel */}
+              {/* Session Info Panel */}
               <Card className="border-0 shadow">
                 <Card.Header className="bg-light border-0">
                   <div className="d-flex align-items-center">
                     <FaUsers className="me-2 text-primary" />
-                    <span className="fw-bold">Connected Students ({connectedStudents.length})</span>
+                    <span className="fw-bold">Session Information</span>
                   </div>
                 </Card.Header>
-                <Card.Body className="p-2" style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                  {connectedStudents.length === 0 ? (
-                    <div className="text-center text-muted py-2">
-                      <small>No students connected yet</small>
+                <Card.Body className="p-3">
+                  <div className="small">
+                    <div className="mb-2">
+                      <strong>Course:</strong> {sessionData?.courseTitle}
                     </div>
-                  ) : (
-                    connectedStudents.map(student => (
-                      <div key={student.id} className="d-flex align-items-center justify-content-between py-1 px-2 small">
-                        <span>{student.name}</span>
-                        <Badge bg="success" className="rounded-circle" style={{ width: '8px', height: '8px' }}></Badge>
+                    <div className="mb-2">
+                      <strong>Session:</strong> {sessionData?.sessionTitle}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Status:</strong> {sessionData?.sessionStatus}
+                    </div>
+                    {sessionData?.sessionDate && (
+                      <div className="mb-2">
+                        <strong>Created:</strong> {new Date(sessionData.sessionDate).toLocaleString()}
                       </div>
-                    ))
-                  )}
+                    )}
+                    {sessionData?.matrixRoomId && (
+                      <div className="mb-2">
+                        <strong>Room:</strong> {sessionData.matrixRoomId.slice(-10)}...
+                      </div>
+                    )}
+                  </div>
                 </Card.Body>
               </Card>
 
               {/* Real-time Matrix Chat Panel */}
               <div className="flex-grow-1">
-                {matrixCredentials && sessionData?.roomId ? (
+                {matrixCredentials && sessionData?.matrixRoomId ? (
                   <ChatPanel
-                    roomId={sessionData.roomId}
+                    roomId={sessionData.matrixRoomId}
                     userCredentials={matrixCredentials}
                     height="calc(100vh - 400px)"
-                    className="shadow"
+                    className="shadow border-0"
                     showHeader={true}
                     allowFileUpload={false}
                   />
@@ -379,8 +471,17 @@ const InstructorLiveSessionPage = ({ params }) => {
                   <Card className="h-100 border-0 shadow">
                     <Card.Body className="d-flex align-items-center justify-content-center">
                       <div className="text-center text-muted">
-                        <Spinner className="mb-3" />
-                        <p>Setting up chat...</p>
+                        {!sessionData?.matrixRoomId ? (
+                          <>
+                            <h6>Chat Not Available</h6>
+                            <p className="mb-0">Matrix room not created yet</p>
+                          </>
+                        ) : (
+                          <>
+                            <Spinner className="mb-3" />
+                            <p>Setting up chat...</p>
+                          </>
+                        )}
                       </div>
                     </Card.Body>
                   </Card>

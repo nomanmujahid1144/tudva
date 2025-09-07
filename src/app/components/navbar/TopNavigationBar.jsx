@@ -78,7 +78,13 @@ const TopNavigationBar = () => {
                   {/* <NotificationDropdown /> */}
                 </div>
               )}
-            </> : null}
+            </> : (<>
+              {isAuthenticated && user && (
+                <Link href={'/live-sessions'} className="nav-item d-none d-sm-block">
+                  <Button size="sm" variant="danger-soft" className="mb-0 !mr-2 px-4">My Live Sessions</Button>
+                </Link>
+              )}
+            </>)}
             {loading ? (
               <div className="spinner-border spinner-border-sm text-primary ms-3" role="status">
                 <span className="visually-hidden">Loading...</span>

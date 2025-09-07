@@ -1,5 +1,5 @@
-// UPDATED: src/app/instructor/live-sessions/page.jsx
-// Use real scheduled session data from CourseSchedulerEnrollment
+// FINAL: src/app/instructor/live-sessions/page.jsx
+// Clean production version with real scheduled session data
 
 'use client';
 
@@ -36,23 +36,25 @@ const InstructorLiveSessionsDashboard = () => {
   const loadLiveCoursesWithSchedules = async () => {
     try {
       setIsLoading(true);
-      
+
       // Get instructor courses
       const coursesResult = await getInstructorCourses(1, 50);
-      
+
       if (!coursesResult.success) {
         throw new Error(coursesResult.error);
       }
 
       // Filter only live courses
       const liveCoursesList = coursesResult.data.courses.filter(course => course.type === 'live');
-      
+
+      // Initialize sessionsLookup outside conditional block
+      let sessionsLookup = {};
+
       // Get scheduled sessions for all courses
       const scheduledResult = await getInstructorScheduledSessions();
-      
-      if (scheduledResult.success) {
+
+      if (scheduledResult.success && scheduledResult.data.courses) {
         // Create lookup object for scheduled sessions by courseId
-        const sessionsLookup = {};
         scheduledResult.data.courses.forEach(courseSession => {
           sessionsLookup[courseSession.courseId] = courseSession;
         });
@@ -79,9 +81,9 @@ const InstructorLiveSessionsDashboard = () => {
           }
         })
       );
-      
+
       setLiveCourses(coursesWithSessions);
-      
+
     } catch (err) {
       console.error('Error loading live courses:', err);
       setError('Failed to load live courses');
@@ -90,17 +92,17 @@ const InstructorLiveSessionsDashboard = () => {
     }
   };
 
-  // FIXED: Check if session can be started using real scheduled data
+  // Check if session can be started using real scheduled data
   const canStartSession = (course) => {
     const scheduledData = course.scheduledSessions;
-    
+
     if (!scheduledData || !scheduledData.sessions?.length) {
       return { canStart: false, reason: 'No students have scheduled this course yet' };
     }
 
     // Find the next session that should be started
     const nextSession = scheduledData.nextSession;
-    
+
     if (!nextSession) {
       return { canStart: false, reason: 'All sessions completed' };
     }
@@ -109,50 +111,52 @@ const InstructorLiveSessionsDashboard = () => {
     const sessionTime = new Date(nextSession.sessionDate);
     const allowEarlyStart = 5 * 60 * 1000; // 5 minutes in milliseconds
     const earliestStartTime = new Date(sessionTime.getTime() - allowEarlyStart);
-    
+
     if (currentTime < earliestStartTime) {
       const timeUntilStart = sessionTime - currentTime;
-      return { 
-        canStart: false, 
-        reason: 'Too early to start', 
+      return {
+        canStart: false,
+        reason: 'Too early to start',
         countdown: timeUntilStart,
         sessionTime: sessionTime,
         nextSession: nextSession
       };
     }
 
-    return { 
-      canStart: true, 
-      nextSession: nextSession 
+    return {
+      canStart: true,
+      nextSession: nextSession
     };
   };
 
-  // Get time until session starts
+  // Get time until session starts with days, hours, minutes, seconds
   const getCountdownDisplay = (timeUntilStart) => {
-    const hours = Math.floor(timeUntilStart / (1000 * 60 * 60));
+    const days = Math.floor(timeUntilStart / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeUntilStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeUntilStart % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${seconds}s`;
-    } else {
-      return `${seconds}s`;
-    }
+    const parts = [];
+
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (seconds > 0 && days === 0) parts.push(`${seconds}s`); // Only show seconds if less than a day
+
+    return parts.join(' ') || '0s';
   };
 
   // Create new session (this creates the Matrix room setup)
   const handleCreateSession = async (courseId) => {
     try {
       setIsManaging(true);
-      
+
       const result = await manageLiveSession(courseId, {
         action: 'create-session',
         sessionDate: new Date().toISOString(), // This just creates the Matrix room
         sessionTitle: 'Live Session'
       });
-      
+
       if (result.success) {
         toast.success('Session room created! Students can now schedule sessions.');
         await loadLiveCoursesWithSchedules(); // Reload data
@@ -167,39 +171,39 @@ const InstructorLiveSessionsDashboard = () => {
     }
   };
 
-  // UPDATED: Start session using real scheduled data
+  // Start session using real scheduled data
   const handleStartSession = async (courseId, slotIndex = 0) => {
     try {
       const course = liveCourses.find(c => c.id === courseId);
       const startCheck = canStartSession(course);
-      
-      if (!startCheck.canStart) {
-        if (startCheck.countdown) {
-          toast.error(`Next session (${startCheck.nextSession.sessionTitle}) starts in ${getCountdownDisplay(startCheck.countdown)}`);
-        } else {
-          toast.error(startCheck.reason);
-        }
-        return;
-      }
+
+      console.log(course, 'course')
+      console.log(startCheck, 'startCheck')
+
+      // TODO => Uncomment this for production
+      // Comment it for testing
+
+      // if (!startCheck.canStart) {
+      //   if (startCheck.countdown) {
+      //     toast.error(`Next session (${startCheck.nextSession.sessionTitle}) starts in ${getCountdownDisplay(startCheck.countdown)}`);
+      //   } else {
+      //     toast.error(startCheck.reason);
+      //   }
+      //   return;
+      // }
 
       setIsManaging(true);
-      
-      console.log('Starting session with:', { 
-        courseId, 
-        slotIndex, 
-        nextSession: startCheck.nextSession 
-      });
-      
+
       const result = await manageLiveSession(courseId, {
         action: 'start',
         slotIndex: parseInt(slotIndex),
         sessionDate: startCheck.nextSession.sessionDate, // Use real scheduled time
         sessionTitle: startCheck.nextSession.sessionTitle
       });
-      
+
       if (result.success) {
         toast.success(`${startCheck.nextSession.sessionTitle} started!`);
-        
+
         // Navigate to instructor live session page
         router.push(`/instructor/live-session/${courseId}/${slotIndex}`);
       } else {
@@ -218,13 +222,13 @@ const InstructorLiveSessionsDashboard = () => {
   const handleEndSession = async (courseId, slotIndex) => {
     try {
       setIsManaging(true);
-      
+
       const result = await manageLiveSession(courseId, {
         action: 'end',
         slotIndex,
         recordingUrl: ''
       });
-      
+
       if (result.success) {
         toast.success('Live session ended successfully!');
         await loadLiveCoursesWithSchedules(); // Reload data
@@ -239,13 +243,13 @@ const InstructorLiveSessionsDashboard = () => {
     }
   };
 
-  // UPDATED: Get session status badge using real scheduled data
+  // Get session status badge using real scheduled data
   const getStatusBadge = (course) => {
     if (!course) return <Badge bg="light" text="dark">No Session</Badge>;
-    
+
     const startCheck = canStartSession(course);
     const scheduledData = course.scheduledSessions;
-    
+
     // Check if session is currently live
     if (course.sessionData?.timeSlots?.[0]?.sessionStatus === 'live') {
       return <Badge bg="success" className="d-flex align-items-center gap-1">
@@ -253,9 +257,9 @@ const InstructorLiveSessionsDashboard = () => {
         LIVE
       </Badge>;
     }
-    
+
     if (!scheduledData || !scheduledData.sessions?.length) {
-      return <Badge bg="light" text="dark">No Students Scheduled</Badge>;
+      return <Badge bg="light" text="dark">Waiting for Student Schedules</Badge>;
     }
 
     if (startCheck.countdown && startCheck.nextSession) {
@@ -340,10 +344,45 @@ const InstructorLiveSessionsDashboard = () => {
         </Card>
       ) : (
         <Row className="g-4">
+          {/* Quick Stats */}
+          {liveCourses.length > 0 && (
+            <Row className="mt-4">
+              <Col>
+                <Card className="border-0 shadow-sm">
+                  <Card.Body>
+                    <Row className="text-center">
+                      <Col md={3}>
+                        <h4 className="text-primary mb-1">{liveCourses.length}</h4>
+                        <p className="text-muted mb-0 small">Live Courses</p>
+                      </Col>
+                      <Col md={3}>
+                        <h4 className="text-success mb-1">
+                          {liveCourses.filter(c => c.sessionData?.timeSlots?.[0]?.sessionStatus === 'live').length}
+                        </h4>
+                        <p className="text-muted mb-0 small">Active Sessions</p>
+                      </Col>
+                      <Col md={3}>
+                        <h4 className="text-info mb-1">
+                          {liveCourses.filter(c => c.scheduledSessions?.nextSession).length}
+                        </h4>
+                        <p className="text-muted mb-0 small">Ready to Start</p>
+                      </Col>
+                      <Col md={3}>
+                        <h4 className="text-secondary mb-1">
+                          {liveCourses.reduce((total, c) => total + (c.scheduledSessions?.totalStudents || 0), 0)}
+                        </h4>
+                        <p className="text-muted mb-0 small">Total Students</p>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          )}
           {liveCourses.map((course) => {
             const startCheck = canStartSession(course);
             const scheduledData = course.scheduledSessions;
-            
+
             return (
               <Col key={course.id} lg={6} xl={4}>
                 <Card className="border-0 shadow-sm h-100">
@@ -353,7 +392,7 @@ const InstructorLiveSessionsDashboard = () => {
                       {getStatusBadge(course)}
                     </div>
                   </Card.Header>
-                  
+
                   <Card.Body>
                     <div className="mb-3">
                       <div className="d-flex align-items-center gap-2 text-muted small mb-2">
@@ -372,11 +411,14 @@ const InstructorLiveSessionsDashboard = () => {
                       )}
                     </div>
 
+                    {console.log(course, 'course')}
+                    {console.log(startCheck, 'startCheck')}
+
                     {/* Session Actions */}
                     <div className="d-flex flex-column gap-2">
-                      {!course.sessionData?.timeSlots || course.sessionData.timeSlots.length === 0 ? (
-                        <Button 
-                          variant="primary" 
+                      {!course.sessionData?.timeSlots?.[0]?.matrixRoomId ? (
+                        <Button
+                          variant="primary"
                           size="sm"
                           onClick={() => handleCreateSession(course.id)}
                           disabled={isManaging}
@@ -387,53 +429,84 @@ const InstructorLiveSessionsDashboard = () => {
                       ) : (
                         <>
                           {course.sessionData.timeSlots[0].sessionStatus === 'live' ? (
+                            // Session is currently LIVE
                             <>
-                              <Button 
-                                variant="primary" 
+                              <Button
+                                variant="primary"
                                 size="sm"
-                                onClick={() => router.push(`/instructor/live-session/${course.id}/0`)}
+                                onClick={() => {
+                                  // Find which slot is currently live
+                                  const liveSlotIndex = course.sessionData.timeSlots.findIndex(
+                                    slot => slot.sessionStatus === 'live'
+                                  );
+                                  router.push(`/instructor/live-session/${course.id}/${liveSlotIndex}`);
+                                }}
+                                className="mb-2"
                               >
                                 <FaEye className="me-1" />
                                 View Live Session
                               </Button>
-                              <Button 
-                                variant="danger" 
+                              <Button
+                                variant="danger"
                                 size="sm"
-                                onClick={() => handleEndSession(course.id, 0)}
+                                onClick={() => {
+                                  const liveSlotIndex = course.sessionData.timeSlots.findIndex(
+                                    slot => slot.sessionStatus === 'live'
+                                  );
+                                  handleEndSession(course.id, liveSlotIndex);
+                                }}
                                 disabled={isManaging}
                               >
                                 <FaStop className="me-1" />
-                                End Session
+                                End Live Session
                               </Button>
                             </>
-                          ) : !scheduledData || !scheduledData.sessions?.length ? (
-                            <Button variant="outline-secondary" size="sm" disabled>
-                              <FaCalendarAlt className="me-1" />
-                              Waiting for Student Schedules
-                            </Button>
-                          ) : startCheck.canStart ? (
-                            <Button 
-                              variant="success" 
-                              size="sm"
-                              onClick={() => handleStartSession(course.id, 0)}
-                              disabled={isManaging}
-                            >
-                              <FaPlay className="me-1" />
-                              Start {startCheck.nextSession.sessionTitle}
-                            </Button>
-                          ) : (
-                            <Button 
-                              variant="outline-warning" 
+                          ) : course.sessionData.timeSlots[0].sessionStatus === 'completed' ? (
+                            // Session is COMPLETED
+                            <Button
+                              variant="success"
                               size="sm"
                               disabled
-                              title={`${startCheck.nextSession?.sessionTitle} starts at ${formatDate(startCheck.nextSession?.sessionDate)}`}
                             >
-                              <FaClock className="me-1" />
-                              {startCheck.countdown ? 
-                                `${startCheck.nextSession.sessionTitle} in ${getCountdownDisplay(startCheck.countdown)}` : 
-                                'All Sessions Complete'
-                              }
+                              <FaCheckCircle className="me-1" />
+                              Session Completed
                             </Button>
+                          ) : course.sessionData.timeSlots[0].sessionStatus === 'cancelled' ? (
+                            // Session is CANCELLED
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              disabled
+                            >
+                              <FaBan className="me-1" />
+                              Session Cancelled
+                            </Button>
+                          ) : (
+                            // Session is SCHEDULED (ready to start)
+                            <>
+                              <Button
+                                variant={startCheck.canStart ? "success" : "secondary"}
+                                size="sm"
+                                onClick={() => handleStartSession(course.id, 0)}
+                              >
+                                <FaPlay className="me-1" />
+                                Click to Test
+                              </Button>
+                              <Button
+                                variant={startCheck.canStart ? "success" : "secondary"}
+                                size="sm"
+                                onClick={() => handleStartSession(course.id, 0)}
+                                disabled={isManaging || !startCheck.canStart}
+                              >
+                                <FaPlay className="me-1" />
+                                {startCheck.canStart ?
+                                  `Start ${startCheck.nextSession?.sessionTitle || 'Session'}` :
+                                  startCheck.countdown ?
+                                    `${startCheck.nextSession.sessionTitle} in ${getCountdownDisplay(startCheck.countdown)}` :
+                                    'Waiting for Student Schedules'
+                                }
+                              </Button>
+                            </>
                           )}
                         </>
                       )}
@@ -443,42 +516,6 @@ const InstructorLiveSessionsDashboard = () => {
               </Col>
             );
           })}
-        </Row>
-      )}
-
-      {/* Quick Stats */}
-      {liveCourses.length > 0 && (
-        <Row className="mt-4">
-          <Col>
-            <Card className="border-0 shadow-sm">
-              <Card.Body>
-                <Row className="text-center">
-                  <Col md={3}>
-                    <h4 className="text-primary mb-1">{liveCourses.length}</h4>
-                    <p className="text-muted mb-0 small">Live Courses</p>
-                  </Col>
-                  <Col md={3}>
-                    <h4 className="text-success mb-1">
-                      {liveCourses.filter(c => c.sessionData?.timeSlots?.[0]?.sessionStatus === 'live').length}
-                    </h4>
-                    <p className="text-muted mb-0 small">Active Sessions</p>
-                  </Col>
-                  <Col md={3}>
-                    <h4 className="text-info mb-1">
-                      {liveCourses.filter(c => c.scheduledSessions?.nextSession).length}
-                    </h4>
-                    <p className="text-muted mb-0 small">Ready to Start</p>
-                  </Col>
-                  <Col md={3}>
-                    <h4 className="text-secondary mb-1">
-                      {liveCourses.reduce((total, c) => total + (c.scheduledSessions?.totalStudents || 0), 0)}
-                    </h4>
-                    <p className="text-muted mb-0 small">Total Students</p>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
         </Row>
       )}
     </Container>

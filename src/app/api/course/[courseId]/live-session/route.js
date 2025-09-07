@@ -312,34 +312,27 @@ export async function POST(request, { params }) {
         // Create Matrix room for the session
         try {
           const matrixUserId = `@instructor_${auth.user.id}:chat.151.hu`;
-          const roomId = await createMatrixRoom(
+          const roomResult = await createMatrixRoom(
             course.title,
             sessionDate || new Date().toLocaleDateString(),
-            matrixUserId
+            auth.user.id
           );
 
-          // Get or create the time slot
-          if (!course.liveCourseMeta.timeSlots) {
-            course.liveCourseMeta.timeSlots = [];
+          // FIXED: Always use the first timeSlot (index 0) instead of creating new ones
+          if (!course.liveCourseMeta.timeSlots || course.liveCourseMeta.timeSlots.length === 0) {
+            // If no timeSlots exist, create the first one
+            course.liveCourseMeta.timeSlots = [{
+              weekDay: 'wednesday',
+              slot: 'slot_1',
+              sessionStatus: 'scheduled'
+            }];
           }
 
-          let timeSlot;
-          if (slotIndex !== undefined && course.liveCourseMeta.timeSlots[slotIndex]) {
-            timeSlot = course.liveCourseMeta.timeSlots[slotIndex];
-          } else {
-            // Create new time slot
-            timeSlot = {
-              weekDay: 'wednesday', // Default, can be customized
-              slot: 'slot_1', // Default, can be customized
-              matrixRoomId: roomId,
-              sessionDate: new Date(sessionDate || Date.now()),
-              sessionStatus: 'scheduled'
-            };
-            course.liveCourseMeta.timeSlots.push(timeSlot);
-          }
+          // ALWAYS update the first timeSlot (index 0) with Matrix room info
+          const timeSlot = course.liveCourseMeta.timeSlots[0];
 
           // Update time slot with room info
-          timeSlot.matrixRoomId = roomId;
+          timeSlot.matrixRoomId = roomResult.roomId;
           timeSlot.sessionDate = new Date(sessionDate || Date.now());
           timeSlot.sessionStatus = 'scheduled';
 
@@ -347,7 +340,7 @@ export async function POST(request, { params }) {
 
           // Send welcome message to room
           await sendMessageToRoom(
-            roomId,
+            roomResult.roomId,
             `Live session room created for "${course.title}". Students will be able to join when you start the session.`
           );
 
@@ -355,8 +348,8 @@ export async function POST(request, { params }) {
             success: true,
             message: 'Live session created successfully',
             data: {
-              roomId,
-              slotIndex: slotIndex || course.liveCourseMeta.timeSlots.length - 1,
+              roomId: roomResult.roomId,
+              slotIndex: 0, // Always return 0 since we're updating the first slot
               sessionStatus: 'scheduled',
               sessionDate: timeSlot.sessionDate,
               courseTitle: course.title

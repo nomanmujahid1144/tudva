@@ -1,4 +1,6 @@
-// src/app/api/course/[courseId]/join-session/route.js
+// FIXED: src/app/api/course/[courseId]/join-session/route.js
+// Added live session bypass logic
+
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Course, { CourseType } from '@/models/Course';
@@ -74,6 +76,13 @@ export async function POST(request, { params }) {
     const reqBody = await request.json();
     const { itemId, slotId } = reqBody;
     
+    console.log('🔄 Student join request:', {
+      courseId,
+      itemId,
+      slotId,
+      timestamp: new Date().toISOString()
+    });
+    
     // Validate course ID
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return NextResponse.json({ 
@@ -127,11 +136,11 @@ export async function POST(request, { params }) {
     let scheduledItem = null;
     let scheduledCourse = null;
     
-    for (const course of enrollment.scheduledCourses) {
-      if (course.course.toString() === courseId) {
-        scheduledCourse = course;
-        scheduledItem = course.scheduledItems.find(item => 
-          item.itemId === itemId || item.slotId === slotId
+    for (const courseData of enrollment.scheduledCourses) {
+      if (courseData.course.toString() === courseId) {
+        scheduledCourse = courseData;
+        scheduledItem = courseData.scheduledItems.find(item => 
+          item._id.toString() === itemId || item.slotId === slotId
         );
         if (scheduledItem) break;
       }
@@ -144,46 +153,16 @@ export async function POST(request, { params }) {
       }, { status: 404 });
     }
     
-    // Check if it's time to join (session should have started)
-    const now = new Date();
-    const sessionTime = new Date(scheduledItem.date);
-    
-    // Allow joining 5 minutes before session starts
-    const joinAllowedTime = new Date(sessionTime.getTime() - 5 * 60 * 1000);
-    
-    if (now < joinAllowedTime) {
-      const timeDiff = joinAllowedTime - now;
-      const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
-      
-      return NextResponse.json({
-        success: false,
-        error: `Session starts in ${minutesLeft} minutes. You can join 5 minutes before the session.`,
-        data: {
-          sessionTime: sessionTime.toISOString(),
-          joinAllowedTime: joinAllowedTime.toISOString(),
-          minutesUntilJoin: minutesLeft
-        }
-      }, { status:425 }); // 425 Too Early
-    }
-    
-    // Check if session is too old (more than 2 hours past)
-    const maxJoinTime = new Date(sessionTime.getTime() + 2 * 60 * 60 * 1000);
-    
-    if (now > maxJoinTime) {
-      return NextResponse.json({
-        success: false,
-        error: 'This session has ended. You can no longer join.',
-        data: {
-          sessionTime: sessionTime.toISOString(),
-          maxJoinTime: maxJoinTime.toISOString()
-        }
-      }, { status: 410 }); // 410 Gone
-    }
+    console.log('✅ Found scheduled item:', {
+      itemId: scheduledItem._id,
+      title: scheduledItem.title,
+      slotId: scheduledItem.slotId,
+      scheduledDate: scheduledItem.date
+    });
     
     // Find the time slot in the course to get Matrix room ID
     let timeSlot = null;
     if (course.liveCourseMeta && course.liveCourseMeta.timeSlots) {
-      // Try to match by slot ID first
       timeSlot = course.liveCourseMeta.timeSlots.find(slot => 
         slot.slot === scheduledItem.slotId
       );
@@ -194,6 +173,71 @@ export async function POST(request, { params }) {
         success: false,
         error: 'Live session room has not been created yet. Please contact the instructor.'
       }, { status: 400 });
+    }
+    
+    console.log('✅ Found time slot:', {
+      slot: timeSlot.slot,
+      sessionStatus: timeSlot.sessionStatus,
+      matrixRoomId: timeSlot.matrixRoomId
+    });
+    
+    // CRITICAL FIX: Check if session is currently LIVE first
+    if (timeSlot.sessionStatus === 'live') {
+      console.log('🚀 Session is LIVE - bypassing time restrictions and allowing immediate join');
+      
+      // Skip all timing validation - session is live, student can join
+      
+    } else {
+      console.log('⏰ Session not live, applying time restrictions');
+      
+      // Only apply timing validation if session is not currently live
+      const now = new Date();
+      const sessionTime = new Date(scheduledItem.date);
+      
+      // Allow joining 5 minutes before session starts
+      const joinAllowedTime = new Date(sessionTime.getTime() - 5 * 60 * 1000);
+      
+      if (now < joinAllowedTime) {
+        const timeDiff = joinAllowedTime - now;
+        const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
+        
+        console.log('❌ Too early to join:', {
+          now: now.toISOString(),
+          sessionTime: sessionTime.toISOString(),
+          joinAllowedTime: joinAllowedTime.toISOString(),
+          minutesLeft
+        });
+        
+        return NextResponse.json({
+          success: false,
+          error: `Session starts in ${minutesLeft} minutes. You can join 5 minutes before the session.`,
+          data: {
+            sessionTime: sessionTime.toISOString(),
+            joinAllowedTime: joinAllowedTime.toISOString(),
+            minutesUntilJoin: minutesLeft
+          }
+        }, { status: 425 }); // 425 Too Early
+      }
+      
+      // Check if session is too old (more than 2 hours past)
+      const maxJoinTime = new Date(sessionTime.getTime() + 2 * 60 * 60 * 1000);
+      
+      if (now > maxJoinTime) {
+        console.log('❌ Session ended:', {
+          now: now.toISOString(),
+          sessionTime: sessionTime.toISOString(),
+          maxJoinTime: maxJoinTime.toISOString()
+        });
+        
+        return NextResponse.json({
+          success: false,
+          error: 'This session has ended. You can no longer join.',
+          data: {
+            sessionTime: sessionTime.toISOString(),
+            maxJoinTime: maxJoinTime.toISOString()
+          }
+        }, { status: 410 }); // 410 Gone
+      }
     }
     
     // Check session status
@@ -208,33 +252,48 @@ export async function POST(request, { params }) {
     const user = await User.findById(auth.user.id).select('fullName email');
     const matrixUserId = `@student_${auth.user.id}:chat.151.hu`;
     
+    console.log('🔗 Inviting student to Matrix room:', {
+      userId: auth.user.id,
+      userName: user.fullName,
+      matrixUserId,
+      roomId: timeSlot.matrixRoomId
+    });
+    
     // Invite user to the Matrix room
     const inviteSuccess = await inviteUserToRoom(timeSlot.matrixRoomId, matrixUserId);
     
     if (!inviteSuccess) {
+      console.log('❌ Failed to invite user to Matrix room');
       return NextResponse.json({
         success: false,
         error: 'Failed to join the session room. Please try again.'
       }, { status: 500 });
     }
     
+    console.log('✅ User invited to Matrix room successfully');
+    
     // Send welcome message
-    await sendMessageToRoom(
-      timeSlot.matrixRoomId,
-      `${user.fullName} has joined the session.`
-    );
+    try {
+      await sendMessageToRoom(
+        timeSlot.matrixRoomId,
+        `🎓 ${user.fullName} has joined the session.`
+      );
+      console.log('✅ Welcome message sent');
+    } catch (msgError) {
+      console.log('⚠️ Welcome message failed, but join succeeded');
+    }
     
     // Return session join details
-    return NextResponse.json({
+    const joinResponse = {
       success: true,
       message: 'Successfully joined the live session',
       data: {
         roomId: timeSlot.matrixRoomId,
         sessionTitle: scheduledItem.title,
-        sessionTime: sessionTime.toISOString(),
+        sessionTime: new Date(scheduledItem.date).toISOString(),
         courseTitle: course.title,
         matrixRoomUrl: `${MATRIX_HOME_SERVER}/#/room/${timeSlot.matrixRoomId}`,
-        sessionStatus: timeSlot.sessionStatus || 'scheduled',
+        sessionStatus: timeSlot.sessionStatus || 'live',
         joinedAt: new Date().toISOString(),
         user: {
           id: auth.user.id,
@@ -242,14 +301,24 @@ export async function POST(request, { params }) {
           matrixUserId
         }
       }
+    };
+    
+    console.log('🎉 Student successfully joined session:', {
+      courseTitle: course.title,
+      sessionTitle: scheduledItem.title,
+      studentName: user.fullName,
+      roomId: timeSlot.matrixRoomId
     });
     
+    return NextResponse.json(joinResponse);
+    
   } catch (error) {
-    console.error('Error joining live session:', error);
+    console.error('💥 Error joining live session:', error);
     
     return NextResponse.json({
       success: false,
-      error: 'Failed to join live session'
+      error: 'Failed to join live session',
+      details: error.message
     }, { status: 500 });
   }
 }
@@ -320,10 +389,10 @@ export async function GET(request, { params }) {
     // Find the specific scheduled item for this student
     let scheduledItem = null;
     
-    for (const course of enrollment.scheduledCourses) {
-      if (course.course.toString() === courseId) {
-        scheduledItem = course.scheduledItems.find(item => 
-          item.itemId === itemId || item.slotId === slotId
+    for (const courseData of enrollment.scheduledCourses) {
+      if (courseData.course.toString() === courseId) {
+        scheduledItem = courseData.scheduledItems.find(item => 
+          item._id.toString() === itemId || item.slotId === slotId
         );
         if (scheduledItem) break;
       }
@@ -336,7 +405,15 @@ export async function GET(request, { params }) {
       }, { status: 404 });
     }
     
-    // Calculate timing information
+    // Find time slot for additional info
+    let timeSlot = null;
+    if (course.liveCourseMeta && course.liveCourseMeta.timeSlots) {
+      timeSlot = course.liveCourseMeta.timeSlots.find(slot => 
+        slot.slot === scheduledItem.slotId
+      );
+    }
+    
+    // FIXED: Consider live session status in timing calculation
     const now = new Date();
     const sessionTime = new Date(scheduledItem.date);
     const joinAllowedTime = new Date(sessionTime.getTime() - 5 * 60 * 1000);
@@ -345,17 +422,18 @@ export async function GET(request, { params }) {
     const timeDiff = sessionTime - now;
     const minutesUntilSession = Math.ceil(timeDiff / (1000 * 60));
     
-    const canJoinNow = now >= joinAllowedTime && now <= maxJoinTime;
-    const sessionStatus = now > maxJoinTime ? 'ended' : 
-                         now >= sessionTime ? 'live' : 
-                         now >= joinAllowedTime ? 'ready' : 'waiting';
+    // If session is live, student can join regardless of scheduled time
+    let canJoinNow;
+    let sessionStatus;
     
-    // Find time slot for additional info
-    let timeSlot = null;
-    if (course.liveCourseMeta && course.liveCourseMeta.timeSlots) {
-      timeSlot = course.liveCourseMeta.timeSlots.find(slot => 
-        slot.slot === scheduledItem.slotId
-      );
+    if (timeSlot?.sessionStatus === 'live') {
+      canJoinNow = true;
+      sessionStatus = 'live';
+    } else {
+      canJoinNow = now >= joinAllowedTime && now <= maxJoinTime;
+      sessionStatus = now > maxJoinTime ? 'ended' : 
+                     now >= sessionTime ? 'ready' : 
+                     now >= joinAllowedTime ? 'ready' : 'waiting';
     }
     
     return NextResponse.json({
@@ -370,7 +448,8 @@ export async function GET(request, { params }) {
         sessionStatus,
         minutesUntilSession: minutesUntilSession > 0 ? minutesUntilSession : 0,
         hasMatrixRoom: !!(timeSlot && timeSlot.matrixRoomId),
-        matrixRoomStatus: timeSlot?.sessionStatus || 'scheduled'
+        matrixRoomStatus: timeSlot?.sessionStatus || 'scheduled',
+        isSessionLive: timeSlot?.sessionStatus === 'live' // Added this for debugging
       }
     });
     

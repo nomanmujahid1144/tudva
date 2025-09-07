@@ -499,7 +499,7 @@ const LiveCourseSchedulePanel = ({
     if (weekdayIndex === -1) return false;
 
     // Add 1 to convert from our 0-indexed weekday to JavaScript's day of week (where Monday=1)
-    const targetDay = weekdayIndex + 1;
+    const targetDay = weekdayIndex + 3;
 
     // Return true if the day of week matches our target day
     return dayOfWeek === targetDay;

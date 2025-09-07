@@ -1,11 +1,12 @@
-// src/app/api/instructor/scheduled-sessions/route.js
-// Get real scheduled sessions from CourseSchedulerEnrollment
+// FIXED: src/app/api/instructor/scheduled-sessions/route.js
+// Fixed course ID matching and data structure
 
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import CourseSchedulerEnrollment from '@/models/CourseSchedulerEnrollment';
 import Course from '@/models/Course';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
+import mongoose from 'mongoose';
 
 export async function GET(request) {
   try {
@@ -69,16 +70,22 @@ export async function GET(request) {
       });
 
     } else {
-      // Get all scheduled sessions for instructor's courses
+      // FIXED: Get all scheduled sessions for instructor's courses
       const instructorCourses = await Course.find({
         instructor: auth.user.id,
         type: 'live'
       }).select('_id title');
 
-      const courseIds = instructorCourses.map(c => c._id);
+      // FIXED: Convert ObjectIds to strings for proper matching
+      const courseIds = instructorCourses.map(c => c._id.toString());
+      const courseObjectIds = instructorCourses.map(c => c._id);
 
+      // FIXED: Search using both string and ObjectId formats
       const allScheduledSessions = await CourseSchedulerEnrollment.find({
-        'scheduledCourses.course': { $in: courseIds }
+        $or: [
+          { 'scheduledCourses.course': { $in: courseObjectIds } },
+          { 'scheduledCourses.course': { $in: courseIds } }
+        ]
       }).populate('learner', 'fullName email')
         .populate('scheduledCourses.course', 'title instructor');
 
@@ -86,13 +93,14 @@ export async function GET(request) {
 
       // Group sessions by course
       allScheduledSessions.forEach(enrollment => {
+        
         enrollment.scheduledCourses.forEach(courseData => {
-          if (courseIds.includes(courseData.course._id)) {
-            const courseId = courseData.course._id.toString();
-            
-            if (!coursesWithSessions[courseId]) {
-              coursesWithSessions[courseId] = {
-                courseId,
+          const courseIdStr = courseData.course._id.toString();
+          
+          if (courseIds.includes(courseIdStr)) {
+            if (!coursesWithSessions[courseIdStr]) {
+              coursesWithSessions[courseIdStr] = {
+                courseId: courseIdStr,
                 courseTitle: courseData.course.title,
                 sessions: [],
                 students: new Set(),
@@ -102,7 +110,7 @@ export async function GET(request) {
 
             // Add sessions
             courseData.scheduledItems.forEach(item => {
-              coursesWithSessions[courseId].sessions.push({
+              coursesWithSessions[courseIdStr].sessions.push({
                 sessionId: item.itemId,
                 sessionTitle: item.title,
                 sessionDate: item.date,
@@ -114,7 +122,7 @@ export async function GET(request) {
                 studentId: enrollment.learner._id
               });
               
-              coursesWithSessions[courseId].students.add(enrollment.learner._id.toString());
+              coursesWithSessions[courseIdStr].students.add(enrollment.learner._id.toString());
             });
           }
         });
@@ -136,13 +144,6 @@ export async function GET(request) {
         courseData.nextSession = courseData.sessions.find(s => 
           !s.isCompleted && new Date(s.sessionDate) > now
         );
-
-        // Find current live session
-        courseData.currentSession = courseData.sessions.find(s => {
-          const sessionTime = new Date(s.sessionDate);
-          const timeDiff = Math.abs(now - sessionTime);
-          return timeDiff <= 2 * 60 * 60 * 1000; // Within 2 hours of session time
-        });
       });
 
       return NextResponse.json({
@@ -155,7 +156,7 @@ export async function GET(request) {
     }
 
   } catch (error) {
-    console.error('Error fetching scheduled sessions:', error);
+    console.error('💥 Error fetching scheduled sessions:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch scheduled sessions',

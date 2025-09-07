@@ -124,13 +124,15 @@ export async function GET(request) {
           }
         }
 
+        console.log(item, 'Item')
+
         let joinUrl = '';
         if (item.type === 'recorded' && videoUrl) {
           joinUrl = videoUrl;
         } else if (item.type === 'live') {
-          joinUrl = `/live-session/${scheduledCourse.course}/${item.itemId}`;
+          joinUrl = `/live-session/${scheduledCourse.course}/${item._id}`;
         } else {
-          joinUrl = `/live-session/${scheduledCourse.course}/${item.itemId}`;
+          joinUrl = `/live-session/${scheduledCourse.course}/${item._id}`;
         }
 
         console.log(joinUrl, 'joinUrl')

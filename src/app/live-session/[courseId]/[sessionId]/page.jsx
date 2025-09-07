@@ -1,4 +1,6 @@
-// src/app/live-session/[courseId]/[sessionId]/page.jsx
+// CLEAN VERSION: src/app/live-session/[courseId]/[sessionId]/page.jsx
+// Real-time data, proper auth, no mock data
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,14 +8,14 @@ import { Container, Row, Col, Card, Alert, Spinner, Badge, Button } from 'react-
 import { FaVideo, FaComments, FaSignOutAlt, FaVolumeUp, FaVolumeMute, FaUsers } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { joinLiveSession, getSessionJoinInfo } from '@/services/learningService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
-import { useAuth } from '@/context/AuthContext';
 
 const LiveSessionPage = ({ params }) => {
   const router = useRouter();
   const { courseId, sessionId } = params;
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,75 +23,88 @@ const LiveSessionPage = ({ params }) => {
   const [isJoined, setIsJoined] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
-  console.log(user, 'User')
-
-  // Matrix credentials for student
+  // Matrix credentials for student (REAL USER)
   const matrixCredentials = user ? {
     userId: `@student_${user.id}:chat.151.hu`,
     accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN || 'syt_bm9t_KyFOAOqQXtogCcGbRktX_0UliGS'
   } : null;
 
-  // Initialize user and join session on page load
+  // Initialize and join session when component mounts
   useEffect(() => {
-    initializeUserAndJoinSession();
-  }, [courseId, sessionId, user]);
+    if (!authLoading && user) {
+      initializeAndJoinSession();
+    }
+  }, [courseId, sessionId, user, authLoading]);
 
-  const initializeUserAndJoinSession = async () => {
+  const initializeAndJoinSession = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       
-      if(!user){
-        return
+      console.log('🔄 Student joining session:', {
+        courseId,
+        sessionId,
+        userId: user.id,
+        userName: user.fullName
+      });
+      
+      // Try to join the live session via API
+      const result = await joinLiveSession(courseId, sessionId);
+      
+      console.log('📡 Join session API result:', result);
+
+      if (result.success) {
+        console.log('✅ Successfully joined session:', result.data);
+        
+        setSessionData({
+          sessionTitle: result.data.sessionTitle,
+          courseTitle: result.data.courseTitle,
+          roomId: result.data.roomId,
+          sessionStatus: result.data.sessionStatus,
+          sessionTime: result.data.sessionTime,
+          matrixRoomUrl: result.data.matrixRoomUrl,
+          joinedAt: result.data.joinedAt,
+          user: result.data.user
+        });
+        
+        setIsJoined(true);
+        toast.success('🎓 Joined live session successfully!');
+        
+      } else {
+        console.error('❌ Failed to join session:', result.error);
+        
+        // Don't use mock data - show proper error
+        setError(result.error || 'Failed to join the live session');
+        
+        // Still try to get session info for display
+        try {
+          const infoResult = await getSessionJoinInfo(courseId, sessionId);
+          if (infoResult.success) {
+            setSessionData({
+              sessionTitle: infoResult.data.sessionTitle || 'Live Session',
+              courseTitle: infoResult.data.courseTitle || 'Course',
+              sessionStatus: infoResult.data.sessionStatus || 'unknown',
+              canJoinNow: false
+            });
+          }
+        } catch (infoErr) {
+          console.error('Failed to get session info:', infoErr);
+        }
       }
-      
-      // Join the session
-      await joinSession();
-      
     } catch (err) {
-      console.error('Error initializing:', err);
-      setError('Failed to initialize the session');
+      console.error('❌ Error joining session:', err);
+      setError('Failed to join the live session. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const joinSession = async () => {
-    try {
-      // Try to join via API
-      const result = await joinLiveSession(courseId, sessionId);
-      
-      console.log(result, 'result')
-
-      if (result.success) {
-        setSessionData(result.data);
-        setIsJoined(true);
-        toast.success('Joined live session successfully!');
-      } else {
-        // Fallback to mock data for testing
-        console.log('API join failed, using mock data');
-        setSessionData({
-          sessionTitle: 'Introduction to React Hooks',
-          courseTitle: 'Advanced React Development',
-          roomId: `!test_room_${courseId}:chat.151.hu`,
-          sessionStatus: 'live',
-          sessionTime: new Date().toISOString(),
-          matrixRoomUrl: `https://chat.151.hu/#/room/!test_room_${courseId}:chat.151.hu`,
-          user: {
-            id: user?.id || 'student_123',
-            name: user?.fullName || 'John Student',
-            matrixUserId: `@student_${user?.id || 'student_123'}:chat.151.hu`
-          }
-        });
-        setIsJoined(true);
-        toast.success('Connected to demo session');
-      }
-    } catch (err) {
-      console.error('Error joining session:', err);
-      setError('Failed to join the live session. Please try again.');
-    }
+  // Retry joining session
+  const retryJoinSession = async () => {
+    await initializeAndJoinSession();
   };
 
-  // Leave session
+  // Leave session and go back to my learning
   const handleLeaveSession = () => {
     router.push('/my-learning');
     toast.info('Left the session');
@@ -98,16 +113,17 @@ const LiveSessionPage = ({ params }) => {
   // Toggle audio mute
   const toggleAudio = () => {
     setIsMuted(!isMuted);
-    toast.info(isMuted ? 'Audio unmuted' : 'Audio muted');
+    toast.info(isMuted ? '🔊 Audio unmuted' : '🔇 Audio muted');
   };
 
-  if (isLoading) {
+  // Show loading while auth is loading or session data is loading
+  if (authLoading || isLoading) {
     return (
       <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
         <Card className="border-0 shadow-lg text-center p-4">
           <Card.Body>
             <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>Joining Live Session...</h5>
+            <h5>{authLoading ? 'Authenticating...' : 'Joining Live Session...'}</h5>
             <p className="text-muted mb-0">Please wait while we connect you</p>
           </Card.Body>
         </Card>
@@ -115,25 +131,53 @@ const LiveSessionPage = ({ params }) => {
     );
   }
 
-  if (error) {
+  // Show error if auth failed or no user
+  if (!user) {
+    return (
+      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
+        <Alert variant="warning" className="text-center p-4">
+          <h5>Authentication Required</h5>
+          <p>Please log in to join the live session.</p>
+          <Button variant="primary" onClick={() => router.push('/login')}>
+            Go to Login
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  // Show error if failed to join session
+  if (error && !isJoined) {
     return (
       <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
         <Alert variant="danger" className="text-center p-4">
           <h5>Connection Error</h5>
           <p>{error}</p>
           <div className="mt-3">
-            <Button variant="primary" onClick={() => window.location.reload()} className="me-2">
+            <Button variant="primary" onClick={retryJoinSession} className="me-2">
               Try Again
             </Button>
-            <Button variant="outline-secondary" onClick={() => router.push('/my-learning')}>
+            <Button variant="outline-secondary" onClick={handleLeaveSession}>
               Back to My Learning
             </Button>
+          </div>
+          
+          {/* Debug info for troubleshooting */}
+          <div className="mt-3 text-start">
+            <small className="text-muted">
+              <strong>Debug Info:</strong><br />
+              Course ID: {courseId}<br />
+              Session ID: {sessionId}<br />
+              User: {user?.fullName} ({user?.id})<br />
+              Session Status: {sessionData?.sessionStatus || 'unknown'}
+            </small>
           </div>
         </Alert>
       </Container>
     );
   }
 
+  // Main session interface (only if successfully joined)
   return (
     <div className="vh-100 bg-light">
       {/* Header */}
@@ -210,7 +254,7 @@ const LiveSessionPage = ({ params }) => {
                     </Col>
                     <Col xs="auto">
                       <div className="text-muted small">
-                        Session Status: <Badge bg="success">Live</Badge>
+                        Joined as: <strong>{user?.fullName}</strong>
                       </div>
                     </Col>
                   </Row>
@@ -231,9 +275,24 @@ const LiveSessionPage = ({ params }) => {
                   </div>
                 </Card.Header>
                 <Card.Body className="p-3">
-                  <div className="text-center">
+                  <div className="small">
+                    <div className="mb-2">
+                      <strong>Course:</strong> {sessionData?.courseTitle}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Session:</strong> {sessionData?.sessionTitle}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Status:</strong> <Badge bg="success">Live</Badge>
+                    </div>
+                    {sessionData?.joinedAt && (
+                      <div className="mb-2">
+                        <strong>Joined:</strong> {new Date(sessionData.joinedAt).toLocaleTimeString()}
+                      </div>
+                    )}
+                    <hr className="my-2" />
                     <small className="text-muted">
-                      You can ask questions and interact with the instructor and other students in the chat below.
+                      You can ask questions and interact with the instructor and other students.
                     </small>
                   </div>
                 </Card.Body>
@@ -241,12 +300,12 @@ const LiveSessionPage = ({ params }) => {
 
               {/* Real-time Matrix Chat Panel */}
               <div className="flex-grow-1">
-                {matrixCredentials && sessionData?.roomId ? (
+                {matrixCredentials && sessionData?.roomId && isJoined ? (
                   <ChatPanel
                     roomId={sessionData.roomId}
                     userCredentials={matrixCredentials}
-                    height="calc(100vh - 300px)"
-                    className="shadow"
+                    height="calc(100vh - 350px)"
+                    className="shadow border-0"
                     showHeader={true}
                     allowFileUpload={false}
                   />
@@ -254,9 +313,22 @@ const LiveSessionPage = ({ params }) => {
                   <Card className="h-100 border-0 shadow">
                     <Card.Body className="d-flex align-items-center justify-content-center">
                       <div className="text-center text-muted">
-                        <Spinner className="mb-3" />
-                        <p>Connecting to chat...</p>
-                        <small>Setting up real-time messaging</small>
+                        {!sessionData?.roomId ? (
+                          <>
+                            <h6>Chat Not Available</h6>
+                            <p className="mb-0">Session room not accessible</p>
+                          </>
+                        ) : !isJoined ? (
+                          <>
+                            <Spinner className="mb-3" />
+                            <p>Connecting to chat...</p>
+                          </>
+                        ) : (
+                          <>
+                            <Spinner className="mb-3" />
+                            <p>Setting up real-time messaging...</p>
+                          </>
+                        )}
                       </div>
                     </Card.Body>
                   </Card>
