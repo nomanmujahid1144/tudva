@@ -21,7 +21,7 @@ const Banner = () => {
         <Row>
           <Col xs={12} className="text-center">
             <h1 className="text-white">
-              {isEditMode ? 'Edit Your Course' : 'Submit a new Course'}
+              {isEditMode ? 'Edit Your Course' : 'Create New Course'}
             </h1>
             <p className="text-white mb-0">
               {isEditMode ? (

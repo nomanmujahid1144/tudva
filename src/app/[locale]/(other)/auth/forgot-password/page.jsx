@@ -9,7 +9,7 @@ const ForgotPasswordPage = () => {
     <Row className="my-5">
       <Col sm={10} xl={12} className="m-auto">
         <h1 className="fs-2">Forgot Password?</h1>
-        <h5 className="fw-light mb-4">To receive a new password, enter your email address below.</h5>
+        <h5 className="fw-light mb-4">Enter the email address associated with account.</h5>
         <ForgotPassword />
       </Col>
     </Row>

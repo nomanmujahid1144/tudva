@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
@@ -9,12 +9,18 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import ButtonLoader from '@/components/ButtonLoader';
 import { loginSchema } from '@/validations/userSchema';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 const LoginForm = () => {
+  const t = useTranslations('auth.login');
+  const tValidation = useTranslations('auth.validation');
   const { login, authLoading: loading } = useAuth();
+  const params = useParams();
+  const locale = params.locale || 'en';
 
   const { register, handleSubmit, formState: { errors }, control } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(loginSchema(tValidation)),
     defaultValues: {
       email: '',
       password: '',
@@ -42,8 +48,8 @@ const LoginForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaEnvelope}
-          placeholder='E-mail'
-          label='Email address *'
+          placeholder={t('emailPlaceholder')}
+          label={t('emailLabel')}
           name='email'
           error={errors.email?.message}
         />
@@ -52,8 +58,8 @@ const LoginForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaLock}
-          placeholder='*********'
-          label='Password *'
+          placeholder={t('passwordPlaceholder')}
+          label={t('passwordLabel')}
           name='password'
           type="password"
           error={errors.password?.message}
@@ -68,12 +74,12 @@ const LoginForm = () => {
             {...register('rememberMe')} 
           />
           <label className="form-check-label" htmlFor="rememberMe">
-            Remember me
+            {t('rememberMe')}
           </label>
         </div>
         <div className="text-primary-hover">
-          <Link href="/auth/forgot-password" className="text-primary">
-            <u>Forgot password?</u>
+          <Link href={`/${locale}/auth/forgot-password`} className="text-primary">
+            <u>{t('forgotPassword')}</u>
           </Link>
         </div>
       </div>
@@ -84,7 +90,7 @@ const LoginForm = () => {
           disabled={loading}
         >
           <ButtonLoader isLoading={loading} spinnerVariant="light">
-            Login
+            {loading ? t('loggingIn') : t('loginButton')}
           </ButtonLoader>
         </button>
       </div>

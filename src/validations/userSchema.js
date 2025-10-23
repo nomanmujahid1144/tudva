@@ -7,35 +7,61 @@ export const UserRole = {
 };
 
 // Registration validation schema
-export const registerSchema = yup.object({
-  fullName: yup.string().required('Please enter your Full Name'),
-  email: yup.string().email('Please enter a valid email').required('Please enter your Email'),
-  password: yup.string().required('Please enter your Password').min(8, 'Password must be at least 8 characters'),
-  confirmPassword: yup.string()
-    .required('Please confirm your Password')
-    .oneOf([yup.ref('password')], 'Passwords must match'),
-  role: yup.string().oneOf(Object.values(UserRole), 'Please select a valid role').required('Please select a role'),
-  agreement: yup.boolean().oneOf([true], "You must accept terms of service").required()
+export const registerSchema = (t) => yup.object({
+  fullName: yup.string().required(t('fullNameRequired')),
+  email: yup
+    .string()
+    .email(t('emailInvalid'))
+    .required(t('emailRequired')),
+  password: yup
+    .string()
+    .required(t('passwordRequired'))
+    .min(8, t('passwordMinLength')),
+  confirmPassword: yup
+    .string()
+    .required(t('confirmPasswordRequired'))
+    .oneOf([yup.ref('password')], t('passwordsDontMatch')),
+  role: yup
+    .string()
+    .oneOf(Object.values(UserRole), t('roleInvalid'))
+    .required(t('roleRequired')),
+  agreement: yup
+    .boolean()
+    .oneOf([true], t('agreementRequired'))
+    .required()
 });
 
 // Login validation schema
-export const loginSchema = yup.object({
-  email: yup.string().email('Please enter a valid email').required('Please enter your Email'),
-  password: yup.string().required('Please enter your Password'),
+export const loginSchema = (t) => yup.object({
+  email: yup
+    .string()
+    .email(t('emailInvalid'))
+    .required(t('emailRequired')),
+  password: yup
+    .string()
+    .required(t('passwordRequired')),
   rememberMe: yup.boolean()
 });
 
+
 // Forgot password validation schema
-export const forgetPasswordSchema = yup.object({
-  email: yup.string().email('Please enter a valid email').required('Please enter your Email'),
+export const forgetPasswordSchema = (t) => yup.object({
+  email: yup
+    .string()
+    .email(t('emailInvalid'))
+    .required(t('emailRequired')),
 });
 
 // Reset password validation schema
-export const resetPasswordSchema = yup.object({
-  password: yup.string().required('Please enter your Password').min(8, 'Password must be at least 8 characters'),
-  confirmPassword: yup.string()
-    .required('Please confirm your Password')
-    .oneOf([yup.ref('password')], 'Passwords must match'),
+export const resetPasswordSchema = (t) => yup.object({
+  password: yup
+    .string()
+    .required(t('passwordRequired'))
+    .min(8, t('passwordMinLength')),
+  confirmPassword: yup
+    .string()
+    .required(t('confirmPasswordRequired'))
+    .oneOf([yup.ref('password')], t('passwordsDontMatch')),
 });
 
 // Profile validation schema

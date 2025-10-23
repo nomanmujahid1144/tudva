@@ -1,6 +1,14 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
+    // Add this for better locale handling
+    skipTrailingSlashRedirect: true,
+    skipMiddlewareUrlNormalize: true,
+    
     images: {
         domains: [
             'ngpdfyhvlztueekbksju.supabase.co',
@@ -35,11 +43,11 @@ const nextConfig = {
     async rewrites() {
         return [
             {
-                source: '/api/backend/:path*',  // IMPORTANT:  Match the path in your API route
-                destination: 'http://localhost:3001/:path*', // Your backend URL
+                source: '/api/backend/:path*',
+                destination: 'http://localhost:3001/:path*',
             },
         ];
     },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
