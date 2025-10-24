@@ -21,7 +21,7 @@ const layout = ({ children }) => {
     <section className="p-0 d-flex align-items-center position-relative overflow-hidden">
       <Container fluid>
         <Row>
-          {shouldShowImage && (
+          {/* {shouldShowImage && (
             <Col
               xs={12}
               lg={6}
@@ -34,10 +34,9 @@ const layout = ({ children }) => {
               }}
             >
               <div className="p-3 p-lg-5">
-                {/* Content that will appear *over* the background image */}
               </div>
             </Col>
-          )}
+          )} */}
           {children}
         </Row>
       </Container>
