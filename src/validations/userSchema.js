@@ -65,9 +65,9 @@ export const resetPasswordSchema = (t) => yup.object({
 });
 
 // Profile validation schema
-export const profileSchema = yup.object({
-  fullName: yup.string().required('Please enter your full name'),
-  email: yup.string().email('Please enter a valid email').required('Please enter your email'),
+export const profileSchema = (t) => yup.object({
+  fullName: yup.string().required(t('fullNameRequired')),
+  email: yup.string().email(t('emailInvalid')).required(t('emailRequired')),
   phoneNo: yup.string().nullable(),
   aboutMe: yup.string().nullable(),
   profilePicture: yup.string().nullable(),

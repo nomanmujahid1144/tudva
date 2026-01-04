@@ -10,7 +10,7 @@
       "rememberMe": "Emlékezz rám",
       "forgotPassword": "Elfelejtetted a jelszavad?",
       "loginButton": "Bejelentkezés",
-      "logginge": "Bejelentkezés...",
+      "loggingIn": "Bejelentkezés...",
       "noAccount": "Nincs még fiókod?",
       "signupLink": "Regisztrálj itt",
       "loginSuccess": "Sikeres bejelentkezés!",
@@ -38,7 +38,8 @@
       "haveAccount": "Már van fiókod?",
       "signinLink": "Jelentkezz be itt",
       "signupSuccess": "Sikeres regisztráció! Kérjük, ellenőrizd az e-mailed a fiókod megerősítéséhez.",
-      "signupError": "Sikertelen regisztráció. Kérjük, próbáld újra."
+      "signupError": "Sikertelen regisztráció. Kérjük, próbáld újra.",
+      "emailAlreadyExists": "Ez az e-mail cím már regisztrálva van."
     },
     "forgotPassword": {
       "title": "Elfelejtett jelszó",

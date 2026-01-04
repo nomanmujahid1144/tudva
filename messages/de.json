@@ -10,7 +10,7 @@
       "rememberMe": "Angemeldet bleiben",
       "forgotPassword": "Passwort vergessen?",
       "loginButton": "Anmelden",
-      "logginge": "Anmeldung läuft...",
+      "loggingIn": "Anmeldung läuft...",
       "noAccount": "Du hast noch kein Konto?",
       "signupLink": "Hier registrieren",
       "loginSuccess": "Anmeldung erfolgreich!",
@@ -38,7 +38,8 @@
       "haveAccount": "Du hast bereits ein Konto?",
       "signinLink": "Hier anmelden",
       "signupSuccess": "Registrierung erfolgreich! Bitte überprüfe deine E-Mails, um dein Konto zu bestätigen.",
-      "signupError": "Registrierung fehlgeschlagen. Bitte versuche es erneut."
+      "signupError": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+      "emailAlreadyExists": "E-Mail bereits registriert."
     },
     "forgotPassword": {
       "title": "Passwort vergessen",

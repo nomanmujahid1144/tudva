@@ -1,9 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import authService from '@/services/authService';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 // Create the Auth Context
 const AuthContext = createContext();
@@ -14,6 +15,17 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(false);
   const router = useRouter();
+  const params = useParams();
+  const locale = params?.locale || 'en';
+  
+  // Translation hooks
+  const tMessages = useTranslations('auth.messages');
+  const tSignup = useTranslations('auth.signup');
+  const tSignin = useTranslations('auth.signin');
+  const tForgotPassword = useTranslations('auth.forgotPassword');
+  const tConfirmEmail = useTranslations('auth.confirmEmail');
+  const tResetPassword = useTranslations('auth.resetPassword');
+  const tConfirmChangePassword = useTranslations('auth.confirmChangePassword');
 
   // Check for existing auth and fetch user profile on component mount
   useEffect(() => {
@@ -23,13 +35,11 @@ export function AuthProvider({ children }) {
 
         // Check if we have a token
         if (authService.isAuthenticated()) {
-          console.log('Token found, fetching user profile...');
 
           // Fetch user profile from server
           const profileResult = await authService.getUserProfile();
 
           if (profileResult.success && profileResult.data?.user) {
-            console.log('User profile loaded successfully');
             setUser(profileResult.data.user);
           } else {
             console.warn('Failed to load user profile:', profileResult.error);
@@ -53,7 +63,7 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-    /**
+  /**
    * Refresh user profile data
    * @returns {Promise<Object>} Result of the refresh operation
    */
@@ -63,14 +73,11 @@ export function AuthProvider({ children }) {
         console.warn('Cannot refresh user - not authenticated');
         return { success: false, error: 'Not authenticated' };
       }
-
-      console.log('Refreshing user profile...');
       
       // Fetch updated user profile from server
       const profileResult = await authService.getUserProfile();
 
       if (profileResult.success && profileResult.data?.user) {
-        console.log('User profile refreshed successfully');
         setUser(profileResult.data.user);
         return { success: true, data: profileResult.data.user };
       } else {
@@ -120,29 +127,28 @@ export function AuthProvider({ children }) {
         }
       } else {
         // Show error message
-        toast.error(result.error || errorMessage || 'An error occurred');
+        toast.error(errorMessage || tMessages('unexpectedError'));
       }
 
       return result;
     } catch (error) {
       console.error('Auth operation error:', error);
-      toast.error(errorMessage || 'An unexpected error occurred');
-      return { success: false, error: errorMessage || 'An unexpected error occurred' };
+      toast.error(errorMessage || tMessages('unexpectedError'));
+      return { success: false, error: errorMessage || tMessages('unexpectedError') };
     } finally {
       setAuthLoading(false);
     }
   };
 
   // Authentication functions
-
   const register = async (userData) => {
     return withAuthLoading(
       authService.register,
       userData,
       {
-        successMessage: 'Registration successful! Please check your email to confirm your account.',
-        errorMessage: 'Registration failed. Please try again.',
-        successRedirect: '/auth/sign-in'
+        successMessage: tSignup('signupSuccess'),
+        errorMessage: tSignup('signupError'),
+        successRedirect: `/${locale}/auth/sign-in`
       }
     );
   };
@@ -152,9 +158,9 @@ export function AuthProvider({ children }) {
       authService.verifyEmailToken,
       token,
       {
-        successMessage: 'Email verified successfully! You can now log in.',
-        errorMessage: 'Email verification failed. Please try again.',
-        successRedirect: '/auth/sign-in'
+        successMessage: tConfirmEmail('verifySuccess'),
+        errorMessage: tConfirmEmail('verifyError'),
+        successRedirect: `/${locale}/auth/sign-in`
       }
     );
   };
@@ -164,10 +170,10 @@ export function AuthProvider({ children }) {
       authService.login,
       credentials,
       {
-        successMessage: 'Login successful!',
-        errorMessage: 'Login failed. Please check your credentials and try again.',
+        successMessage: tSignin('loginSuccess'),
+        errorMessage: tSignin('loginError'),
         updateUser: true,
-        successRedirect: '/auth/callback'
+        successRedirect: `/${locale}/auth/callback`
       }
     );
   };
@@ -177,9 +183,9 @@ export function AuthProvider({ children }) {
       authService.logout,
       null,
       {
-        successMessage: 'Logged out successfully',
-        errorMessage: 'Logout failed. Please try again.',
-        successRedirect: '/auth/sign-in'
+        successMessage: tMessages('logoutSuccess'),
+        errorMessage: tMessages('logoutError'),
+        successRedirect: `/${locale}/auth/sign-in`
       }
     );
 
@@ -194,8 +200,8 @@ export function AuthProvider({ children }) {
       authService.requestPasswordReset,
       email,
       {
-        successMessage: 'Password reset instructions sent to your email.',
-        errorMessage: 'Please check your email and try again!'
+        successMessage: tForgotPassword('resetSuccess'),
+        errorMessage: tForgotPassword('resetError')
       }
     );
   };
@@ -205,21 +211,20 @@ export function AuthProvider({ children }) {
       authService.verifyResetToken,
       token,
       {
-        errorMessage: 'Invalid or expired reset token. Please request a new one.',
-        successRedirect: `/auth/reset-password?token=${token}`,
+        errorMessage: tConfirmChangePassword('verifyError'),
+        successRedirect: `/${locale}/auth/reset-password?token=${token}`,
       }
     );
   };
 
   const resetPassword = async (data) => {
-    console.log(data, 'data')
     return withAuthLoading(
       authService.resetPassword,
       data,
       {
-        successMessage: 'Password reset successful! You can now log in with your new password.',
-        errorMessage: 'Password reset failed. Please try again.',
-        successRedirect: '/auth/sign-in'
+        successMessage: tResetPassword('resetSuccess'),
+        errorMessage: tResetPassword('resetError'),
+        successRedirect: `/${locale}/auth/sign-in`
       }
     );
   };

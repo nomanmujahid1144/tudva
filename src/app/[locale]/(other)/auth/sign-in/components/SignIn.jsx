@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 
 const LoginForm = () => {
-  const t = useTranslations('auth.login');
+  const t = useTranslations('auth.signin');
   const tValidation = useTranslations('auth.validation');
   const { login, authLoading: loading } = useAuth();
   const params = useParams();
@@ -89,9 +89,7 @@ const LoginForm = () => {
           type="submit" 
           disabled={loading}
         >
-          <ButtonLoader isLoading={loading} spinnerVariant="light">
             {loading ? t('loggingIn') : t('loginButton')}
-          </ButtonLoader>
         </button>
       </div>
     </form>

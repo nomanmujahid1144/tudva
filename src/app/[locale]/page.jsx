@@ -7,10 +7,11 @@ export const metadata = {
 };
 const AcademicHome = () => {
   return <>
-        <Hero />
-        <SearchCourses />
-        <CoursesOverview />
-        <TrendingCourses />
-    </>;
+    {console.log('AT HOME PAGE')}
+    <Hero />
+    <SearchCourses />
+    <CoursesOverview />
+    <TrendingCourses />
+  </>;
 };
 export default AcademicHome;

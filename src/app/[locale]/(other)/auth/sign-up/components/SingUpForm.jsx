@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,13 +8,18 @@ import IconTextFormInput from '@/components/form/IconTextFormInput';
 import ChoicesFormInput from '@/components/form/ChoicesFormInput';
 import { registerSchema, UserRole } from '@/validations/userSchema';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 
 const SignUpForm = () => {
+  // Translations
+  const t = useTranslations('auth.signup');
+  const tValidation = useTranslations('auth.validation');
+  
   // Use the register function and loading state from AuthContext
   const { register: registerUser, authLoading: loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors }, control } = useForm({
-    resolver: yupResolver(registerSchema),
+    resolver: yupResolver(registerSchema(tValidation)),
     defaultValues: {
       fullName: '',
       email: '',
@@ -33,15 +39,9 @@ const SignUpForm = () => {
         role: data.role
       };
 
-      // Use the register function from AuthContext
-      // This will handle loading state, toast notifications, and redirects
       await registerUser(userData);
-      
-      // No need to manually handle success/error cases here
-      // AuthContext takes care of that with the withAuthLoading helper
     } catch (err) {
       console.error('Unexpected registration error:', err);
-      // This only runs if there's an unexpected error outside the normal flow
     }
   };
 
@@ -51,8 +51,8 @@ const SignUpForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaUser}
-          placeholder='Full Name'
-          label='Full Name *'
+          placeholder={t('fullNamePlaceholder')}
+          label={t('fullNameLabel')}
           name='fullName'
           error={errors.fullName?.message}
         />
@@ -61,8 +61,8 @@ const SignUpForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaEnvelope}
-          placeholder='E-mail'
-          label='Email address *'
+          placeholder={t('emailPlaceholder')}
+          label={t('emailLabel')}
           name='email'
           error={errors.email?.message}
         />
@@ -71,8 +71,8 @@ const SignUpForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaLock}
-          placeholder='*********'
-          label='Password *'
+          placeholder={t('passwordPlaceholder')}
+          label={t('passwordLabel')}
           name='password'
           type="password"
           error={errors.password?.message}
@@ -82,15 +82,15 @@ const SignUpForm = () => {
         <IconTextFormInput
           control={control}
           icon={FaLock}
-          placeholder='*********'
-          label='Confirm Password *'
+          placeholder={t('confirmPasswordPlaceholder')}
+          label={t('confirmPasswordLabel')}
           name='confirmPassword'
           type="password"
           error={errors.confirmPassword?.message}
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="role" className="form-label">Role *</label>
+        <label htmlFor="role" className="form-label">{t('roleLabel')}</label>
         <Controller
           name="role"
           control={control}
@@ -104,9 +104,9 @@ const SignUpForm = () => {
                 removeItemButton: false,
               }}
             >
-              <option value="" disabled>Select a role...</option>
-              <option value={UserRole.Learner}>Learner</option>
-              <option value={UserRole.Instructor}>Instructor</option>
+              <option value="" disabled>{t('selectRole')}</option>
+              <option value={UserRole.Learner}>{t('learner')}</option>
+              <option value={UserRole.Instructor}>{t('instructor')}</option>
             </ChoicesFormInput>
           )}
         />
@@ -114,14 +114,25 @@ const SignUpForm = () => {
       </div>
       <div className="mb-3">
         <div className="form-check">
-          <input type="checkbox" className="form-check-input" id="agreement"  {...register('agreement')} />
-          <label className="form-check-label" htmlFor="agreement">By signing up, you agree to the<a href="#"> terms of service</a></label>
-          {errors.agreement && <div className='invalid-feedback d-block' >{errors.agreement.message}</div>}
+          <input 
+            type="checkbox" 
+            className="form-check-input" 
+            id="agreement" 
+            {...register('agreement')} 
+          />
+          <label className="form-check-label" htmlFor="agreement">
+            {t('agreement')} <a href="#">{t('termsOfService')}</a>
+          </label>
+          {errors.agreement && <div className='invalid-feedback d-block'>{errors.agreement.message}</div>}
         </div>
       </div>
       <div className="d-grid">
-        <button className="btn btn-primary mb-0" type="submit" disabled={loading}>
-          {loading ? 'Signing Up...' : 'Sign Up'}
+        <button 
+          className="btn btn-primary mb-0" 
+          type="submit" 
+          disabled={loading}
+        >
+          {loading ? t('signingUp') : t('signupButton')}
         </button>
       </div>
     </form>

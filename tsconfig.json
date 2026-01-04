@@ -22,6 +22,15 @@
     },
     "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/page.jsx", "src/app/api/auth/register/route.js", "src/app/api/scheduler/update-item-order/route.js"],
+  "include": [
+    "next-env.d.ts", 
+    "**/*.ts", 
+    "**/*.tsx", 
+    ".next/types/**/*.ts", 
+    "src/app/auth/page.jsx", 
+    "src/app/api/auth/register/route.js", 
+    "src/app/api/scheduler/update-item-order/route.js", 
+    "src/app/[locale]/layout.jsx"
+, "src/i18n/request.js"  ],
   "exclude": ["node_modules"]
 }

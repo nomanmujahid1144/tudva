@@ -18,7 +18,7 @@
     },
 
     "signup": {
-      "title": "Registe at tudva",
+      "title": "Register at tudva",
       "subtitle": "Start your journey with social free studying.",
       "fullNameLabel": "Full Name *",
       "fullNamePlaceholder": "Full Name",
@@ -39,7 +39,8 @@
       "haveAccount": "Already have an account?",
       "signinLink": "Sign in here",
       "signupSuccess": "Registration successful! Please check your email to confirm your account.",
-      "signupError": "Registration failed. Please try again."
+      "signupError": "Registration failed. Please try again.",
+      "emailAlreadyExists": "Email already registered."
     },
 
     "forgotPassword": {
@@ -465,5 +466,8 @@
         "materialDeleted": "Material deleted successfully!"
       }
     }
+  },
+  "button": {
+    "loading" : ""
   }
 }

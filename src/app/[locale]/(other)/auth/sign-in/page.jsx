@@ -2,10 +2,11 @@ import React from 'react';
 import SignIn from './components/SignIn';
 import { Col, Row } from 'react-bootstrap';
 import Link from 'next/link';
-import {useTranslations} from 'next-intl';
 import {getTranslations} from 'next-intl/server';
 
-export async function generateMetadata({params: {locale}}) {
+// Server Component - use getTranslations with await
+export async function generateMetadata({params}) {
+  const { locale } = await params;
   const t = await getTranslations({locale, namespace: 'auth.signin'});
   
   return {
@@ -13,14 +14,10 @@ export async function generateMetadata({params: {locale}}) {
   };
 }
 
-export default function SignInPage({params: {locale}}) {
-  return <SignInPageContent locale={locale} />;
-}
-
-function SignInPageContent({locale}) {
-  const t = useTranslations('auth.signin');
-
-  console.log(t, 'Translation')
+// Server Component - use getTranslations with await
+export default async function SignInPage({params}) {
+  const { locale } = await params;
+  const t = await getTranslations({locale, namespace: 'auth.signin'});
   
   return (
     <Col xs={12} lg={6} className="m-auto">
