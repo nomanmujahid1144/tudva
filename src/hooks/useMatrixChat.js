@@ -1,5 +1,5 @@
 // src/hooks/useMatrixChat.js
-// FIXED: Real-time chat hook for Matrix integration
+// FIXED: Real-time chat hook for Matrix integration with userRole detection
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { matrixService } from '@/services/matrixService';
@@ -60,6 +60,7 @@ export const useMatrixChat = (roomId, userCredentials) => {
 
   /**
    * Join Matrix room
+   * ✅ FIXED: Now passes userCredentials to detect instructor vs student
    */
   const joinRoom = useCallback(async () => {
     if (!roomId || !isConnected) return;
@@ -67,8 +68,10 @@ export const useMatrixChat = (roomId, userCredentials) => {
     try {
       setIsJoining(true);
       console.log('🔄 Joining room:', roomId);
+      console.log('👤 User credentials:', userCredentials?.userId);
 
-      const joinResult = await matrixService.joinRoom(roomId);
+      // ✅ CRITICAL FIX: Pass userCredentials to joinRoom
+      const joinResult = await matrixService.joinRoom(roomId, userCredentials);
       
       if (!joinResult.success) {
         throw new Error(joinResult.error);
@@ -92,7 +95,7 @@ export const useMatrixChat = (roomId, userCredentials) => {
     } finally {
       setIsJoining(false);
     }
-  }, [roomId, isConnected]);
+  }, [roomId, isConnected, userCredentials]); // ✅ Added userCredentials to dependency array
 
   /**
    * Set up Matrix event listeners

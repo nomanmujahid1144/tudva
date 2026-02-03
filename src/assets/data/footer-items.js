@@ -2,118 +2,132 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/f
 
 export const footerLinks = [
   {
-    title: "Learn",
+    title: "footer.links.learn.title",
     items: [
       {
-        name: "Courses",
-        link: "/courses", // Replace with your actual course catalog link
+        name: "footer.links.learn.courses",
+        link: "/courses",
       },
       {
-        name: "My Schedule",
-        link: "#", // Replace with your user dashboard link
+        name: "footer.links.learn.mySchedule",
+        link: "#",
       },
       {
-        name: "Why use tudva",
-        link: "/why-tudva", // Replace with your explanation page
+        name: "footer.links.learn.whyUseTudva",
+        link: "/why-tudva",
       },
       {
-        name: "Get Started",
-        link: "/get-started", // Replace with your guide/tutorial link
+        name: "footer.links.learn.getStarted",
+        link: "/get-started",
       },
     ],
   },
   {
-    title: "About tudva",
+    title: "footer.links.aboutTudva.title",
     items: [
       {
-        name: "Our Mission",
-        link: "/our-mission", // Or /philosophie, as you mentioned
+        name: "footer.links.aboutTudva.ourMission",
+        link: "/our-mission",
       },
       {
-        name: "How it Works",
+        name: "footer.links.aboutTudva.howItWorks",
         link: "/how-it-works",
       },
       {
-        name: 'What means "tudva"?',
-        link: "/tudva-means", //  Or a better URL
+        name: "footer.links.aboutTudva.tudvaMeans",
+        link: "/tudva-means",
       },
       {
-        name: "About us",
+        name: "footer.links.aboutTudva.aboutUs",
         link: "/about-us",
       },
       {
-        name: "Transparency",
+        name: "footer.links.aboutTudva.transparency",
         link: "#",
       },
     ],
   },
   {
-    title: "Community",
+    title: "footer.links.community.title",
     items: [
       {
-        name: "Blog",
+        name: "footer.links.community.blog",
         link: "/blogs",
       },
       {
-        name: "Support",
-        link: "/help/center", // Or /help, /faq, /contact
+        name: "footer.links.community.support",
+        link: "/help/center",
       },
       {
-        name: "Become teacher",
+        name: "footer.links.community.becomeTeacher",
         link: "/become-teacher",
       },
       {
-        name: "Learning Rooms",
-        link: "/learning-room",  // Or /locations, etc.
+        name: "footer.links.community.learningRooms",
+        link: "/learning-room",
       },
     ],
   },
   {
-    title: "Help & Contact",
+    title: "footer.links.helpContact.title",
     items: [
       {
-        name: "Helpdesk",
-        link: "/help/center",  // Link to your privacy policy
+        name: "footer.links.helpContact.helpdesk",
+        link: "/help/center",
       },
       {
-        name: "FAQ",
-        link: "/faq",   // Link to your terms of service
+        name: "footer.links.helpContact.faq",
+        link: "/faq",
       },
       {
-        name: "Contact Us",
-        link: "/contact-us", // Or an email address link: mailto:contact@example.com
+        name: "footer.links.helpContact.contactUs",
+        link: "/contact-us",
       },
       {
-        name: "Imprint",  // Legal information (if required in your region)
-        link: "#", // Or /legal, etc.  Only if required!
+        name: "footer.links.helpContact.imprint",
+        link: "#",
       },
     ],
   },
 ];
-export const footerLinks2 = [{
-  name: "About",
-  link: "/pages/about/about-us"
-}, {
-  name: "Terms"
-}, {
-  name: "Privacy"
-}, {
-  name: "Career"
-}, {
-  name: "Contact us"
-}, {
-  name: "Cookies"
-}];
-export const socialMediaLinks = [{
-  icon: FaFacebookF,
-  variant: "text-facebook"
-}, {
-  icon: FaInstagram,
-  variant: "text-instagram"
-}, {
-  icon: FaTwitter,
-  variant: "text-twitter"
-}, {
-  icon: FaLinkedinIn,
-  variant: "text-linkedin"
-}];
+
+export const footerLinks2 = [
+  {
+    name: "About",
+    link: "/pages/about/about-us"
+  },
+  {
+    name: "Terms"
+  },
+  {
+    name: "Privacy"
+  },
+  {
+    name: "Career"
+  },
+  {
+    name: "Contact us"
+  },
+  {
+    name: "Cookies"
+  }
+];
+
+export const socialMediaLinks = [
+  {
+    icon: FaFacebookF,
+    variant: "text-facebook"
+  },
+  {
+    icon: FaInstagram,
+    variant: "text-instagram"
+  },
+  {
+    icon: FaTwitter,
+    variant: "text-twitter"
+  },
+  {
+    icon: FaLinkedinIn,
+    variant: "text-linkedin"
+  }
+];

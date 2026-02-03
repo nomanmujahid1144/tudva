@@ -1,5 +1,5 @@
 // src/services/matrixService.js
-// FIXED: Stop infinite polling and fix Matrix permissions
+// FIXED: Get auth token from COOKIES (not localStorage)
 
 let createClient;
 
@@ -14,6 +14,20 @@ const initializeMatrixSDK = async () => {
   }
   
   return createClient;
+};
+
+// ✅ HELPER: Get auth token from cookies
+const getAuthTokenFromCookies = () => {
+  if (typeof document === 'undefined') return null;
+  
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'auth_token') {
+      return value;
+    }
+  }
+  return null;
 };
 
 class MatrixService {
@@ -91,26 +105,47 @@ class MatrixService {
 
   /**
    * Join room using server proxy
+   * ✅ FIXED: Now gets token from COOKIES instead of localStorage
    */
-  async joinRoom(roomId) {
+  async joinRoom(roomId, userCredentials) {
     try {
       console.log('🔄 Joining room via server proxy:', roomId);
+
+      // ✅ ADDED: Detect user role from userId
+      const isInstructor = userCredentials?.userId?.includes('@instructor_');
+      const userRole = isInstructor ? 'instructor' : 'student';
+      
+      console.log('🔑 User role detected:', userRole, '| userId:', userCredentials?.userId);
+
+      // ✅ CRITICAL FIX: Get auth token from COOKIES (not localStorage)
+      const authToken = getAuthTokenFromCookies();
+      
+      if (!authToken || authToken === 'undefined' || authToken === 'null') {
+        console.error('❌ No valid auth token found in cookies');
+        throw new Error('Authentication required. Please log in again.');
+      }
+
+      console.log('🔐 Auth token from cookie:', authToken.substring(0, 20) + '...');
 
       const response = await fetch('/api/matrix/join-room', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`  // ✅ Token from cookies
         },
         body: JSON.stringify({ 
           roomId,
-          userId: this.userId 
+          userRole  // ✅ CRITICAL: Pass role to API
         })
       });
+
+      console.log('📡 API Response status:', response.status);
 
       const result = await response.json();
       
       if (!result.success) {
-        throw new Error(result.error);
+        console.error('❌ Join room failed:', result.error);
+        throw new Error(result.error || 'Failed to join room');
       }
 
       this.currentRoomId = roomId;
@@ -118,7 +153,7 @@ class MatrixService {
       // FIXED: Start controlled polling instead of infinite polling
       this.startControlledPolling();
       
-      console.log('✅ Joined room successfully');
+      console.log('✅ Joined room successfully as:', userRole);
       
       return {
         success: true,
@@ -176,8 +211,6 @@ class MatrixService {
         })
       });
 
-      console.log(response, 'Response')
-
       if (response.ok) {
         const result = await response.json();
         
@@ -220,6 +253,7 @@ class MatrixService {
 
   /**
    * Send message using server proxy
+   * ✅ FIXED: Gets token from cookies
    */
   async sendMessage(content, msgType = 'm.text') {
     if (!content.trim() || !this.currentRoomId) {
@@ -227,10 +261,14 @@ class MatrixService {
     }
 
     try {
+      // ✅ Get token from cookies
+      const authToken = getAuthTokenFromCookies();
+      
       const response = await fetch('/api/matrix/send-message', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({
           roomId: this.currentRoomId,

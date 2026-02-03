@@ -7,7 +7,7 @@ import { Card, Col, Container, Row } from 'react-bootstrap';
 import { FaSlidersH } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import patternImg from '@/assets/images/pattern/04.png';
-import placeholderAvatar from '../../../../public/assets/images/avatar/placeholder.svg';
+import placeholderAvatar from '../../../../../public/assets/images/avatar/placeholder.svg';
 import { BannerSkeleton } from '@/components/skeletons/BannerSkeleton';
 
 const Banner = ({ toggleOffCanvas }) => {
@@ -69,7 +69,7 @@ const Banner = ({ toggleOffCanvas }) => {
                 {/* Instructor Info & Stats */}
                 <Col className="d-sm-flex justify-content-between align-items-center">
                   <div>
-                    <h1 className="my-1 fs-4">{userName}</h1>
+                    {/* <h1 className="my-1 fs-4">{userName}</h1>
                     <ul className="list-inline mb-0">
                       <li className="list-inline-item me-3 mb-1 mb-sm-0">
                         <span className="h6">255</span>
@@ -83,7 +83,7 @@ const Banner = ({ toggleOffCanvas }) => {
                         <span className="h6">52</span>
                         <span className="text-body fw-light"> Students enrolled</span>
                       </li>
-                    </ul>
+                    </ul> */}
                   </div>
                   <div className="mt-2 mt-sm-0">
                     <Link href="/instructor/create-course" className="btn btn-outline-primary mb-0">

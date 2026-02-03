@@ -132,7 +132,7 @@ const MessageList = ({ messages, currentUserId, onMessageClick }) => {
   };
 
   return (
-    <div className="message-list">
+    <div className="message-list" style={{height: '5rem'}}>
       {messages.map((message, index) => renderMessage(message, index))}
     </div>
   );

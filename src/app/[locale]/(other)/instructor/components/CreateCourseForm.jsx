@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'react-bootstrap'
 import { useParams, usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import 'bs-stepper/dist/css/bs-stepper.min.css'
 import Step1 from './Step1'
 import Step2 from './Step2'
@@ -15,6 +16,7 @@ const CreateCourseForm = () => {
   const stepperInstance = useBSStepper(stepperRef);
   const params = useParams();
   const pathname = usePathname();
+  const t = useTranslations('instructor.course.form');
 
   // Determine mode and courseId from URL
   const isEditMode = pathname.includes('/edit-course');
@@ -79,10 +81,7 @@ const CreateCourseForm = () => {
           <Row>
             <Col md={8} className="mx-auto text-center">
               <p>
-                {isEditMode 
-                  ? 'Edit your course details and update your content...' 
-                  : 'Use this interface to add a new Course...'
-                }
+                {t(`${mode}.subtitle`)}
               </p>
             </Col>
           </Row>
@@ -96,10 +95,7 @@ const CreateCourseForm = () => {
               <Col>
                 <div className="alert alert-info">
                   <p className="mb-0">
-                    {isEditMode 
-                      ? 'You have unsaved changes to this course. You can continue from where you left off.'
-                      : 'You have unsaved course data. You can continue from where you left off.'
-                    }
+                    {t(`${mode}.recoveryAlert`)}
                   </p>
                 </div>
               </Col>
@@ -122,7 +118,9 @@ const CreateCourseForm = () => {
                       >
                         <span className="bs-stepper-circle">1</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Course details</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        {t('stepper.step1')}
+                      </h6>
                     </div>
                   </div>
                   <div className="line" />
@@ -139,7 +137,9 @@ const CreateCourseForm = () => {
                       >
                         <span className="bs-stepper-circle">2</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Course media</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        {t('stepper.step2')}
+                      </h6>
                     </div>
                   </div>
                   <div className="line" />
@@ -156,7 +156,9 @@ const CreateCourseForm = () => {
                       >
                         <span className="bs-stepper-circle">3</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Curriculum</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        {t('stepper.step3')}
+                      </h6>
                     </div>
                   </div>
                   <div className="line" />
@@ -173,7 +175,9 @@ const CreateCourseForm = () => {
                       >
                         <span className="bs-stepper-circle">4</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Additional information</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        {t('stepper.step4')}
+                      </h6>
                     </div>
                   </div>
                 </div>

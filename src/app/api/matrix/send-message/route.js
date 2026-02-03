@@ -1,19 +1,23 @@
+// ================================================================
 // FIXED: src/app/api/matrix/send-message/route.js
+// UPDATED FOR NEW MATRIX SERVER (matrix.151.hu) + Room Join Fix
+
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://chat.151.hu';
+// ✅ UPDATED: New Matrix server configuration
+const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
 
 /**
- * Ensure API user is in room before sending message
+ * ✅ CRITICAL FIX: Ensure API user is in room before sending message
  */
 async function ensureApiUserInRoom(roomId) {
   try {
     // Try to join the room (idempotent operation)
     await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/join`, // ✅ Changed to v3
       {},
       {
         headers: {
@@ -22,9 +26,10 @@ async function ensureApiUserInRoom(roomId) {
         }
       }
     );
+    console.log('✅ API user joined room successfully');
     return true;
   } catch (error) {
-    console.error('Failed to join room:', error.response?.data);
+    console.error('❌ Failed to join room:', error.response?.data);
     return false;
   }
 }
@@ -68,8 +73,9 @@ export async function POST(request) {
     const messageBody = `${auth.user.fullName || 'User'}: ${content.trim()}`;
     
     try {
-      const response = await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+      const txnId = Date.now(); // ✅ Transaction ID for v3
+      const response = await axios.put( // ✅ Changed from POST to PUT
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to v3 with txnId
         {
           msgtype: msgType,
           body: messageBody,
@@ -110,8 +116,9 @@ export async function POST(request) {
         
         // Retry message send
         try {
-          const retryResponse = await axios.post(
-            `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+          const txnId = Date.now(); // ✅ New transaction ID for retry
+          const retryResponse = await axios.put( // ✅ Changed from POST to PUT
+            `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to v3
             {
               msgtype: msgType,
               body: messageBody,
@@ -146,7 +153,7 @@ export async function POST(request) {
     }
 
   } catch (error) {
-    console.error('Failed to send Matrix message:', error);
+    console.error('❌ Failed to send Matrix message:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to send message',

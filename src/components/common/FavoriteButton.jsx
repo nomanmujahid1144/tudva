@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import { addToFavorites, removeFromFavorites, checkIsFavorite } from '@/services/favoriteService';
+import { addToFavorites, removeFromFavorites, checkIsFavorite } from '../../services/favoritesService';
 import { addToWishlist, removeFromWishlist, isInWishlist } from '@/utils/fileWishlistApi';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';

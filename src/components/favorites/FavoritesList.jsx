@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Spinner, Alert, Button, Nav } from 'react-bootstrap';
-import { getFavorites } from '@/services/favoriteService';
-import CourseCard from '@/app/pages/course/grid/components/CourseCard'; // Adjust import path as needed
-import { useAuth } from '@/context/AuthContext';
+import {getFavoriteCourses} from '../../services/favoritesService';
+// import CourseCard from '@/app/pages/course/grid/components/CourseCard'; // Adjust import path as needed
+import CourseCard from '../../app/[locale]/pages/course/grid/components/CourseCard'; // Adjust import path as needed
+import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -31,7 +32,7 @@ const FavoritesList = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await getFavorites();
+        const response = await getFavoriteCourses();
 
         if (response.success) {
           setFavorites(response.favorites || []);

@@ -1,5 +1,7 @@
 // ================================================================
 // src/app/api/matrix/leave-room/route.js
+// UPDATED FOR NEW MATRIX SERVER (matrix.151.hu)
+
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 
@@ -19,13 +21,15 @@ export async function POST(request) {
     // In this proxy approach, we don't need to actually leave the room
     // since we're using a service account. Just return success.
     
+    console.log(`✅ User ${auth.user.id} left room ${roomId} (proxy mode)`);
+
     return NextResponse.json({
       success: true,
       data: { message: 'Left room successfully' }
     });
 
   } catch (error) {
-    console.error('Failed to leave Matrix room:', error);
+    console.error('❌ Failed to leave Matrix room:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to leave room'

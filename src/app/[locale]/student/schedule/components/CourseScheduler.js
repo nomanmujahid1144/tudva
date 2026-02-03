@@ -7,19 +7,24 @@ import Image from 'next/image';
 import { toast } from 'sonner';
 import liveIcon from '@/assets/images/live-course.png';
 import recordedIcon from '@/assets/images/recorded-course.png';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 // Import our actual API services
 import schedulerService from '@/services/schedulerService';
 
 const CourseScheduler = () => {
+  const t = useTranslations('scheduler');
+  const { locale } = useParams();
+
   // Time slots with IDs and formatted times
   const TIME_SLOTS = [
-    { id: 'slot_1', name: 'SLOT 1', time: '9:00 - 9:40' },
-    { id: 'slot_2', name: 'SLOT 2', time: '9:45 - 10:25' },
-    { id: 'slot_3', name: 'SLOT 3', time: '10:45 - 11:25' },
-    { id: 'slot_4', name: 'SLOT 4', time: '11:30 - 12:10' },
-    { id: 'slot_5', name: 'SLOT 5', time: '13:35 - 14:15' },
-    { id: 'slot_6', name: 'SLOT 6', time: '14:20 - 15:00' }
+    { id: 'slot_1', name: t('timeSlotNames.slot1'), time: '9:00 - 9:40' },
+    { id: 'slot_2', name: t('timeSlotNames.slot2'), time: '9:45 - 10:25' },
+    { id: 'slot_3', name: t('timeSlotNames.slot3'), time: '10:45 - 11:25' },
+    { id: 'slot_4', name: t('timeSlotNames.slot4'), time: '11:30 - 12:10' },
+    { id: 'slot_5', name: t('timeSlotNames.slot5'), time: '13:35 - 14:15' },
+    { id: 'slot_6', name: t('timeSlotNames.slot6'), time: '14:20 - 15:00' }
   ];
 
   // States for calendar dates
@@ -124,8 +129,9 @@ const CourseScheduler = () => {
     if (item.type === 'live' && item.itemId?.startsWith('session_')) {
       const sessionMatch = item.itemId.match(/session_(\d+)/);
       if (sessionMatch && sessionMatch[1]) {
+        console.log(item, 'item')
         const sessionNumber = parseInt(sessionMatch[1], 10);
-        const totalSessions = item.totalSessions || 5;
+        const totalSessions = item.totalLessons || 0;
         return `${sessionNumber}/${totalSessions}`;
       }
     }
@@ -233,12 +239,12 @@ const CourseScheduler = () => {
         return true;
       } else {
         console.error('Error reordering lessons:', result.error);
-        toast.error('Failed to update lesson order');
+        toast.error(t('messages.orderError'));
         return false;
       }
     } catch (error) {
       console.error('Error updating lesson ordering:', error);
-      toast.error('Failed to update lesson order');
+      toast.error(t('messages.orderError'));
       return false;
     }
   };
@@ -259,7 +265,7 @@ const CourseScheduler = () => {
       const date = new Date(currentWednesday);
       dates.push({
         date,
-        formatted: date.toLocaleDateString('en-US', {
+        formatted: date.toLocaleDateString(locale === 'de' ? 'de-DE' : locale === 'hu' ? 'hu-HU' : 'en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric'
@@ -282,11 +288,11 @@ const CourseScheduler = () => {
       if (result.success) {
         setScheduledItems(result.data.scheduledItems || []);
       } else {
-        toast.error(result.error || 'Failed to load your schedule');
+        toast.error(result.error || t('messages.loadError'));
       }
     } catch (error) {
       console.error('Error loading user schedule:', error);
-      toast.error('Failed to load your schedule. Please try again.');
+      toast.error(t('messages.loadError') + ' ' + t('messages.tryAgain'));
     } finally {
       setLoading(false);
     }
@@ -325,11 +331,11 @@ const CourseScheduler = () => {
           ...newLessonInfoMap
         }));
       } else {
-        toast.error(result.error || 'Failed to load available courses');
+        toast.error(result.error || t('messages.loadError'));
       }
     } catch (error) {
       console.error('Error loading available courses:', error);
-      toast.error('Failed to load available courses. Please try again.');
+      toast.error(t('messages.loadError') + ' ' + t('messages.tryAgain'));
     } finally {
       setIsPanelLoading(false);
     }
@@ -603,7 +609,7 @@ const CourseScheduler = () => {
 
     // Check if slot is already occupied
     if (isSlotOccupied(date, slotId, dragSourceRef.current)) {
-      addErrorItem(itemWithLessonInfo, date, slotId, 'This time slot is already occupied');
+      addErrorItem(itemWithLessonInfo, date, slotId, t('slot.occupied'));
 
       // End drag operation
       setDraggedItem(null);
@@ -616,7 +622,7 @@ const CourseScheduler = () => {
     const courseIdForReorder = item.courseId;
     const isRecordedType = item.type === 'recorded';
 
-    toast.info('Updating schedule...');
+    toast.info(t('actions.updating'));
 
     // First step: Handle the drag & drop operation
     try {
@@ -641,10 +647,10 @@ const CourseScheduler = () => {
             });
 
             if (result.success) {
-              toast.success('Course added to schedule');
+              toast.success(t('messages.courseAdded'));
               updateLocalLessonCache(item.courseId, itemWithLessonInfo.lessonNumber);
             } else {
-              toast.error(result.error || 'Failed to add course to schedule');
+              toast.error(result.error || t('messages.addError'));
             }
           }
           // If it was a rescheduled item
@@ -656,9 +662,9 @@ const CourseScheduler = () => {
             });
 
             if (result.success) {
-              toast.success('Course rescheduled');
+              toast.success(t('messages.courseRescheduled'));
             } else {
-              toast.error(result.error || 'Failed to reschedule course');
+              toast.error(result.error || t('messages.rescheduleError'));
             }
           }
         } else {
@@ -689,10 +695,10 @@ const CourseScheduler = () => {
         });
 
         if (result.success) {
-          toast.success('Course added to schedule');
+          toast.success(t('messages.courseAdded'));
           updateLocalLessonCache(item.courseId, itemWithLessonInfo.lessonNumber);
         } else {
-          toast.error(result.error || 'Failed to add course to schedule');
+          toast.error(result.error || t('messages.addError'));
         }
       } else {
         // Rescheduling existing item
@@ -707,9 +713,9 @@ const CourseScheduler = () => {
         });
 
         if (result.success) {
-          toast.success('Course rescheduled');
+          toast.success(t('messages.courseRescheduled'));
         } else {
-          toast.error(result.error || 'Failed to reschedule course');
+          toast.error(result.error || t('messages.rescheduleError'));
         }
       }
 
@@ -751,7 +757,7 @@ const CourseScheduler = () => {
             const orderResult = await schedulerService.updateItemsOrder(courseIdForReorder, orderedItemIds);
 
             if (orderResult.success) {
-              toast.success('Course order updated');
+              toast.success(t('messages.orderUpdated'));
 
               // Final reload to get everything in sync
               await loadUserSchedule();
@@ -763,7 +769,7 @@ const CourseScheduler = () => {
       }
     } catch (error) {
       console.error('Error in drag and drop operation:', error);
-      toast.error('Failed to update schedule');
+      toast.error(t('messages.addError'));
     }
 
     // Clean up
@@ -807,7 +813,7 @@ const CourseScheduler = () => {
         },
         selectedSlot.date,
         selectedSlot.slotId,
-        'This time slot is already occupied'
+        t('slot.occupied')
       );
       return;
     }
@@ -827,7 +833,7 @@ const CourseScheduler = () => {
       };
 
       // Show the user we're processing their request
-      toast.info('Adding course to schedule...');
+      toast.info(t('actions.adding'));
 
       // First step: Add the course item
       const result = await schedulerService.addCourseItem(payload);
@@ -870,7 +876,7 @@ const CourseScheduler = () => {
               const orderResult = await schedulerService.updateItemsOrder(course._id, orderedItemIds);
 
               if (orderResult.success) {
-                toast.success('Course order updated');
+                toast.success(t('messages.orderUpdated'));
               } else {
                 console.error('Failed to update course order:', orderResult.error);
               }
@@ -878,7 +884,7 @@ const CourseScheduler = () => {
           }
         }
 
-        toast.success('Course added to schedule');
+        toast.success(t('messages.courseAdded'));
 
         // Update the local cache
         updateLocalLessonCache(course._id, item.lessonNumber);
@@ -886,11 +892,11 @@ const CourseScheduler = () => {
         // Reload one more time to ensure we have the final state
         await loadUserSchedule();
       } else {
-        toast.error(result.error || 'Failed to add course to schedule');
+        toast.error(result.error || t('messages.addError'));
       }
     } catch (error) {
       console.error('Error adding course:', error);
-      toast.error('Failed to add course to schedule');
+      toast.error(t('messages.addError'));
     }
   };
 
@@ -902,14 +908,14 @@ const CourseScheduler = () => {
       });
 
       if (result.success) {
-        toast.success('Live course added to schedule');
+        toast.success(t('messages.courseAdded'));
         await loadUserSchedule(); // Reload schedule
       } else {
-        toast.error(result.error || 'Failed to add live course');
+        toast.error(result.error || t('messages.addError'));
       }
     } catch (error) {
       console.error('Error adding live course:', error);
-      toast.error('Failed to add live course');
+      toast.error(t('messages.addError'));
     }
   };
 
@@ -939,7 +945,7 @@ const CourseScheduler = () => {
       });
 
       if (result.success) {
-        toast.success('Item removed from schedule');
+        toast.success(t('messages.courseRemoved'));
 
         // Update local cache by removing the lesson number for this course
         if (itemToDelete.courseId && itemToDelete.lessonNumber) {
@@ -964,11 +970,11 @@ const CourseScheduler = () => {
           await updateLessonOrdering(itemToDelete.courseId);
         }
       } else {
-        toast.error(result.error || 'Failed to remove item');
+        toast.error(result.error || t('messages.removeError'));
       }
     } catch (error) {
       console.error('Error removing item:', error);
-      toast.error('Failed to remove item');
+      toast.error(t('messages.removeError'));
     }
 
     // Close modal and reset
@@ -1021,7 +1027,7 @@ const CourseScheduler = () => {
     return (
       <div className="text-center p-5">
         <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading course scheduler...</p>
+        <p className="mt-3">{t('messages.loadingSchedule')}</p>
       </div>
     );
   }
@@ -1043,17 +1049,17 @@ const CourseScheduler = () => {
           {/* Header Section */}
           <Card className="border mb-3">
             <Card.Body>
-              <h3 className="mb-3">Course Schedule</h3>
+              <h3 className="mb-3">{t('title')}</h3>
 
               <Row className="align-items-center mb-2">
                 <Col md={6}>
                   <Form.Group>
-                    <Form.Label className="mb-1"><small>School Day</small></Form.Label>
+                    <Form.Label className="mb-1"><small>{t('schoolDay.label')}</small></Form.Label>
                     <Form.Select disabled value="wednesday">
-                      <option value="wednesday">Wednesday</option>
+                      <option value="wednesday">{t('schoolDay.wednesday')}</option>
                     </Form.Select>
                     <Form.Text className="text-muted">
-                      Currently, all courses are scheduled on Wednesdays
+                      {t('schoolDay.note')}
                     </Form.Text>
                   </Form.Group>
                 </Col>
@@ -1068,7 +1074,7 @@ const CourseScheduler = () => {
                 {/* Calendar header with dates */}
                 <div className="calendar-header">
                   <div className="time-column bg-light border-end">
-                    <div className="p-3 text-center fw-medium">Time Slots</div>
+                    <div className="p-3 text-center fw-medium">{t('timeSlots')}</div>
                   </div>
 
                   {calendarDates.map((date, index) => (
@@ -1077,7 +1083,7 @@ const CourseScheduler = () => {
                       className={`date-column border-end ${date.isToday ? 'bg-primary bg-opacity-10' : 'bg-light'}`}
                     >
                       <div className="p-3 d-flex flex-column text-center fw-medium">
-                        <span>Wednesday</span>
+                        <span>{t('schoolDay.wednesday')}</span>
                         <span>{date.formatted}</span>
                       </div>
                     </div>
@@ -1194,7 +1200,7 @@ const CourseScheduler = () => {
                                                 onClick={(e) => handleRemoveItem(item, e)}
                                                 className="text-danger"
                                               >
-                                                <FaTrash className="me-2" /> Remove Lecture
+                                                <FaTrash className="me-2" /> {t('actions.removeLecture')}
                                               </Dropdown.Item>
                                             </Dropdown.Menu>
                                           </Dropdown>
@@ -1237,8 +1243,7 @@ const CourseScheduler = () => {
 
             <Card.Footer className="bg-light border-0">
               <Alert variant="warning" className="mb-0">
-                <strong>Important Note:</strong> All live sessions are conducted via our virtual classroom.
-                You will receive access details after enrollment. Make sure to join 5 minutes before the scheduled time.
+                <strong>{t('footer.importantNote')}</strong> {t('footer.virtualClassroom')}
               </Alert>
             </Card.Footer>
           </Card>
@@ -1277,7 +1282,7 @@ const CourseScheduler = () => {
 
             <div className="p-3 mt-5">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="mb-0">Available Courses</h5>
+                <h5 className="mb-0">{t('availableCourses')}</h5>
               </div>
 
               {/* Search and Filter */}
@@ -1286,7 +1291,7 @@ const CourseScheduler = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search courses..."
+                    placeholder={t('search.placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -1310,7 +1315,7 @@ const CourseScheduler = () => {
                       loadAvailableCourses();
                     }}
                   >
-                    All
+                    {t('filters.all')}
                   </Button>
                   <Button
                     variant={courseTypeFilter === 'live' ? 'primary' : 'outline-primary'}
@@ -1320,7 +1325,7 @@ const CourseScheduler = () => {
                       loadAvailableCourses();
                     }}
                   >
-                    Live
+                    {t('filters.live')}
                   </Button>
                   <Button
                     variant={courseTypeFilter === 'recorded' ? 'primary' : 'outline-primary'}
@@ -1329,7 +1334,7 @@ const CourseScheduler = () => {
                       loadAvailableCourses();
                     }}
                   >
-                    Recorded
+                    {t('filters.recorded')}
                   </Button>
                 </div>
               </div>
@@ -1339,11 +1344,11 @@ const CourseScheduler = () => {
                 {isPanelLoading ? (
                   <div className="text-center p-5">
                     <Spinner animation="border" variant="primary" size="sm" />
-                    <p>Loading courses...</p>
+                    <p>{t('messages.loadingCourses')}</p>
                   </div>
                 ) : availableCourses.length === 0 ? (
                   <div className="text-center p-5">
-                    <p>No courses found. Try a different search.</p>
+                    <p>{t('messages.noCourses')}</p>
                   </div>
                 ) : (
                   <Accordion key={refreshKey} defaultActiveKey={lastAddedCourse ? lastAddedCourse.courseId : undefined}>
@@ -1385,11 +1390,11 @@ const CourseScheduler = () => {
                               <div>
                                 <strong>{course.title}</strong> &nbsp;
                                 <Badge bg={course.type === 'live' ? 'success' : 'info'} className="me-1">
-                                  {course.type === 'live' ? 'Live' : 'Recorded'}
+                                  {course.type === 'live' ? t('badges.live') : t('badges.recorded')}
                                 </Badge>
                                 <Badge bg="secondary">{course.level}</Badge>
                                 <div className="small text-muted">
-                                  Progress: {course.progress.scheduledCount}/{course.progress.totalCount}
+                                  {t('course.progress')}: {course.progress.scheduledCount}/{course.progress.totalCount}
                                 </div>
                               </div>
                             </div>
@@ -1403,10 +1408,10 @@ const CourseScheduler = () => {
                                 {course.liveCourseMeta && (
                                   <div className="mb-3">
                                     <p className="mb-1">
-                                      <strong>Start Date:</strong> {new Date(course.liveCourseMeta.startDate).toLocaleDateString()}
+                                      <strong>{t('course.startDate')}:</strong> {new Date(course.liveCourseMeta.startDate).toLocaleDateString(locale === 'de' ? 'de-DE' : locale === 'hu' ? 'hu-HU' : 'en-US')}
                                     </p>
                                     <p className="mb-1">
-                                      <strong>Time Slots:</strong>
+                                      <strong>{t('course.timeSlots')}:</strong>
                                       {course.liveCourseMeta.timeSlots.map((slot, i) => (
                                         <span key={i} className="ms-1">
                                           {slot.weekDay} ({slot.slotTime || TIME_SLOTS.find(s => s.id === slot.slot)?.time})
@@ -1419,7 +1424,7 @@ const CourseScheduler = () => {
                                       onClick={() => handleAddLiveCourse(course)}
                                       className="mt-3"
                                     >
-                                      Add All Sessions
+                                      {t('course.addAllSessions')}
                                     </Button>
                                   </div>
                                 )}
@@ -1433,14 +1438,14 @@ const CourseScheduler = () => {
                                   <Alert variant="warning" className="my-2 py-2">
                                     <small>
                                       <FaExclamationTriangle className="me-1" />
-                                      The selected time slot is already occupied
+                                      {t('slot.occupied')}
                                     </small>
                                   </Alert>
                                 )}
 
                                 {course.availableLessons && course.availableLessons.length > 0 ? (
                                   <div className="mt-3">
-                                    <h6>Available Lessons:</h6>
+                                    <h6>{t('course.availableLessons')}</h6>
                                     <div className="lesson-list">
                                       {course.availableLessons.map((lesson, i) => {
                                         // Check if this lesson is already scheduled somewhere
@@ -1488,7 +1493,7 @@ const CourseScheduler = () => {
                                               </Col>
                                               <Col md={12} className="px-4 pb-2 d-flex justify-content-between align-items-center">
                                                 <div className="lesson-progress fs-5 me-2">
-                                                  {lesson.lessonNumber} of {lesson.totalLessons}
+                                                  {lesson.lessonNumber} / {lesson.totalLessons}
                                                 </div>
                                                 <div className="d-flex align-items-center">
                                                   <div className="course-type-icon">
@@ -1503,34 +1508,10 @@ const CourseScheduler = () => {
                                               </Col>
                                             </div>
 
-                                            {/* <div className="d-flex justify-content-between">
-                                              <div>
-                                                <strong>{lesson.title}</strong>
-                                                <div className="small text-muted">{lesson.moduleTitle}</div>
-                                              </div>
-                                              <div className="text-muted small">
-                                                {lesson.duration ? `${Math.floor(lesson.duration / 60)}:${(lesson.duration % 60).toString().padStart(2, '0')}` : ''}
-                                              </div>
-                                            </div>
-                                            <div className="mt-2 d-flex justify-content-between align-items-center">
-                                              <div className="small">
-                                                Lesson {lesson.lessonNumber} of {lesson.totalLessons}
-                                              </div>
-
-                                              <Button
-                                                size="sm"
-                                                variant={isAlreadyScheduled ? "success" : "primary"}
-                                                onClick={() => !isAlreadyScheduled && handleAddCourse(course, lesson)}
-                                                disabled={isAlreadyScheduled || (selectedSlot && isSlotOccupied(selectedSlot.date, selectedSlot.slotId))}
-                                              >
-                                                {isAlreadyScheduled ? "Scheduled" : "Add"}
-                                              </Button>
-                                            </div> */}
-
                                             {isAlreadyScheduled && (
                                               <div className="mt-1 small text-success">
                                                 <FaLock className="me-1" />
-                                                Already scheduled
+                                                {t('course.alreadyScheduled')}
                                               </div>
                                             )}
                                           </div>
@@ -1540,7 +1521,7 @@ const CourseScheduler = () => {
                                   </div>
                                 ) : (
                                   <div className="text-center p-3">
-                                    <p>No available lessons for this course.</p>
+                                    <p>{t('messages.noLessons')}</p>
                                   </div>
                                 )}
                               </div>
@@ -1564,25 +1545,25 @@ const CourseScheduler = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Remove Lecture</Modal.Title>
+          <Modal.Title>{t('modal.removeTitle')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to remove this lecture?</p>
+          <p>{t('modal.removeMessage')}</p>
           {itemToDelete && (
             <div className="mt-2">
               <strong>{itemToDelete.title || itemToDelete.courseTitle}</strong>
               <div>
-                {new Date(itemToDelete.date).toLocaleDateString()} ({TIME_SLOTS.find(slot => slot.id === itemToDelete.slotId)?.time})
+                {new Date(itemToDelete.date).toLocaleDateString(locale === 'de' ? 'de-DE' : locale === 'hu' ? 'hu-HU' : 'en-US')} ({TIME_SLOTS.find(slot => slot.id === itemToDelete.slotId)?.time})
               </div>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={cancelRemoveItem}>
-            No
+            {t('modal.confirmNo')}
           </Button>
           <Button variant="danger" onClick={confirmRemoveItem}>
-            Yes
+            {t('modal.confirmYes')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -1696,7 +1677,7 @@ const CourseScheduler = () => {
         }
         
         .live-conflict-slot::before {
-          content: "Cannot mix with live course";
+          content: "${t('slot.cannotMixLive')}";
           position: absolute;
           top: 0;
           left: 0;
@@ -1765,25 +1746,6 @@ const CourseScheduler = () => {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
           transform: translateY(-2px);
         }
-        
-        /* Live course styling with blur and lock */
-        // .live-course-card {
-        //   cursor: default !important;
-        //   position: absolute;
-        //   inset: 0;
-        // }
-        
-        // .live-course-card::after {
-        //   content: '';
-        //   position: absolute;
-        //   top: 0;
-        //   left: 0;
-        //   right: 0;
-        //   bottom: 0;
-        //   background-color: rgba(0, 0, 0, 0.1);
-        //   border-radius: 8px;
-        //   pointer-events: none;
-        // }
         
         /* Error course styling */
         .error-course-card {
@@ -1857,16 +1819,11 @@ const CourseScheduler = () => {
         
         .lock-course {
           position: absolute;
-          // inset: 0;
           top: 12px;
           left: 0;
           height: 100%;
           width: 100%;
           z-index: 9;
-          // display: flex;
-          // justify-content: center;
-          // align-items: center;
-          // backdrop-filter: brightness(0.5);
         }
         
         /* Highlight styling for recently added courses */

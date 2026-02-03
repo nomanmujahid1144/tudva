@@ -1,38 +1,58 @@
-// src/app/what-means-tudva/page.tsx
-import React from 'react';
+import { getTranslations } from 'next-intl/server';
 import { Container, Row, Col } from 'react-bootstrap';
 import PageBanner from '../../components/banner/PageBanner';
 
-const WhatMeansTudvaPage = () => {
-    return (
-        <>
-            <PageBanner
-                bannerHeadline="tudva means"
-            />
-            <Container className="py-5">
-                <Row className="justify-content-center">
-                    <Col md={8} className="text-center">
-                        <h1>What Does &quot;Tudva&quot; Mean?</h1>
-                    </Col>
-                </Row>
+// Generate metadata dynamically based on locale
+export async function generateMetadata({ params: { locale } }) {
+  const t = await getTranslations({ locale, namespace: 'pages.whatMeansTudva.metadata' });
 
-                <Row className="justify-content-center mt-4">
-                    <Col md={8}>
-                        <p style={{ whiteSpace: 'pre-line' }}>
-                            &quot;Tudva&quot; is a [YOUR LANGUAGE] word that means [MEANING OF TUDVA].  It reflects our core values of [LIST CORE VALUES - e.g., knowledge, accessibility, community].  We chose this name because [REASON FOR CHOOSING THE NAME].
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
-                            [Optional: Add a paragraph expanding on the meaning, the origin of the word, or any relevant cultural context.  Be specific and engaging!].
+const WhatMeansTudvaPage = async ({ params: { locale } }) => {
+  const t = await getTranslations({ locale, namespace: 'pages.whatMeansTudva' });
+  const tBreadcrumb = await getTranslations({ locale, namespace: 'pages.whatMeansTudva.breadcrumb' });
 
-                            [Optional: Another paragraph with further details, perhaps connecting the meaning to your platform&apos;s features.]
+  return (
+    <>
+      <PageBanner
+        bannerHeadline={t('banner.headline')}
+        showBreadcrumb={true}
+        breadcrumbItems={[
+          { name: tBreadcrumb('home'), link: "/" },
+          { name: tBreadcrumb('whatMeansTudva'), link: "/what-means-tudva" }
+        ]}
+      />
+      
+      <Container className="py-5">
+        <Row className="justify-content-center">
+          <Col md={8} className="text-center">
+            <h1>{t('hero.title')}</h1>
+          </Col>
+        </Row>
 
-                            We hope that the name &quot;Tudva&quot; will inspire you on your learning journey!
-                        </p>
-                    </Col>
-                </Row>
-
-            </Container>
-        </>
-    );
+        <Row className="justify-content-center mt-4">
+          <Col md={8}>
+            <p>
+              {t('content.paragraph1')}
+            </p>
+            <p>
+              {t('content.paragraph2')}
+            </p>
+            <p>
+              {t('content.paragraph3')}
+            </p>
+            <p className="text-center fw-bold mt-4">
+              {t('content.conclusion')}
+            </p>
+          </Col>
+        </Row>
+      </Container>
+    </>
+  );
 };
 
 export default WhatMeansTudvaPage;

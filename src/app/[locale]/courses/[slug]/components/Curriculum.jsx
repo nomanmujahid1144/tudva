@@ -837,11 +837,14 @@ import { FaLock } from "react-icons/fa";
 import Image from "next/image";
 import clsx from "clsx";
 import { format } from 'date-fns';
+import { useTranslations } from "next-intl";
 import liveIcon from '@/assets/images/live-course.png';
 import { formatDuration, calculateCourseDuration, calculateModuleDuration } from '@/utils/durationUtils';
 
 // Component for displaying time slots in a live course
 const LiveCourseSchedule = ({ liveCourseMeta }) => {
+  const t = useTranslations('courses.detail.curriculum');
+  
   if (!liveCourseMeta) return null;
 
   // Format dates
@@ -881,7 +884,7 @@ const LiveCourseSchedule = ({ liveCourseMeta }) => {
             height={48}
           />
         </div>
-        <h3 className="ms-3 mb-0">Course Schedule</h3>
+        <h3 className="ms-3 mb-0">{t('courseSchedule')}</h3>
       </div>
 
       <div className="row mb-4">
@@ -889,30 +892,30 @@ const LiveCourseSchedule = ({ liveCourseMeta }) => {
           <table className="table table-borderless">
             <tbody>
               <tr>
-                <td className="font-weight-normal ps-0" style={{ width: '40%' }}>School day</td>
+                <td className="font-weight-normal ps-0" style={{ width: '40%' }}>{t('schoolDay')}</td>
                 <td>{weekDay}</td>
               </tr>
               <tr>
-                <td className="font-weight-normal ps-0">Start date</td>
+                <td className="font-weight-normal ps-0">{t('startDate')}</td>
                 <td>{startDate}</td>
               </tr>
               <tr>
-                <td className="font-weight-normal ps-0">End date</td>
+                <td className="font-weight-normal ps-0">{t('endDate')}</td>
                 <td>{endDate}</td>
               </tr>
               <tr>
-                <td className="font-weight-normal ps-0">Lessons (daily|total)</td>
+                <td className="font-weight-normal ps-0">{t('lessonsLabel')}</td>
                 <td>
                   <span className="p-2">{slotsPerDay}</span>|<span className="p-2">{totalLessons}</span>
                 </td>
               </tr>
               <tr>
-                <td className="font-weight-normal ps-0 align-top">Slots</td>
+                <td className="font-weight-normal ps-0 align-top">{t('slots')}</td>
                 <td>
                   {timeSlots.map((slot, index) => (
                     <div key={slot.slot || index} className="mb-2">
                       <span className="badge bg-primary me-2">{index + 2}</span>
-                      <span>{slotTimes[slot.slot] || 'Unknown time'}</span>
+                      <span>{slotTimes[slot.slot] || t('unknownTime')}</span>
                     </div>
                   ))}
                 </td>
@@ -923,10 +926,9 @@ const LiveCourseSchedule = ({ liveCourseMeta }) => {
       </div>
       
       <div className="alert alert-warning">
-        <h6 className="mb-1">Important Note:</h6>
+        <h6 className="mb-1">{t('importantNote')}</h6>
         <p className="mb-0">
-          All live sessions are conducted via our virtual classroom. You will receive access details after enrollment. 
-          Make sure to join 5 minutes before the scheduled time.
+          {t('liveSessionInfo')}
         </p>
       </div>
     </div>
@@ -934,6 +936,8 @@ const LiveCourseSchedule = ({ liveCourseMeta }) => {
 };
 
 const Curriculum = ({ course }) => {
+  const t = useTranslations('courses.detail.curriculum');
+  
   if (!course) return null;
 
   // Check if this is a live course
@@ -951,7 +955,7 @@ const Curriculum = ({ course }) => {
   if (modules.length === 0) {
     return (
       <div className="alert alert-info">
-        <h6 className="mb-0">Curriculum is being developed. Please check back later.</h6>
+        <h6 className="mb-0">{t('noCurriculum')}</h6>
       </div>
     );
   }
@@ -968,13 +972,13 @@ const Curriculum = ({ course }) => {
   return (
     <>
       <div className="curriculum-header mb-4">
-        <h5>Course Content</h5>
+        <h5>{t('title')}</h5>
         <div className="d-flex align-items-center text-muted">
-          <span>{moduleCount} sections</span>
+          <span>{moduleCount} {t('sections')}</span>
           <span className="mx-2">•</span>
-          <span>{videoCount} lectures</span>
+          <span>{videoCount} {videoCount === 1 ? t('lecture') : t('lectures')}</span>
           <span className="mx-2">•</span>
-          <span>{formatDuration(totalDuration)} total length</span>
+          <span>{formatDuration(totalDuration)} {t('totalLength')}</span>
         </div>
       </div>
 
@@ -1001,7 +1005,7 @@ const Curriculum = ({ course }) => {
                       {moduleDurationData.formattedDuration}
                     </span>
                     <span className="me-3 small d-none d-sm-inline text-muted">
-                      {moduleDurationData.videoCount} {moduleDurationData.videoCount === 1 ? 'lecture' : 'lectures'}
+                      {moduleDurationData.videoCount} {moduleDurationData.videoCount === 1 ? t('lecture') : t('lectures')}
                     </span>
                   </div>
                 </div>
@@ -1086,7 +1090,7 @@ const Curriculum = ({ course }) => {
           width: 35px;
           height: 35px;
           display: flex;
-          align-items: center;
+          align-items-center;
           justify-content: center;
         }
       `}</style>

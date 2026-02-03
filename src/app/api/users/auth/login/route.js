@@ -16,7 +16,7 @@ export async function POST(request) {
     if (!email || !password) {
       return NextResponse.json({
         success: false,
-        error: "Email and password are required."
+        error: "Email and password are required"
       }, { status: 400 });
     }
     
@@ -29,7 +29,7 @@ export async function POST(request) {
     if (!user) {
       return NextResponse.json({
         success: false,
-        error: "Invalid credentials."
+        error: "Invalid email or password"
       }, { status: 401 });
     }
     
@@ -37,7 +37,7 @@ export async function POST(request) {
     if (!user.isActive) {
       return NextResponse.json({
         success: false,
-        error: "Please verify your email before logging in."
+        error: "Please verify your email before logging in"
       }, { status: 403 });
     }
     
@@ -47,7 +47,7 @@ export async function POST(request) {
     if (!isPasswordValid) {
       return NextResponse.json({
         success: false,
-        error: "Invalid credentials."
+        error: "Invalid email or password"
       }, { status: 401 });
     }
     
@@ -93,7 +93,7 @@ export async function POST(request) {
     console.error("Login error:", error);
     return NextResponse.json({
       success: false,
-      error: "An unexpected error occurred during login."
+      error: "An unexpected error occurred. Please try again."
     }, { status: 500 });
   }
 }

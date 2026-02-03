@@ -1,103 +1,114 @@
 import React from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
-import learningImageUrl from "../../assets/images/about/01.jpg";
-import communityImageUrl from "../../assets/images/about/02.jpg";
-import freeImageUrl from "../../assets/images/about/04.jpg";
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import learningImageUrl from "../../../assets/images/about/01.jpg";
+import communityImageUrl from "../../../assets/images/about/02.jpg";
+import freeImageUrl from "../../../assets/images/about/04.jpg";
 import PageBanner from '../../components/banner/PageBanner';
 
-export const metadata = { //Keep this metadata, you already had it
-  title: 'Why Tudva'
-};
+// Generate metadata dynamically based on locale
+export async function generateMetadata({ params: { locale } }) {
+  const t = await getTranslations({ locale, namespace: 'pages.whyTudva.metadata' });
+
+  return {
+    title: t('title'),
+  };
+}
+
 const WhyTudva = () => {
-    return (
-        <>
-        <PageBanner 
-          bannerHeadline="why tudva"
-        />
-        <Container className="py-5"> {/* Added py-5 for padding on top and bottom */}
-            <Row className="justify-content-center">
-                <Col lg={8} className="text-center">
-                    <h1>Why Choose Tudva?</h1>
-                    <p className="lead">
-                        Discover the benefits of learning with Tudva, a platform designed for lifelong learning.
-                    </p>
-                </Col>
-            </Row>
+  const t = useTranslations('pages.whyTudva');
+  const tBreadcrumb = useTranslations('pages.whyTudva.breadcrumb');
 
-            <Row className="g-4 mt-4"> {/* Added mt-4 for margin-top */}
-                <Col md={6} lg={4}>
-                    <div className="d-flex flex-column align-items-center">
-                        <Image
-                            src={learningImageUrl.src}
-                            alt="Flexible Learning"
-                            width={300}  // Set appropriate width/height, or use 'fill'
-                            height={200}
-                            className="img-fluid rounded mb-3" // Use Bootstrap's responsive image class
-                            priority
-                        />
-                        <h3>Flexible Learning</h3>
-                        <p>
-                            Configure your own weekly learning schedule. Choose from live and recorded courses to fit your life.
-                        </p>
-                    </div>
-                </Col>
-                <Col md={6} lg={4}>
-                <div className="d-flex flex-column align-items-center">
-                        <Image
-                            src={communityImageUrl.src}
-                            alt="Community Based"
-                            width={300}
-                            height={200}
-                            className="img-fluid rounded mb-3"
-                            priority
-                        />
-                        <h3>Community-Based</h3>
-                        <p>
-                            Learn alongside a vibrant community of students and volunteer instructors.  Share knowledge and grow together.
-                        </p>
-                    </div>
-                </Col>
-                <Col md={6} lg={4}>
-                <div className="d-flex flex-column align-items-center">
-                        <Image
-                            src={freeImageUrl.src}
-                            alt="Free Access"
-                            width={300}
-                            height={200}
-                            className="img-fluid rounded mb-3"
-                            priority
-                        />
-                        <h3>Free Access</h3>
-                        <p>
-                            High-quality education should be accessible to everyone. Tudva is completely free to use.
-                        </p>
-                    </div>
-                </Col>
-            </Row>
+  const features = [
+    {
+      key: 'flexible',
+      image: learningImageUrl
+    },
+    {
+      key: 'community',
+      image: communityImageUrl
+    },
+    {
+      key: 'free',
+      image: freeImageUrl
+    }
+  ];
 
-            <Row className="mt-5"> {/* Section for additional details */}
-                <Col>
-                    <h2>How Tudva Works</h2>
-                    <p>
-                        Tudva is built on the principle of flexible, community-driven learning. Here&apos;s a brief overview:
-                    </p>
-                    <ul>
-                        <li><strong>Create Your Schedule:</strong>  Students can configure their ideal learning day by selecting from a variety of courses.</li>
-                        <li><strong>Live and Recorded Courses:</strong>  Choose between interactive live sessions or flexible recorded content.</li>
-                        <li><strong>Training Rooms:</strong> Institutions provide spaces for students to participate online together.</li>
-                        <li><strong>Volunteer Instructors:</strong>  Courses are created and led by passionate volunteers.</li>
-                        <li><strong>Personal Learning Folder:</strong> Access course materials and recordings in your personal learning folder.</li>
-                        <li><strong>Community Interaction:</strong>  Connect with other learners and instructors, contributing to a supportive learning environment.</li>
-                    </ul>
-                    <p>
-                       Ready to get started?  <a href="/courses">Explore our courses</a> or <a href="/register">create an account</a> today!
-                    </p>
+  const steps = ['schedule', 'courses', 'trainingRooms', 'instructors', 'folder', 'interaction'];
 
-                </Col>
-            </Row>
-        </Container>
-        </>
-    );
+  return (
+    <>
+      <PageBanner 
+        bannerHeadline={t('banner.headline')}
+        showBreadcrumb={true}
+        breadcrumbItems={[
+          { name: tBreadcrumb('home'), link: "/" },
+          { name: tBreadcrumb('whyTudva'), link: "/why-tudva" }
+        ]}
+      />
+      
+      <Container className="py-5">
+        {/* Hero Section */}
+        <Row className="justify-content-center">
+          <Col lg={8} className="text-center">
+            <h1>{t('hero.title')}</h1>
+            <p className="lead">
+              {t('hero.subtitle')}
+            </p>
+          </Col>
+        </Row>
+
+        {/* Features Section */}
+        <Row className="g-4 mt-4">
+          {features.map((feature) => (
+            <Col md={6} lg={4} key={feature.key}>
+              <div className="d-flex flex-column align-items-center">
+                <Image
+                  src={feature.image.src}
+                  alt={t(`features.${feature.key}.alt`)}
+                  width={300}
+                  height={200}
+                  className="img-fluid rounded mb-3"
+                  priority
+                />
+                <h3>{t(`features.${feature.key}.title`)}</h3>
+                <p className="text-center">
+                  {t(`features.${feature.key}.description`)}
+                </p>
+              </div>
+            </Col>
+          ))}
+        </Row>
+
+        {/* How It Works Section */}
+        <Row className="mt-5">
+          <Col>
+            <h2>{t('howItWorks.title')}</h2>
+            <p>
+              {t('howItWorks.intro')}
+            </p>
+            <ul>
+              {steps.map((step) => (
+                <li key={step}>
+                  <strong>{t(`howItWorks.steps.${step}.title`)}</strong>{' '}
+                  {t(`howItWorks.steps.${step}.description`)}
+                </li>
+              ))}
+            </ul>
+            <p>
+              {t('howItWorks.cta.text')}{' '}
+              <Link href="/courses">{t('howItWorks.cta.exploreCourses')}</Link>{' '}
+              {t('howItWorks.cta.or')}{' '}
+              <Link href="/auth/sign-up">{t('howItWorks.cta.createAccount')}</Link>{' '}
+              {t('howItWorks.cta.today')}
+            </p>
+          </Col>
+        </Row>
+      </Container>
+    </>
+  );
 };
 
 export default WhyTudva;

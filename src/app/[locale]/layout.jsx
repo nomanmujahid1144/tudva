@@ -15,6 +15,7 @@ import { saira, merienda } from '../fonts';
 import logoDark from '@/assets/images/logo.svg';
 import FallbackLoading from '@/components/FallbackLoading';
 import Layout from '../components/layout/page';
+import 'flag-icons/css/flag-icons.min.css';
 
 // Dynamic imports
 const AppProvidersWrapper = dynamic(() => import('@/components/wrappers/AppProvidersWrapper'));

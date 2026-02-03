@@ -1,22 +1,32 @@
-import PageBanner from "../components/banner/PageBanner";
-import CourseList from "../components/courses/CourseList";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import PageBanner from "../../components/banner/PageBanner";
+import CourseList from "../../components/courses/CourseList";
 
-export const metadata = {
-  title: 'All Courses - Tudva',
-  description: 'Explore our comprehensive collection of courses across various categories including Languages, Cooking, Creativity, Digital Skills, Health, Nature, and Career Development.',
-  keywords: 'online courses, live courses, recorded courses, learning, education, skills development',
-};
+// Generate metadata dynamically based on locale
+export async function generateMetadata({ params: { locale } }) {
+  const t = await getTranslations({ locale, namespace: 'pages.courses.metadata' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    keywords: t('keywords'),
+  };
+}
 
 const CourseHome = () => {
+  const t = useTranslations('pages.courses');
+  const tBreadcrumb = useTranslations('pages.courses.breadcrumb');
+
   return (
     <>
       <PageBanner 
-        bannerHeadline="Discover Your Next Learning Adventure"
-        bannerSubtext="Explore our comprehensive collection of courses designed to help you grow personally and professionally"
+        bannerHeadline={t('banner.headline')}
+        bannerSubtext={t('banner.subtext')}
         showBreadcrumb={true}
         breadcrumbItems={[
-          { name: "Home", link: "/" },
-          { name: "Courses", link: "/courses" }
+          { name: tBreadcrumb('home'), link: "/" },
+          { name: tBreadcrumb('courses'), link: "/courses" }
         ]}
       />
       <CourseList />

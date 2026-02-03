@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseMediaSchema } from '@/validations/courseSchema';
 import { useCourseContext } from '@/context/CourseContext';
+import { useTranslations } from 'next-intl';
 
 const Step2 = ({ stepperInstance, mode = 'create' }) => {
   const { 
@@ -21,6 +22,9 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
   const [availableIcons, setAvailableIcons] = useState([]);
   const [loadingIcons, setLoadingIcons] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Translation hook
+  const t = useTranslations('instructor.course.step2');
 
   // Dynamic localStorage key based on mode
   const STEP2_STORAGE_KEY = `${mode}_course_step2_data`;
@@ -42,18 +46,15 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
   useEffect(() => {
     const loadData = () => {
       if (mode === 'edit') {
-        // In edit mode, prioritize course data from API
         if (courseData && courseData._id && !dataLoaded) {
           console.log('Edit mode: Loading course media data into form', courseData);
           populateFormWithCourseData();
           setDataLoaded(true);
         } else if (!courseData._id && !courseLoading && !dataLoaded) {
-          // If no course data and not loading, try localStorage
           loadFromLocalStorage();
           setDataLoaded(true);
         }
       } else {
-        // Create mode - always try localStorage first
         if (!dataLoaded) {
           loadFromLocalStorage();
           setDataLoaded(true);
@@ -80,7 +81,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
       iconUrl: courseData.iconUrl
     });
     
-    // FIXED: Always set the values from courseData in edit mode
     if (courseData.backgroundColorHex) {
       console.log('Setting background color:', courseData.backgroundColorHex);
       setValue('backgroundColorHex', courseData.backgroundColorHex);
@@ -102,7 +102,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
         const parsedData = JSON.parse(savedData);
         console.log(`${mode} mode: Loading Step 2 data from localStorage`, parsedData);
 
-        // Set values from localStorage
         if (parsedData.backgroundColorHex) {
           setValue('backgroundColorHex', parsedData.backgroundColorHex);
         }
@@ -125,7 +124,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
     const fetchIcons = async () => {
       setLoadingIcons(true);
       try {
-        // Fetch icons from the manifest file
         const response = await fetch('/assets/icons-manifest.json');
         if (!response.ok) {
           throw new Error(`Failed to fetch icons: ${response.status}`);
@@ -135,7 +133,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
         setAvailableIcons(iconsList);
       } catch (error) {
         console.error('Error fetching icons from manifest:', error);
-        // Fall back to hardcoded list if the manifest fetch fails
         const fallbackIcons = [
           'AI.png', 'Analyse.png', 'analyzing.png', 'android.png', 'atom.png',
           'calculator.png', 'calender.png', 'callcenter.png', 'chemie.png', 'clock.png',
@@ -157,25 +154,20 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
     };
 
     fetchIcons();
-  }, []); // Empty dependency array - fetch icons only once
+  }, []);
 
   // FIXED: Set a default icon only if we don't have one yet
   useEffect(() => {
-    // Skip if icons are still loading
     if (loadingIcons || !availableIcons.length) return;
 
-    // FIXED: In edit mode, only set default if no icon is set in courseData AND no form value
     if (mode === 'edit' && courseData._id) {
-      // Don't set default if course already has an icon or if we're still loading course data
       if (courseData.iconUrl || selectedIcon || !dataLoaded) {
         return;
       }
       
-      // Only set default if course doesn't have an icon
       console.log('Edit mode: Course has no icon, setting default');
       setDefaultIcon();
     } else if (mode === 'create') {
-      // Create mode - set default only if no icon is selected
       if (!selectedIcon && dataLoaded) {
         console.log('Create mode: Setting default icon');
         setDefaultIcon();
@@ -184,7 +176,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
   }, [loadingIcons, availableIcons, selectedIcon, dataLoaded, mode, courseData._id, courseData.iconUrl]);
 
   const setDefaultIcon = () => {
-    // Set a default book icon if possible
     const bookIcon = availableIcons.find(icon =>
       icon.toLowerCase().includes('book') ||
       icon.toLowerCase().includes('dictionary') ||
@@ -218,7 +209,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
   // Handle form submission
   const onSubmit = async (data) => {
     try {
-      // Save to localStorage before API call
       saveFormToLocalStorage(data);
 
       const result = await saveCourseMedia(data);
@@ -251,7 +241,6 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
     );
   };
 
-
   // Show loading spinner if course is still loading in edit mode
   if (mode === 'edit' && courseLoading) {
     return (
@@ -259,8 +248,8 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <div className="text-center">
             <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>Loading course media...</h5>
-            <p className="text-muted">Please wait while we fetch your course information.</p>
+            <h5>{t('loadingCourseMedia')}</h5>
+            <p className="text-muted">{t('loadingSubtext')}</p>
           </div>
         </div>
       </div>
@@ -272,10 +261,10 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
     return (
       <div id="step-2" role="tabpanel" className="content fade" aria-labelledby="steppertrigger2">
         <Alert variant="danger">
-          <h5>Error Loading Course Media</h5>
-          <p>Unable to load course media data: {courseLoadError}</p>
+          <h5>{t('errorLoadingTitle')}</h5>
+          <p>{t('errorLoadingMessage')} {courseLoadError}</p>
           <Button variant="outline-danger" onClick={() => window.location.href = '/instructor/manage-course'}>
-            Back to Course Management
+            {t('backToCourseManagement')}
           </Button>
         </Alert>
       </div>
@@ -285,20 +274,20 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
   return (
     <div id="step-2" role="tabpanel" className="content fade" aria-labelledby="steppertrigger2">
       <div className="d-flex justify-content-between align-items-center">
-        <h4>Course Media</h4>
+        <h4>{mode === 'edit' ? t('editTitle') : t('title')}</h4>
       </div>
       <hr />
       
       <Form>
         <Row>
           <Col xs={12} className="mb-3">
-            <h5>Setup the combination of color and icon for your course</h5>
+            <h5>{t('subTitle')}</h5>
           </Col>
 
           <Col md={6} className="mb-4">
             {/* Color Picker */}
             <Form.Group>
-              <Form.Label>Background Color <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('backgroundColorLabel')} <span className="text-danger">{t('backgroundColorRequired')}</span></Form.Label>
               <div className='my-3 d-flex gap-3 align-items-start'>
                 <HexColorPicker
                   color={selectedColor}
@@ -332,7 +321,7 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
           <Col md={6} className="mb-4 d-flex flex-column align-items-end justify-content-end">
             {/* Course Card Preview */}
             <div>
-              <Form.Label>How it should Look like?</Form.Label>
+              <Form.Label>{t('howItLooks')}</Form.Label>
               <div className='my-3'>
                 <div
                   className="shadow-sm d-flex align-items-center justify-content-center"
@@ -347,7 +336,7 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
                 >
                   {renderSelectedIcon() || (
                     <div className="text-white text-center" style={{ fontSize: '14px' }}>
-                      Select an icon
+                      {t('selectIconPreview')}
                     </div>
                   )}
 
@@ -369,14 +358,14 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
 
           <Col xs={12}>
             <hr />
-            <h5>Select an Icon for Your Course</h5>
+            <h5>{t('iconTitle')}</h5>
 
             {/* Icon Search */}
             <div className="d-flex align-items-center mb-3">
               <div className="position-relative flex-grow-1" style={{ maxWidth: '300px' }}>
                 <Form.Control
                   type="search"
-                  placeholder="Search icons..."
+                  placeholder={t('iconSearchPlaceholder')}
                   aria-label="Search"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -396,7 +385,7 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
             {loadingIcons ? (
               <div className="text-center my-3">
                 <Spinner animation="border" size="sm" role="status">
-                  <span className="visually-hidden">Loading icons...</span>
+                  <span className="visually-hidden">{t('loadingIcons')}</span>
                 </Spinner>
               </div>
             ) : (
@@ -426,7 +415,7 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
 
                   {filteredIcons.length === 0 && (
                     <div className="text-center w-100 py-4 text-muted">
-                      No icons found matching "{searchTerm}"
+                      {t('noIconsFound')} "{searchTerm}"
                     </div>
                   )}
                 </div>
@@ -443,7 +432,7 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
                 disabled={isLoading}
                 className="mb-0"
               >
-                Previous
+                {t('buttons.previous')}
               </Button>
               <Button
                 variant="primary"
@@ -453,8 +442,8 @@ const Step2 = ({ stepperInstance, mode = 'create' }) => {
                 className="mb-0"
               >
                 {isLoading ? 
-                  (mode === 'edit' ? 'Updating...' : 'Saving...') : 
-                  'Next'
+                  (mode === 'edit' ? t('buttons.updating') : t('buttons.saving')) : 
+                  t('buttons.next')
                 }
               </Button>
             </div>

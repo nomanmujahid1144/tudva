@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Card, CardBody, CardTitle, Col, Row, Badge } from "react-bootstrap";
 import { FaRegClock, FaRegStar, FaSignal, FaStar, FaStarHalfAlt, FaTable, FaUser } from "react-icons/fa";
+import { useLocale, useTranslations } from "next-intl";
 import FavoriteButton from "@/components/favorites/FavoriteButton";
 import { normalizeCourseData, formatDuration } from "@/utils/courseDataNormalizer";
 import { formatCourseLevel } from '@/utils/textFormatting';
@@ -13,12 +14,16 @@ import recordedIcon from '@/assets/images/recorded-course.png';
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
+
 const CourseCard = ({
   course: rawCourse,
-  isFavoritePage = false, // Flag to indicate if this is rendered on favorites page
-  onFavoriteToggle = null // Callback for when favorite status changes
+  isFavoritePage = false,
+  onFavoriteToggle = null
 }) => {
-  // Normalize course data to ensure consistent field names and values
+
+  const locale = useLocale();
+
+  const t = useTranslations('courses.list.card');
   const course = normalizeCourseData(rawCourse);
 
   const {
@@ -44,15 +49,12 @@ const CourseCard = ({
   const router = useRouter();
   const { user } = useAuth();
 
-  // Determine which icon to use (priority: iconUrl > icon)
   const displayIcon = iconUrl || icon || "FaBook";
 
-  // Calculate star display
   const fullStars = Math.floor(rating?.stars || 5);
   const hasHalfStar = rating?.stars ? !Number.isInteger(rating.stars) : false;
   const emptyStars = 5 - (fullStars + (hasHalfStar ? 1 : 0));
 
-  // Handle favorite toggle with callback
   const handleFavoriteToggle = async (courseId, newStatus) => {
     if (onFavoriteToggle) {
       await onFavoriteToggle(courseId, newStatus);
@@ -66,9 +68,8 @@ const CourseCard = ({
       style={{ cursor: 'pointer' }}
     >
       <Row className="g-0 h-100">
-        {/* Course Icon/Image Column */}
         <Col md={4} className="course-card-icon position-relative">
-          <Link href={`/courses/${slug}`}>
+          <Link href={`/${locale}/courses/${slug}`}>
             <div
               className="d-flex justify-content-center align-items-center h-100"
               style={{
@@ -80,7 +81,6 @@ const CourseCard = ({
               <DynamicIcon iconName={displayIcon} />
             </div>
 
-            {/* Category Badge */}
             {course.category && (
               <div className="position-absolute top-0 start-0 m-2">
                 <Badge bg="primary" className="small">
@@ -89,7 +89,6 @@ const CourseCard = ({
               </div>
             )}
 
-            {/* Level Badge */}
             {level && (
               <div className="position-absolute bottom-0 start-0 m-2">
                 <Badge bg="light" text="dark" className="border">
@@ -99,12 +98,10 @@ const CourseCard = ({
             )}
           </Link>
         </Col>
-        {/* Course Details Column */}
         <Col md={8}>
           <CardBody className="d-flex flex-column h-100">
-            {/* Title and Favorite Button */}
             <div className="d-flex justify-content-between mb-2">
-              <Link href={`/courses/${slug}`}>
+              <Link href={`/${locale}/courses/${slug}`}>
                 <CardTitle className="mb-0 h5 course-title" title={title}>
                   {title}
                 </CardTitle>
@@ -114,8 +111,8 @@ const CourseCard = ({
                   <FavoriteButton
                     courseId={id}
                     initialFavoriteStatus={isFavorite}
-                    skipInitialCheck={isFavoritePage} // Skip API check if we're on favorites page
-                    onToggle={handleFavoriteToggle} // Pass callback to FavoriteButton
+                    skipInitialCheck={isFavoritePage}
+                    onToggle={handleFavoriteToggle}
                   />
                 </span>
               ) : null}
@@ -129,15 +126,12 @@ const CourseCard = ({
               )}
               <p className="d-flex justify-content-start align-items-center">
                 <FaUser className="text-primary me-2" />
-                {instructor?.name || 'Unknown Instructor'}
+                {instructor?.name || t('unknownInstructor')}
               </p>
             </div>
 
-            {/* Rating and Course Type */}
             <div className="d-flex justify-content-between align-items-center">
-              {/* Rating Section (Left side or empty) */}
               <div className="d-flex align-items-center">
-                {console.log(rating.stars, 'rating.stars')}
                 {rating.stars !== 0 && (
                   <>
                     {Array(fullStars).fill(0).map((_, idx) => (
@@ -156,11 +150,10 @@ const CourseCard = ({
                 )}
               </div>
 
-              {/* Course Type Badge (Right side - always visible) */}
               {format && (
                 <Image
                   src={format === 'live' ? liveIcon : recordedIcon}
-                  alt={format === 'live' ? "Live Course" : "Recorded Course"}
+                  alt={format === 'live' ? t('liveCourse') : t('recordedCourse')}
                   width={46}
                   height={46}
                   className="me-1"

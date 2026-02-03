@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Container, Button } from "react-bootstrap";
+import { useTranslations } from "next-intl";
 import CourseDetails from "./components/CourseDetails";
 import ListedCourses from "./components/ListedCourses";
 import PageIntro from "./components/PageIntro";
@@ -11,20 +12,25 @@ import CourseDetailsSkeleton from "./components/skeletons/CourseDetailsSkeleton"
 import courseService from "@/services/courseService";
 
 // Component to show error state
-const ErrorState = ({ error, onRetry }) => (
-  <Container className="py-5 text-center">
-    <div className="alert alert-danger">
-      <h4 className="alert-heading">Error Loading Course</h4>
-      <p className="mb-3">{error}</p>
-      <Button variant="primary" onClick={onRetry}>
-        Try Again
-      </Button>
-    </div>
-  </Container>
-);
+const ErrorState = ({ error, onRetry }) => {
+  const t = useTranslations('courses.detail.error');
+  
+  return (
+    <Container className="py-5 text-center">
+      <div className="alert alert-danger">
+        <h4 className="alert-heading">{t('title')}</h4>
+        <p className="mb-3">{error}</p>
+        <Button variant="primary" onClick={onRetry}>
+          {t('tryAgain')}
+        </Button>
+      </div>
+    </Container>
+  );
+};
 
 const CourseDetailPage = () => {
   const params = useParams();
+  const t = useTranslations('courses.detail.error');
   const [course, setCourse] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,14 +44,14 @@ const CourseDetailPage = () => {
       const slug = params.slug;
 
       if (!slug) {
-        throw new Error("Course not found");
+        throw new Error(t('notFound'));
       }
 
       // Fetch course details
       const courseResponse = await courseService.getCourseBySlug(slug);
 
       if (!courseResponse.success || !courseResponse.data) {
-        throw new Error(courseResponse.error || "Failed to load course");
+        throw new Error(courseResponse.error || t('title'));
       }
 
       const courseData = courseResponse.data;
@@ -66,7 +72,7 @@ const CourseDetailPage = () => {
 
     } catch (err) {
       console.error("Error fetching course:", err);
-      setError(err.message || "Failed to load course data");
+      setError(err.message || t('title'));
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +105,7 @@ const CourseDetailPage = () => {
   if (!course) {
     return (
       <main>
-        <ErrorState error="Course not found" onRetry={fetchCourseData} />
+        <ErrorState error={t('notFound')} onRetry={fetchCourseData} />
       </main>
     );
   }
@@ -108,7 +114,6 @@ const CourseDetailPage = () => {
     <main>
       <PageIntro course={course} />
       <CourseDetails course={course} />
-      {/* TODO: Handle related courses later */}
       {relatedCourses.length > 0 && (
         <ListedCourses relatedCourses={relatedCourses} />
       )}

@@ -9,12 +9,16 @@ import ChoicesFormInput from '@/components/form/ChoicesFormInput';
 import { registerSchema, UserRole } from '@/validations/userSchema';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 const SignUpForm = () => {
   // Translations
   const t = useTranslations('auth.signup');
   const tValidation = useTranslations('auth.validation');
-  
+  const params = useParams();
+  const locale = params.locale || 'en'; // ✅ Get locale
+
+
   // Use the register function and loading state from AuthContext
   const { register: registerUser, authLoading: loading } = useAuth();
 
@@ -36,7 +40,8 @@ const SignUpForm = () => {
         fullName: data.fullName,
         email: data.email,
         password: data.password,
-        role: data.role
+        role: data.role,
+        locale: locale
       };
 
       await registerUser(userData);
@@ -114,11 +119,11 @@ const SignUpForm = () => {
       </div>
       <div className="mb-3">
         <div className="form-check">
-          <input 
-            type="checkbox" 
-            className="form-check-input" 
-            id="agreement" 
-            {...register('agreement')} 
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id="agreement"
+            {...register('agreement')}
           />
           <label className="form-check-label" htmlFor="agreement">
             {t('agreement')} <a href="#">{t('termsOfService')}</a>
@@ -127,9 +132,9 @@ const SignUpForm = () => {
         </div>
       </div>
       <div className="d-grid">
-        <button 
-          className="btn btn-primary mb-0" 
-          type="submit" 
+        <button
+          className="btn btn-primary mb-0"
+          type="submit"
           disabled={loading}
         >
           {loading ? t('signingUp') : t('signupButton')}

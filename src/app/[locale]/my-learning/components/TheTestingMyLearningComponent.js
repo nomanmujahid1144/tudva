@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import PageBanner from '../components/banner/PageBanner';
 import { Col, Container, Row, Button, Card, Nav, Image, Spinner, Modal } from 'react-bootstrap';
 import { FaCalendarAlt, FaClock, FaLock, FaUser, FaCheckCircle, FaPlay, FaUsers } from 'react-icons/fa';
@@ -14,6 +15,7 @@ import CourseMaterials from './components/CourseMaterials';
 
 const MyLearning = () => {
     const router = useRouter();
+    const t = useTranslations('student.learning');
     const [activeTab, setActiveTab] = useState('lessons');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -39,6 +41,7 @@ const MyLearning = () => {
     const [selectedVideo, setSelectedVideo] = useState(null);
 
     // Load next learning day data
+    // Load next learning day data
     const loadNextLearningDay = async () => {
         try {
             setLoading(true);
@@ -57,11 +60,11 @@ const MyLearning = () => {
                     testData.nextWednesday.formattedDate = now.toLocaleDateString();
                     testData.nextWednesday.daysFromNow = 0;
 
-                    // Modify slot times to be just minutes from now
+                    // Modify slot times to be just seconds from now
                     testData.slots = testData.slots.map((slot, index) => {
                         if (slot.isReserved) {
                             const testTime = new Date();
-                            testTime.setSeconds(testTime.getSeconds() + (index + 1) * 30); // 30, 60, 90 seconds from now
+                            testTime.setSeconds(testTime.getSeconds() + (index + 1) * 5); // 5, 10, 15 seconds from now
 
                             const hours = testTime.getHours().toString().padStart(2, '0');
                             const minutes = testTime.getMinutes().toString().padStart(2, '0');
@@ -111,7 +114,6 @@ const MyLearning = () => {
             setLoading(false);
         }
     };
-
     // Handle course becoming ready to join
     const handleCountdownComplete = (slotId) => {
         setReadyToJoin(prev => ({
@@ -120,7 +122,6 @@ const MyLearning = () => {
         }));
     };
 
-    // Handle joining a course
     // Handle joining a course
     const handleJoinCourse = (course) => {
         if (course?.type === 'recorded' && course?.videoUrl) {
@@ -188,7 +189,7 @@ const MyLearning = () => {
             return (
                 <div className="text-center py-5">
                     <Spinner animation="border" variant="primary" />
-                    <p className="mt-3">Loading your next learning day...</p>
+                    <p className="mt-3">{t('nextLessons.loading')}</p>
                 </div>
             );
         }
@@ -210,9 +211,9 @@ const MyLearning = () => {
                             <Card.Body className="py-3">
                                 <h3 className="text-primary mb-0 d-flex align-items-center fs-5">
                                     <FaCalendarAlt className="me-2" />
-                                    {testMode ? 'Today (Test Mode)' : `Wednesday, ${learningData.nextWednesday.formattedDate}`}
+                                    {testMode ? t('nextLessons.today') : `${t('nextLessons.wednesday')}, ${learningData.nextWednesday.formattedDate}`}
                                     {!testMode && learningData.nextWednesday.daysFromNow > 0 &&
-                                        ` (${learningData.nextWednesday.daysFromNow} days from now)`}
+                                        ` (${learningData.nextWednesday.daysFromNow} ${t('nextLessons.daysFromNow')})`}
                                 </h3>
                             </Card.Body>
                         </Card>
@@ -360,12 +361,12 @@ const MyLearning = () => {
                                                                                 {courseType === 'live' ? (
                                                                                     <>
                                                                                         <FaUsers className="me-1" size={12} />
-                                                                                        Join
+                                                                                        {t('nextLessons.join')}
                                                                                     </>
                                                                                 ) : (
                                                                                     <>
                                                                                         <FaPlay className="me-1" size={12} />
-                                                                                        Watch Video
+                                                                                        {t('nextLessons.watchVideo')}
                                                                                     </>
                                                                                 )}
                                                                             </Button>
@@ -379,14 +380,14 @@ const MyLearning = () => {
                                                                     ) : (
                                                                         <div className="d-flex align-items-center text-primary">
                                                                             <FaCheckCircle className="me-1" />
-                                                                            <small>Completed</small>
+                                                                            <small>{t('nextLessons.completed')}</small>
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             </>
                                                         ) : (
                                                             <div className="text-center py-4 text-muted">
-                                                                <p className="mb-2">No course scheduled</p>
+                                                                <p className="mb-2">{t('nextLessons.noCourseScheduled')}</p>
                                                                 <FaLock size={24} />
                                                             </div>
                                                         )}
@@ -406,7 +407,7 @@ const MyLearning = () => {
 
     return (
         <>
-            <PageBanner bannerHeadline="my Learning" />
+            <PageBanner bannerHeadline={t('pageTitle')} />
 
             <Container className="my-4">
                 {/* TEST MODE CONTROLS - Remove in production */}
@@ -414,7 +415,7 @@ const MyLearning = () => {
                     <Row className="mb-3">
                         <Col xs={12}>
                             <div className="alert alert-warning d-flex justify-content-between align-items-center">
-                                <span>🧪 <strong>TEST MODE ACTIVE</strong> - Countdown timers set to 30, 60, 90 seconds</span>
+                                <span>🧪 <strong>{t('testMode.active')}</strong> - {t('testMode.description')}</span>
                                 <Button
                                     size="sm"
                                     variant="outline-secondary"
@@ -423,7 +424,7 @@ const MyLearning = () => {
                                         loadNextLearningDay(); // Reload with real data
                                     }}
                                 >
-                                    Disable Test Mode
+                                    {t('testMode.disable')}
                                 </Button>
                             </div>
                         </Col>
@@ -433,7 +434,7 @@ const MyLearning = () => {
                 <Row>
                     <Col xs={12}>
                         <p className="text-primary fs-5 mb-4">
-                            Via this page you have access to all your courses and learning materials
+                            {t('subtitle')}
                         </p>
                     </Col>
                 </Row>
@@ -448,7 +449,7 @@ const MyLearning = () => {
                                     className="me-2 px-4 py-2 rounded"
                                     onClick={() => setActiveTab('lessons')}
                                 >
-                                    my next Lessons
+                                    {t('tabs.nextLessons')}
                                 </Button>
                             </Nav.Item>
                             <Nav.Item>
@@ -457,7 +458,7 @@ const MyLearning = () => {
                                     className="me-2 px-4 py-2 rounded"
                                     onClick={() => setActiveTab('scheduler')}
                                 >
-                                    my Scheduler
+                                    {t('tabs.scheduler')}
                                 </Button>
                             </Nav.Item>
                             <Nav.Item>
@@ -466,7 +467,7 @@ const MyLearning = () => {
                                     className="px-4 py-2 rounded"
                                     onClick={() => setActiveTab('materials')}
                                 >
-                                    my Materials
+                                    {t('tabs.materials')}
                                 </Button>
                             </Nav.Item>
                         </Nav>
@@ -526,7 +527,7 @@ const MyLearning = () => {
                     <div className="d-flex justify-content-between w-100 align-items-center">
                         <div className="text-muted small">
                             {selectedVideo?.videoData?.duration && (
-                                <>Duration: {Math.floor(selectedVideo.videoData.duration / 60)} minutes</>
+                                <>{t('videoModal.duration')}: {Math.floor(selectedVideo.videoData.duration / 60)} {t('videoModal.minutes')}</>
                             )}
                         </div>
                         <div>
@@ -540,10 +541,10 @@ const MyLearning = () => {
                                 }}
                             >
                                 <FaCheckCircle className="me-1" />
-                                Mark as Completed
+                                {t('videoModal.markCompleted')}
                             </Button>
                             <Button variant="secondary" size="sm" onClick={handleCloseVideoModal}>
-                                Close
+                                {t('videoModal.close')}
                             </Button>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ export async function POST(request) {
     await connectDB();
 
     // Get token from request body
-    const { token } = await request.json();
+    const { token, locale = 'en' } = await request.json();
 
     if (!token) {
       return NextResponse.json({
@@ -74,7 +74,7 @@ export async function POST(request) {
     // Send account activated confirmation email
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      const loginUrl = `${baseUrl}/auth/sign-in`;
+      const loginUrl = `${baseUrl}/${locale}/auth/sign-in`;
 
       await sendAccountActivatedEmail({
         to: user.email,
@@ -82,9 +82,7 @@ export async function POST(request) {
         loginUrl: loginUrl
       });
     } catch (emailError) {
-      // We'll continue even if the confirmation email fails
       console.error("Error sending account activated email:", emailError);
-      // The account is still activated, so we don't return an error response
     }
 
     return NextResponse.json({

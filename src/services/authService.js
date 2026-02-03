@@ -123,9 +123,9 @@ export const logout = async () => {
  * @param {string} email - User email
  * @returns {Promise<Object>} Request result
  */
-export const requestPasswordReset = async (email) => {
+export const requestPasswordReset = async (data) => {
   return handleApiCall(
-    () => api.post('/api/users/auth/forget-password', { email }),
+    () => api.post('/api/users/auth/forget-password', data ),
     'Please check your email and try again!'
   );
 };
@@ -177,9 +177,9 @@ export const getUserProfile = async () => {
  * @param {string} token - Email verification token
  * @returns {Promise<Object>} Verification result
  */
-export const verifyEmailToken = async (token) => {
+export const verifyEmailToken = async (data) => {
   return handleApiCall(
-    () => api.post('/api/users/auth/confirm-email', { token }),
+    () => api.post('/api/users/auth/confirm-email', data),
     'Email verification failed. Please try again.'
   );
 };

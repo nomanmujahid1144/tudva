@@ -4,12 +4,15 @@ import React from 'react';
 import { Col, Container, Row, Badge } from 'react-bootstrap';
 import { FaStar, FaUserGraduate, FaSignal } from 'react-icons/fa';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { formatCourseLevel } from '@/utils/textFormatting';
 import DynamicIcon from '../../../../components/courses/DynamicIcons';
 import liveIcon from '@/assets/images/live-course.png';
 import recordedIcon from '@/assets/images/recorded-course.png';
 
 const PageIntro = ({ course }) => {
+  const t = useTranslations('courses.detail.pageIntro');
+  
   if (!course) return null;
 
   const {
@@ -55,7 +58,6 @@ const PageIntro = ({ course }) => {
                   style={{ backgroundColor: backgroundColorHex }}
                 >
                   <div className='d-flex h-100 justify-content-center align-items-center'>
-                    {/* <DynamicIcon iconName={displayIcon} /> */}
                     <img
                       src={displayIcon}
                       alt="Course Icon"
@@ -74,13 +76,13 @@ const PageIntro = ({ course }) => {
             <div className="d-flex align-items-start gap-3">
               <Image
                 src={type === 'live' ? liveIcon : recordedIcon}
-                alt={type === 'live' ? "Live Course" : "Recorded Course"}
+                alt={type === 'live' ? t('liveCourse') : t('recordedCourse')}
                 className='me-2'
                 width={80}
                 height={80}
               />
               <p className="lead mb-4">
-                {shortDescription?.substring(0, 150) + (shortDescription?.length > 150 ? '...' : '') || 'No description available'}
+                {shortDescription?.substring(0, 150) + (shortDescription?.length > 150 ? '...' : '') || t('noDescription')}
               </p>
             </div>
 
@@ -102,7 +104,7 @@ const PageIntro = ({ course }) => {
                 )}
                 <div className="d-flex align-items-center px-3 py-2 bg-white rounded-3 shadow-sm">
                   <FaUserGraduate className="text-orange fs-5 me-2" />
-                  <span className="fw-bold">{stats?.enrollmentCount || 0} Enrolled</span>
+                  <span className="fw-bold">{stats?.enrollmentCount || 0} {t('enrolled')}</span>
                 </div>
                 <div className="d-flex align-items-center px-3 py-2 bg-white rounded-3 shadow-sm">
                   <FaSignal className="text-success fs-5 me-2" />

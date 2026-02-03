@@ -1,28 +1,43 @@
 import Link from "next/link";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const t = useTranslations('courses.pagination');
+  
   if (totalPages <= 1) return null;
 
   return (
     <nav className="mt-4 d-flex justify-content-center" aria-label="navigation">
       <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
         <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-          <button className="page-link" onClick={() => onPageChange(1)}>
+          <button 
+            className="page-link" 
+            onClick={() => onPageChange(1)}
+            aria-label={t('previous')}
+          >
             <FaAngleDoubleLeft />
           </button>
         </li>
 
         {Array.from({ length: totalPages }, (_, index) => (
           <li key={index} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
-            <button className="page-link" onClick={() => onPageChange(index + 1)}>
+            <button 
+              className="page-link" 
+              onClick={() => onPageChange(index + 1)}
+              aria-label={t('page', { number: index + 1 })}
+            >
               {index + 1}
             </button>
           </li>
         ))}
 
         <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-          <button className="page-link" onClick={() => onPageChange(totalPages)}>
+          <button 
+            className="page-link" 
+            onClick={() => onPageChange(totalPages)}
+            aria-label={t('next')}
+          >
             <FaAngleDoubleRight />
           </button>
         </li>

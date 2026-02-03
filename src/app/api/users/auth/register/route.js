@@ -13,7 +13,7 @@ export async function POST(request) {
     // Parse request body
     const reqBody = await request.json();
     console.log(reqBody, 'reqBody')
-    const { email, password, fullName, role = UserRole.LEARNER } = reqBody;
+    const { email, password, fullName, role = UserRole.LEARNER, locale = 'en' } = reqBody;
 
     // Input validation
     if (!email || !password || !fullName) {
@@ -41,12 +41,12 @@ export async function POST(request) {
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
-    
+
     if (existingUser) {
       return NextResponse.json({
         success: false,
         error: "Email already registered."
-      }, { status: 409 }); // 409 Conflict
+      }, { status: 409 });
     }
 
     // Hash password
@@ -80,7 +80,7 @@ export async function POST(request) {
     // Send confirmation email
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      const confirmationUrl = `${baseUrl}/auth/confirm-email?token=${token}`;
+      const confirmationUrl = `${baseUrl}/${locale}/auth/confirm-email?token=${token}`;
 
       await sendVerificationEmail({
         to: savedUser.email,

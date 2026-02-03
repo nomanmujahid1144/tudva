@@ -1,26 +1,19 @@
-'use client';
-
+// src/app/[locale]/instructor/edit-profile/page.jsx
 import React from 'react';
-import EditProfile from '../profile/components/EditProfile';
-import LinkedAccount from '../profile/components/LinkedAccount';
-import SocialMedia from '../profile/components/SocialMedia';
-import EmailChange from '../profile/components/EmailChange';
-import PasswordChange from '../profile/components/PasswordChange';
-import { Row } from 'react-bootstrap';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import EditProfilePage from './components/EditProfilePage';
+import { getTranslations } from 'next-intl/server';
 
-const EditProfilePage = () => {
-  return (
-    <ProtectedRoute allowedRoles={['instructor', 'admin']}>
-      <EditProfile />
-      {/* <Row className="g-4 mt-3">
-        <LinkedAccount />
-        <SocialMedia />
-        <EmailChange />
-        <PasswordChange />
-      </Row> */}
-    </ProtectedRoute>
-  );
-};
+export async function generateMetadata({params}) {
+  const { locale } = await params;
+  const t = await getTranslations({locale, namespace: 'instructor.editProfile'});
+  
+  return {
+    title: t('title')
+  };
+}
 
-export default EditProfilePage;
+export default async function ProfileEditPage({params}) {
+  const { locale } = await params;
+  
+  return <EditProfilePage />;
+}

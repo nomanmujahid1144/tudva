@@ -1,14 +1,21 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 
 const ConfirmChangePassword = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const locale = params.locale || 'en';
   const [token, setToken] = useState('');
+  
+  // Translations
+  const t = useTranslations('auth.confirmChangePassword');
+  
   const { verifyResetToken, authLoading: loading } = useAuth();
 
   useEffect(() => {
@@ -17,42 +24,35 @@ const ConfirmChangePassword = () => {
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
     } else {
-      toast.error("No verification token found in URL");
+      toast.error(t('noToken'));
     }
-  }, [searchParams]);
-
+  }, [searchParams, t]);
 
   const handleVerify = async (e) => {
-    // Prevent default form submission
     e.preventDefault();
 
     if (!token) {
-      toast.error("Verification token is missing");
+      toast.error(t('noToken'));
       return;
     }
 
     try {
-      // Using the verifyResetToken method from AuthContext
       const result = await verifyResetToken(token);
 
-      // Note: Toast notifications and redirects are handled in AuthContext
       if (!result.success) {
-        // If not redirected by AuthContext, we can handle specific errors here
         console.error('Verification failed:', result.error);
       }
     } catch (error) {
       console.error('Verification error:', error);
-      toast.error('An unexpected error occurred. Please try again.');
-      router.push('/auth/sign-in');
+      toast.error(t('verifyError'));
+      router.push(`/${locale}/auth/sign-in`);
     }
   };
 
   return (
     <div className="text-center">
-      <h2 className="mb-4">Verify Your Identity to Proceed</h2>
-      <p className="mb-4">
-        Click the button below to confirm your identity and continue with resetting your password.
-      </p>
+      <h2 className="mb-4">{t('title')}</h2>
+      <p className="mb-4">{t('subtitle')}</p>
       <div className="d-grid gap-2 col-6 mx-auto">
         <button
           onClick={handleVerify}
@@ -60,15 +60,15 @@ const ConfirmChangePassword = () => {
           type="button"
           disabled={loading || !token}
         >
-          {loading ? 'Verifying...' : 'Create New Password'}
+          {loading ? t('verifying') : t('verifyButton')}
         </button>
 
         <button
-          onClick={() => router.push('/auth/sign-in')}
+          onClick={() => router.push(`/${locale}/auth/sign-in`)}
           className="btn btn-outline-secondary"
           type="button"
         >
-          Back to Sign In
+          {t('backToLogin')}
         </button>
       </div>
     </div>

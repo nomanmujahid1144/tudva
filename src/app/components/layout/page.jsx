@@ -29,6 +29,7 @@ const Layout = ({ children }) => {
   return (
     <>
       {shouldShowHeaderFooter && <TopNavigationBar />}
+      {/* className='mt-7' */}
       <main>{children}</main>
       {shouldShowHeaderFooter && <Footer />}
     </>

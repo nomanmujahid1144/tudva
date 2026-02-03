@@ -10,7 +10,7 @@ import { BannerSkeleton } from '@/components/skeletons/BannerSkeleton';
 
 // Import images
 import patternImg from '@/assets/images/pattern/04.png';
-import placeholderAvatar from '../../../../public/assets/images/avatar/placeholder.svg';
+import placeholderAvatar from '../../../../../public/assets/images/avatar/placeholder.svg';
 
 const Banner = ({ toggleOffCanvas }) => {
   const { user, loading } = useAuth(); // Use the existing auth context

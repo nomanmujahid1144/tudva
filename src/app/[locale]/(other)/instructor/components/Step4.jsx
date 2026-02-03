@@ -32,14 +32,11 @@ import SlidePanel from '../../../../components/side-panel/SlidePanel';
 import { useCourseContext } from '@/context/CourseContext';
 import { toast } from 'sonner';
 import ConfirmDialog from '../../../../components/dialog/ConfirmDialog';
+import { useTranslations } from 'next-intl';
 
 // Array of weekdays for live courses with proper enum values
 const WEEKDAYS = [
-  // { display: 'Monday', value: 'monday' },
-  // { display: 'Tuesday', value: 'tuesday' },
-  { display: 'Wednesday', value: 'wednesday' },
-  // { display: 'Thursday', value: 'thursday' },
-  // { display: 'Friday', value: 'friday' }
+  { display: 'Wednesday', value: 'wednesday' }
 ];
 
 // Predefined time slots with proper enum values
@@ -88,8 +85,8 @@ const PREDEFINED_TAGS = [
 const TagSearchDropdown = ({ onSelect, selectedTags }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [show, setShow] = useState(false);
+  const t = useTranslations('instructor.course.step4.tags');
 
-  // Filter tags based on search term
   const filteredTags = searchTerm
     ? PREDEFINED_TAGS
       .filter(tag => !selectedTags.some(t => t.tagName === tag))
@@ -103,8 +100,7 @@ const TagSearchDropdown = ({ onSelect, selectedTags }) => {
   };
 
   const handleRequestTag = () => {
-    // Empty function - will be implemented later
-    toast.info('Tag request feature will be available soon!');
+    toast.info(t('requestNewTagMessage'));
     setShow(false);
   };
 
@@ -113,7 +109,7 @@ const TagSearchDropdown = ({ onSelect, selectedTags }) => {
       <Dropdown.Toggle variant="outline-secondary" id="tag-dropdown" className="d-flex justify-content-between align-items-center w-100">
         <span className="text-start text-truncate">
           <FaTag className="me-2" />
-          Select tags
+          {t('selectPlaceholder')}
         </span>
       </Dropdown.Toggle>
 
@@ -122,7 +118,7 @@ const TagSearchDropdown = ({ onSelect, selectedTags }) => {
           <InputGroup className="mb-2">
             <InputGroup.Text><FaSearch /></InputGroup.Text>
             <Form.Control
-              placeholder="Search tags..."
+              placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
@@ -142,7 +138,7 @@ const TagSearchDropdown = ({ onSelect, selectedTags }) => {
             ))
           ) : (
             <div className="text-center py-2 text-muted">
-              No tags match your search
+              {t('noTagsMatch')}
             </div>
           )}
         </div>
@@ -151,7 +147,7 @@ const TagSearchDropdown = ({ onSelect, selectedTags }) => {
           onClick={handleRequestTag}
           className="text-primary fw-bold"
         >
-          <FaPlus className="me-2" /> Request a new tag
+          <FaPlus className="me-2" /> {t('requestNewTag')}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -168,8 +164,8 @@ const FaqPanel = ({
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [validated, setValidated] = useState(false);
+  const t = useTranslations('instructor.course.step4.faq');
 
-  // Initialize form if editing
   useEffect(() => {
     if (editingFaq) {
       setQuestion(editingFaq.question || '');
@@ -194,12 +190,11 @@ const FaqPanel = ({
     const faqData = {
       question: question.trim(),
       answer: answer.trim(),
-      id: editingFaq?.id || Date.now().toString() // Use existing ID or create new one
+      id: editingFaq?.id || Date.now().toString()
     };
 
     onSave(faqData, editingFaq !== null);
 
-    // Reset form
     setQuestion('');
     setAnswer('');
     setValidated(false);
@@ -210,42 +205,42 @@ const FaqPanel = ({
     <SlidePanel
       isOpen={isOpen}
       onClose={onClose}
-      title={editingFaq ? "Edit FAQ" : "Add New FAQ"}
+      title={editingFaq ? t('panelEditTitle') : t('panelAddTitle')}
       size="lg"
     >
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Question <span className="text-danger">*</span></Form.Label>
+          <Form.Label>{t('questionLabel')} <span className="text-danger">*</span></Form.Label>
           <Form.Control
             type="text"
-            placeholder="e.g. How long will I have access to the course?"
+            placeholder={t('questionPlaceholder')}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
           />
           <Form.Control.Feedback type="invalid">
-            Please provide a question.
+            {t('questionRequired')}
           </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Answer <span className="text-danger">*</span></Form.Label>
+          <Form.Label>{t('answerLabel')} <span className="text-danger">*</span></Form.Label>
           <Form.Control
             as="textarea"
             rows={4}
-            placeholder="e.g. Once enrolled, you'll have lifetime access to the course materials."
+            placeholder={t('answerPlaceholder')}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             required
           />
           <Form.Control.Feedback type="invalid">
-            Please provide an answer.
+            {t('answerRequired')}
           </Form.Control.Feedback>
         </Form.Group>
 
         <div className="d-grid mt-4">
           <Button variant="primary" type="submit">
-            {editingFaq ? 'Update FAQ' : 'Add FAQ'}
+            {editingFaq ? t('updateButton') : t('addButtonSubmit')}
           </Button>
         </div>
       </Form>
@@ -263,26 +258,33 @@ const LiveCourseSchedulePanel = ({
 }) => {
   const [selectedWeekday, setSelectedWeekday] = useState('');
   const [selectedSlots, setSelectedSlots] = useState([]);
-  const [startDate, setStartDate] = useState(null); // Changed to null for react-datepicker
+  const [startDate, setStartDate] = useState(null);
   const [maxEnrollment, setMaxEnrollment] = useState('');
   const [validated, setValidated] = useState(false);
   const [endDate, setEndDate] = useState(null);
   const [plannedLessons, setPlannedLessons] = useState(0);
   const [lessonWarning, setLessonWarning] = useState('');
 
-  // Load plannedLessons from localStorage
+  const t = useTranslations('instructor.course.step4.schedulePanel');
+  const tWeekdays = useTranslations('instructor.course.step4.weekdays');
+
+  // Get translated weekdays
+  const getTranslatedWeekdays = () => {
+    return WEEKDAYS.map(day => ({
+      ...day,
+      display: tWeekdays(day.value)
+    }));
+  };
+
   useEffect(() => {
     const STEP3_STORAGE_KEY = `${mode}_course_step3_data`;
     const savedData = localStorage.getItem(STEP3_STORAGE_KEY);
-
-    console.log(savedData, 'savedData')
 
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
         let storedPlannedLessons = null;
 
-        // Check all possible locations where plannedLessons might be stored
         if (parsedData?.liveCourseMeta?.plannedLessons) {
           storedPlannedLessons = parsedData.liveCourseMeta.plannedLessons;
         } else if (parsedData?.plannedLessons) {
@@ -296,70 +298,56 @@ const LiveCourseSchedulePanel = ({
         console.error('Error parsing saved data:', error);
       }
     }
-  }, [courseData]);
+  }, [courseData, mode]);
 
-  // Initialize form with existing data
   useEffect(() => {
     if (courseData && courseData.liveCourseMeta) {
-      // Extract weekday from the first time slot if it exists
       if (courseData.liveCourseMeta.timeSlots && courseData.liveCourseMeta.timeSlots.length > 0) {
         setSelectedWeekday(courseData.liveCourseMeta.timeSlots[0].weekDay || '');
-
-        // Set selected slots
         const slots = courseData.liveCourseMeta.timeSlots.map(slot => slot.slot);
         setSelectedSlots(slots);
       }
 
-      // Format startDate for DatePicker if it exists
       if (courseData.liveCourseMeta.startDate) {
         setStartDate(new Date(courseData.liveCourseMeta.startDate));
       }
 
-      // No need to set plannedLessons here as we get it from Step 3 via localStorage
       setMaxEnrollment(courseData.liveCourseMeta.maxEnrollment || '');
     }
   }, [courseData, isOpen]);
 
-  // Check if the lessons calculation works with selected slots
   useEffect(() => {
     if (plannedLessons > 0 && selectedSlots.length > 0) {
-      // Check if plannedLessons is divisible by the number of slots per day
       if (plannedLessons % selectedSlots.length !== 0) {
         setLessonWarning(
-          `The number of planned lessons (${plannedLessons}) must be divisible by the number of slots per day (${selectedSlots.length}). ` +
-          `Please adjust your time slots to ensure equal lessons per day.`
+          t('lessonWarning', { planned: plannedLessons, slots: selectedSlots.length })
         );
       } else {
         setLessonWarning('');
-        // Calculate end date
         calculateEndDate();
       }
     } else {
       setLessonWarning('');
     }
-  }, [plannedLessons, selectedSlots]);
+  }, [plannedLessons, selectedSlots, t]);
 
-  // Calculate the end date based on start date, slots per week, and planned lessons
   const calculateEndDate = () => {
     if (startDate && plannedLessons && selectedSlots.length > 0) {
       const start = new Date(startDate);
       const lessonsPerWeek = selectedSlots.length;
       const weeksNeeded = Math.ceil(parseInt(plannedLessons) / lessonsPerWeek);
 
-      // Find the weekday index for the selected weekday
       const weekdayObj = WEEKDAYS.find(day => day.value === selectedWeekday);
       if (!weekdayObj) return;
 
       const weekdayIndex = WEEKDAYS.findIndex(day => day.value === selectedWeekday);
       if (weekdayIndex === -1) return;
 
-      // Find the first occurrence of the selected weekday from the start date
-      const startWeekday = start.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const startWeekday = start.getDay();
       const weekdayOffset = ((weekdayIndex + 1) % 7) - startWeekday;
       const adjustedStart = new Date(start);
       adjustedStart.setDate(start.getDate() + (weekdayOffset >= 0 ? weekdayOffset : weekdayOffset + 7));
 
-      // Calculate end date by adding the required number of weeks
       const end = new Date(adjustedStart);
       end.setDate(adjustedStart.getDate() + ((weeksNeeded - 1) * 7));
 
@@ -380,12 +368,10 @@ const LiveCourseSchedulePanel = ({
 
     setSelectedSlots(newSelectedSlots);
 
-    // Check slot compatibility with plannedLessons immediately
     if (plannedLessons > 0 && newSelectedSlots.length > 0) {
       if (plannedLessons % newSelectedSlots.length !== 0) {
         setLessonWarning(
-          `The number of planned lessons (${plannedLessons}) must be divisible by the number of slots per day (${newSelectedSlots.length}). ` +
-          `Please adjust your time slots to ensure equal lessons per day.`
+          t('lessonWarning', { planned: plannedLessons, slots: newSelectedSlots.length })
         );
       } else {
         setLessonWarning('');
@@ -405,31 +391,26 @@ const LiveCourseSchedulePanel = ({
       return;
     }
 
-    // Make sure weekday is selected
     if (!selectedWeekday) {
-      toast.error('Please select a weekday for your sessions');
+      toast.error(t('selectWeekdayError'));
       return;
     }
 
-    // Make sure at least one time slot is selected
     if (selectedSlots.length === 0) {
-      toast.error('Please select at least one time slot');
+      toast.error(t('selectSlotError'));
       return;
     }
 
-    // Make sure start date is selected
     if (!startDate) {
-      toast.error('Please select a start date');
+      toast.error(t('selectDateError'));
       return;
     }
 
-    // Verify plannedLessons is compatible with selected slots
     if (plannedLessons % selectedSlots.length !== 0) {
-      toast.error(`The number of planned lessons (${plannedLessons}) must be divisible by the number of slots per day (${selectedSlots.length})`);
+      toast.error(t('lessonsDivisibleError', { planned: plannedLessons, slots: selectedSlots.length }));
       return;
     }
 
-    // Prepare the data with proper enum values
     const liveCourseMeta = {
       startDate: startDate.toISOString(),
       plannedLessons: parseInt(plannedLessons),
@@ -445,9 +426,8 @@ const LiveCourseSchedulePanel = ({
     onClose();
   };
 
-  // Format date for display
   const formatDate = (date) => {
-    if (!date) return 'Not calculated yet';
+    if (!date) return t('notCalculatedYet');
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -456,20 +436,14 @@ const LiveCourseSchedulePanel = ({
     });
   };
 
-  // Get nearest upcoming date for the selected weekday
   const getUpcomingDate = (weekdayValue) => {
     const today = new Date();
     const weekdayIndex = WEEKDAYS.findIndex(day => day.value === weekdayValue);
     if (weekdayIndex === -1) return null;
 
-    // Add 1 to convert from our 0-indexed weekday to JavaScript's day of week (where Monday=1)
-    const targetDay = weekdayIndex + 1; // 1 = Monday, 2 = Tuesday, etc.
-
-    // Get the current day of the week (0 = Sunday, 1 = Monday, etc.)
-    const todayDay = today.getDay() || 7; // Convert Sunday from 0 to 7 for easier calculation
-
-    // Calculate how many days to add to get to the next occurrence of the target day
-    const daysToAdd = (targetDay - todayDay + 7) % 7 || 7; // If 0, make it 7 (next week)
+    const targetDay = weekdayIndex + 1;
+    const todayDay = today.getDay() || 7;
+    const daysToAdd = (targetDay - todayDay + 7) % 7 || 7;
 
     const result = new Date(today);
     result.setDate(today.getDate() + daysToAdd);
@@ -478,58 +452,48 @@ const LiveCourseSchedulePanel = ({
 
   const handleWeekdayChange = (weekdayValue) => {
     setSelectedWeekday(weekdayValue);
-
-    // Reset the start date when weekday changes
     setStartDate(null);
 
-    // Suggest a start date that matches the selected weekday
     const suggestedDate = getUpcomingDate(weekdayValue);
     if (suggestedDate) setStartDate(suggestedDate);
   };
 
-  // Function to filter dates that don't match the selected weekday
   const filterDate = (date) => {
     if (!selectedWeekday) return true;
 
-    // Get the day of week (0-6, where 0 is Sunday)
     const dayOfWeek = date.getDay();
-
-    // Convert selectedWeekday to a day number
     const weekdayIndex = WEEKDAYS.findIndex(day => day.value === selectedWeekday);
     if (weekdayIndex === -1) return false;
 
-    // Add 1 to convert from our 0-indexed weekday to JavaScript's day of week (where Monday=1)
     const targetDay = weekdayIndex + 3;
-
-    // Return true if the day of week matches our target day
     return dayOfWeek === targetDay;
   };
+
+  const translatedWeekdays = getTranslatedWeekdays();
+  const selectedWeekdayDisplay = translatedWeekdays.find(day => day.value === selectedWeekday)?.display;
 
   return (
     <SlidePanel
       isOpen={isOpen}
       onClose={onClose}
-      title="Live Course Schedule"
+      title={t('title')}
       size="lg"
     >
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Alert variant="info" className="d-flex align-items-center mb-4">
           <FaInfoCircle className="me-2 flex-shrink-0" size={18} />
           <div>
-            <strong>Set your live course schedule:</strong> Select a weekday, time slots, and
-            specify the total number of planned lessons. The system will calculate the end date
-            based on your selections.
+            <strong>{t('infoMessage')}</strong> {t('infoDescription')}
           </div>
         </Alert>
 
-        {/* Display the plannedLessons from Step 3 */}
         <Alert variant="primary" className="mb-4">
           <div className="d-flex align-items-center">
             <FaBook className="me-2 flex-shrink-0" size={18} />
             <div>
-              <strong>Planned Lessons:</strong> {plannedLessons} lessons
+              <strong>{t('plannedLessonsAlert')}</strong> {plannedLessons} {t('plannedLessonsCount')}
               <div className="small text-muted mt-1">
-                This value was set in the Curriculum step and determines the total number of sessions.
+                {t('plannedLessonsNote')}
               </div>
             </div>
           </div>
@@ -544,9 +508,9 @@ const LiveCourseSchedulePanel = ({
         <Row className="mb-4">
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Select Weekday <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('selectWeekdayLabel')} <span className="text-danger">*</span></Form.Label>
               <div className="d-flex flex-wrap gap-2">
-                {WEEKDAYS.map((day) => (
+                {translatedWeekdays.map((day) => (
                   <Button
                     key={day.value}
                     variant={selectedWeekday === day.value ? "primary" : "outline-secondary"}
@@ -557,42 +521,41 @@ const LiveCourseSchedulePanel = ({
                   </Button>
                 ))}
               </div>
-              <Form.Text>Choose the day of the week for your live sessions.</Form.Text>
+              <Form.Text>{t('selectWeekdayHelp')}</Form.Text>
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Start Date <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('startDateLabel')} <span className="text-danger">*</span></Form.Label>
               <div>
-                {/* Use react-datepicker with day filter */}
                 <DatePicker
                   selected={startDate}
                   onChange={date => setStartDate(date)}
                   filterDate={filterDate}
-                  minDate={new Date()} // Disable past dates
+                  minDate={new Date()}
                   dateFormat="MMMM d, yyyy"
                   placeholderText={selectedWeekday
-                    ? `Select a ${WEEKDAYS.find(day => day.value === selectedWeekday)?.display}`
-                    : "Select a weekday first"}
+                    ? t('startDatePlaceholder', { weekday: selectedWeekdayDisplay })
+                    : t('startDatePlaceholderDefault')}
                   className="form-control"
                   disabled={!selectedWeekday}
                   required
                 />
               </div>
               <Form.Control.Feedback type="invalid">
-                Please select a start date.
+                {t('startDateRequired')}
               </Form.Control.Feedback>
               <Form.Text>
                 {selectedWeekday
-                  ? `Only ${WEEKDAYS.find(day => day.value === selectedWeekday)?.display}s will be available to select.`
-                  : "Select a weekday first to enable date selection."}
+                  ? t('startDateHelp', { weekday: selectedWeekdayDisplay })
+                  : t('startDateHelpDefault')}
               </Form.Text>
             </Form.Group>
           </Col>
         </Row>
 
         <Form.Group className="mb-4">
-          <Form.Label>Select Time Slots <span className="text-danger">*</span></Form.Label>
+          <Form.Label>{t('selectTimeSlotsLabel')} <span className="text-danger">*</span></Form.Label>
           <div className="border rounded p-3 bg-light">
             <div className="d-flex flex-wrap gap-2">
               {TIME_SLOTS.map((slot) => (
@@ -601,7 +564,7 @@ const LiveCourseSchedulePanel = ({
                   variant={selectedSlots.includes(slot.id) ? "primary" : "outline-secondary"}
                   onClick={() => toggleSlot(slot.id)}
                   className="mb-2"
-                  disabled={!selectedWeekday} // Disable if no weekday selected
+                  disabled={!selectedWeekday}
                 >
                   <span className="d-block">{slot.name}</span>
                   <small>{slot.time}</small>
@@ -615,25 +578,24 @@ const LiveCourseSchedulePanel = ({
             </div>
             {!selectedWeekday && (
               <div className="text-muted small mt-2">
-                Please select a weekday first to enable time slot selection.
+                {t('selectWeekdayFirst')}
               </div>
             )}
           </div>
           <Form.Text>
-            Select time slots carefully. The number of lessons ({plannedLessons}) must be divisible
-            by the number of slots per day to ensure equal lessons each day.
+            {t('selectTimeSlotsHelp', { planned: plannedLessons })}
           </Form.Text>
         </Form.Group>
 
         <Row className="mb-4">
           <Col md={6}>
             <Form.Group>
-              <Form.Label>Maximum Enrollment <span className="text-danger">*</span></Form.Label>
+              <Form.Label>{t('maxEnrollmentLabel')} <span className="text-danger">*</span></Form.Label>
               <InputGroup>
                 <InputGroup.Text><FaUsers /></InputGroup.Text>
                 <Form.Control
                   type="number"
-                  placeholder="e.g. 25"
+                  placeholder={t('maxEnrollmentPlaceholder')}
                   value={maxEnrollment}
                   onChange={(e) => setMaxEnrollment(e.target.value)}
                   required
@@ -641,29 +603,28 @@ const LiveCourseSchedulePanel = ({
                 />
               </InputGroup>
               <Form.Control.Feedback type="invalid">
-                Please enter the maximum number of students.
+                {t('maxEnrollmentRequired')}
               </Form.Control.Feedback>
-              <Form.Text>Maximum number of students who can enroll.</Form.Text>
+              <Form.Text>{t('maxEnrollmentHelp')}</Form.Text>
             </Form.Group>
           </Col>
         </Row>
 
-        {/* Course Schedule Summary */}
         <Card className="mb-4 bg-light border">
           <Card.Header className="bg-light">
-            <h6 className="mb-0">Course Schedule Summary</h6>
+            <h6 className="mb-0">{t('summaryTitle')}</h6>
           </Card.Header>
           <Card.Body>
             <Table borderless size="sm" className="mb-0">
               <tbody>
                 <tr>
-                  <td className="text-muted" width="40%">Day of Week:</td>
+                  <td className="text-muted" width="40%">{t('summaryDayOfWeek')}</td>
                   <td>
-                    {selectedWeekday ? WEEKDAYS.find(day => day.value === selectedWeekday)?.display || 'Not selected' : 'Not selected'}
+                    {selectedWeekday ? translatedWeekdays.find(day => day.value === selectedWeekday)?.display || t('notSelected') : t('notSelected')}
                   </td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Time Slots:</td>
+                  <td className="text-muted">{t('summaryTimeSlots')}</td>
                   <td>
                     {selectedSlots.length > 0 ? (
                       <div className="d-flex flex-wrap gap-1">
@@ -676,33 +637,33 @@ const LiveCourseSchedulePanel = ({
                           ) : null;
                         })}
                       </div>
-                    ) : 'No slots selected'}
+                    ) : t('notSelected')}
                   </td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Start Date:</td>
-                  <td>{startDate ? formatDate(startDate) : 'Not selected'}</td>
+                  <td className="text-muted">{t('summaryStartDate')}</td>
+                  <td>{startDate ? formatDate(startDate) : t('notSelected')}</td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Lessons Per Day:</td>
+                  <td className="text-muted">{t('summaryLessonsPerDay')}</td>
                   <td>{selectedSlots.length || 0}</td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Total Course Days:</td>
-                  <td>{selectedSlots.length > 0 ? Math.ceil(plannedLessons / selectedSlots.length) : 'Cannot calculate'}</td>
+                  <td className="text-muted">{t('summaryTotalDays')}</td>
+                  <td>{selectedSlots.length > 0 ? Math.ceil(plannedLessons / selectedSlots.length) : t('notCalculatedYet')}</td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Total Planned Lessons:</td>
+                  <td className="text-muted">{t('summaryTotalLessons')}</td>
                   <td>{plannedLessons}</td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Maximum Enrollment:</td>
-                  <td>{maxEnrollment || 'Not specified'}</td>
+                  <td className="text-muted">{t('summaryMaxEnrollment')}</td>
+                  <td>{maxEnrollment || t('notSpecified')}</td>
                 </tr>
                 <tr>
-                  <td className="text-muted">Estimated End Date:</td>
+                  <td className="text-muted">{t('summaryEndDate')}</td>
                   <td className="fw-bold">
-                    {endDate ? formatDate(endDate) : 'Not calculated yet'}
+                    {endDate ? formatDate(endDate) : t('notCalculatedYet')}
                   </td>
                 </tr>
               </tbody>
@@ -712,7 +673,7 @@ const LiveCourseSchedulePanel = ({
 
         <div className="d-grid mt-4">
           <Button variant="primary" type="submit" disabled={!!lessonWarning}>
-            Save Schedule
+            {t('saveButton')}
           </Button>
         </div>
       </Form>
@@ -730,7 +691,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     courseLoadError
   } = useCourseContext();
 
-  // Local state
   const [faqs, setFaqs] = useState([]);
   const [tags, setTags] = useState([]);
   const [reviewerMessage, setReviewerMessage] = useState('');
@@ -738,34 +698,38 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
   const [liveCourseMeta, setLiveCourseMeta] = useState(null);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  // Panel control
   const [showFaqPanel, setShowFaqPanel] = useState(false);
   const [showSchedulePanel, setShowSchedulePanel] = useState(false);
   const [editingFaq, setEditingFaq] = useState(null);
 
-  // Confirmation dialog
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
-  // Dynamic localStorage key based on mode
+  // Translation hooks
+  const t = useTranslations('instructor.course.step4');
+  const tSchedule = useTranslations('instructor.course.step4.schedule');
+  const tFaq = useTranslations('instructor.course.step4.faq');
+  const tTags = useTranslations('instructor.course.step4.tags');
+  const tRights = useTranslations('instructor.course.step4.rights');
+  const tButtons = useTranslations('instructor.course.step4.buttons');
+  const tValidation = useTranslations('instructor.course.step4.validation');
+  const tPublish = useTranslations('instructor.course.step4.publish');
+  const tWeekdays = useTranslations('instructor.course.step4.weekdays');
+
   const STEP3_STORAGE_KEY = `${mode}_course_step3_data`;
   const STEP4_STORAGE_KEY = `${mode}_course_step4_data`;
 
-  // FIXED: Load data based on mode and priority - following Step1/Step2/Step3 pattern
   useEffect(() => {
     const loadData = () => {
       if (mode === 'edit') {
-        // In edit mode, prioritize course data from API
         if (courseData && courseData._id && !dataLoaded) {
           console.log('Edit mode: Loading course additional data into form', courseData);
           populateFormWithCourseData();
           setDataLoaded(true);
         } else if (!courseData._id && !courseLoading && !dataLoaded) {
-          // If no course data and not loading, try localStorage
           loadFromLocalStorage();
           setDataLoaded(true);
         }
       } else {
-        // Create mode - always try localStorage first
         if (!dataLoaded) {
           loadFromLocalStorage();
           setDataLoaded(true);
@@ -776,7 +740,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     loadData();
   }, [courseData, mode, courseLoading, dataLoaded]);
 
-  // FIXED: Add forced data loading when courseData changes in edit mode
   useEffect(() => {
     if (mode === 'edit' && courseData._id && (courseData.faqs || courseData.tags || courseData.liveCourseMeta)) {
       console.log('Force loading Step4 data due to courseData change');
@@ -785,8 +748,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     }
   }, [courseData._id, courseData.faqs, courseData.tags, courseData.liveCourseMeta, mode]);
 
-  // FIXED: Function to populate form with course data (edit mode)
-  // FIXED: Function to populate form with course data (edit mode)
   const populateFormWithCourseData = () => {
     console.log('Populating Step 4 form with course data:', {
       faqs: courseData.faqs,
@@ -796,10 +757,8 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
       hasRights: courseData.hasRights
     });
 
-    // Set FAQs
     if (courseData.faqs && Array.isArray(courseData.faqs)) {
       console.log('Setting FAQs from courseData:', courseData.faqs);
-      // Ensure FAQs have IDs for editing
       const faqsWithIds = courseData.faqs.map((faq, index) => ({
         ...faq,
         id: faq.id || faq._id || `faq_${index}_${Date.now()}`
@@ -807,10 +766,8 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
       setFaqs(faqsWithIds);
     }
 
-    // Set Tags
     if (courseData.tags && Array.isArray(courseData.tags)) {
       console.log('Setting tags from courseData:', courseData.tags);
-      // Convert string array to objects with IDs for compatibility
       const tagsWithIds = courseData.tags.map((tag, index) => ({
         id: `tag_${index}_${Date.now()}`,
         tagName: typeof tag === 'string' ? tag : tag.tagName || tag
@@ -818,29 +775,24 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
       setTags(tagsWithIds);
     }
 
-    // FIXED: Set Live Course Meta with proper delay to ensure state updates
     if (courseData.liveCourseMeta) {
       console.log('Setting liveCourseMeta from courseData:', courseData.liveCourseMeta);
-      // Ensure all properties including maxEnrollment are properly set
       const liveMetaData = {
         ...courseData.liveCourseMeta,
-        maxEnrollment: courseData.liveCourseMeta.maxEnrollment || 30 // Default value if missing
+        maxEnrollment: courseData.liveCourseMeta.maxEnrollment || 30
       };
 
-      // Use setTimeout to ensure the state update happens after the component has fully loaded
       setTimeout(() => {
         setLiveCourseMeta(liveMetaData);
         console.log('Set liveCourseMeta with data:', liveMetaData);
       }, 0);
     }
 
-    // Set Reviewer Message
     if (courseData.reviewerMessage) {
       console.log('Setting reviewerMessage from courseData:', courseData.reviewerMessage);
       setReviewerMessage(courseData.reviewerMessage);
     }
 
-    // Set Rights Confirmation
     if (courseData.hasRights !== undefined) {
       console.log('Setting hasRights from courseData:', courseData.hasRights);
       setHasRights(courseData.hasRights);
@@ -849,19 +801,13 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     console.log('Populated Step 4 form with course data');
   };
 
-  // ADDED: Additional useEffect to handle live course meta loading when navigating between steps
   useEffect(() => {
-    // This handles the case when navigating from step3 to step4 in edit mode
     if (mode === 'edit' && courseData._id && courseData.liveCourseMeta) {
       console.log('Loading liveCourseMeta on step navigation:', courseData.liveCourseMeta);
-      console.log('Current liveCourseMeta state:', liveCourseMeta);
-
-      // Always update if courseData has liveCourseMeta, regardless of current state
       setLiveCourseMeta(courseData.liveCourseMeta);
     }
   }, [courseData.liveCourseMeta, mode, courseData._id]);
 
-  // ADDED: Force update liveCourseMeta when courseData changes in edit mode
   useEffect(() => {
     if (mode === 'edit' && courseData._id && courseData.liveCourseMeta && dataLoaded) {
       console.log('Force updating liveCourseMeta due to courseData change');
@@ -869,7 +815,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     }
   }, [courseData, mode, dataLoaded]);
 
-  // Function to load from localStorage
   const loadFromLocalStorage = () => {
     const savedData = localStorage.getItem(STEP4_STORAGE_KEY);
     if (savedData) {
@@ -888,7 +833,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Save to localStorage when data changes
   useEffect(() => {
     if (dataLoaded) {
       const dataToSave = {
@@ -903,50 +847,9 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     }
   }, [faqs, tags, reviewerMessage, hasRights, liveCourseMeta, dataLoaded, STEP4_STORAGE_KEY]);
 
-  // ADDED: Debug panel for development
-  // const DebugPanel = () => {
-  //   if (process.env.NODE_ENV !== 'development') return null;
-
-  //   return (
-  //     <div className="mb-3 p-3 bg-light border rounded">
-  //       <h6>Debug Info (Development Only)</h6>
-  //       <p><strong>Mode:</strong> {mode}</p>
-  //       <p><strong>Course ID:</strong> {courseData._id || 'None'}</p>
-  //       <p><strong>Course Type:</strong> {courseData.type || 'None'}</p>
-  //       <p><strong>DB FAQs Count:</strong> {courseData.faqs?.length || 0}</p>
-  //       <p><strong>DB Tags Count:</strong> {courseData.tags?.length || 0}</p>
-  //       <p><strong>DB Live Course Meta:</strong> {courseData.liveCourseMeta ? 'Yes' : 'No'}</p>
-  //       <p><strong>Local FAQs Count:</strong> {faqs.length}</p>
-  //       <p><strong>Local Tags Count:</strong> {tags.length}</p>
-  //       <p><strong>Local Live Course Meta:</strong> {liveCourseMeta ? 'Yes' : 'No'}</p>
-  //       <p><strong>Data Loaded:</strong> {dataLoaded ? 'Yes' : 'No'}</p>
-  //       <p><strong>Course Loading:</strong> {courseLoading ? 'Yes' : 'No'}</p>
-  //       <button 
-  //         className="btn btn-sm btn-secondary me-2"
-  //         onClick={() => {
-  //           console.log('Force reload data');
-  //           setDataLoaded(false);
-  //         }}
-  //       >
-  //         Force Reload Data
-  //       </button>
-  //       <button 
-  //         className="btn btn-sm btn-info"
-  //         onClick={() => {
-  //           console.log('Force populate form');
-  //           populateFormWithCourseData();
-  //         }}
-  //       >
-  //         Force Populate Form
-  //       </button>
-  //     </div>
-  //   );
-  // };
-
-  // FAQ handlers
   const handleAddFaq = (faqData) => {
     setFaqs([...faqs, faqData]);
-    toast.success('FAQ added successfully');
+    toast.success(tFaq('addedSuccess'));
   };
 
   const handleUpdateFaq = (faqData) => {
@@ -955,7 +858,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     );
     setFaqs(updatedFaqs);
     setEditingFaq(null);
-    toast.success('FAQ updated successfully');
+    toast.success(tFaq('updatedSuccess'));
   };
 
   const handleEditFaq = (index) => {
@@ -967,25 +870,22 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     const updatedFaqs = [...faqs];
     updatedFaqs.splice(index, 1);
     setFaqs(updatedFaqs);
-    toast.success('FAQ deleted successfully');
+    toast.success(tFaq('deletedSuccess'));
   };
 
-  // Tag handlers
   const handleAddTag = (tagName) => {
-    // Check if tag already exists
     if (tags.some(tag => tag.tagName.toLowerCase() === tagName.toLowerCase())) {
-      toast.error('This tag already exists');
+      toast.error(tTags('tagExists'));
       return;
     }
 
-    // Check tag limit
     if (tags.length >= 14) {
-      toast.error('Maximum of 14 tags allowed');
+      toast.error(tTags('maxTagsReached'));
       return;
     }
 
     setTags([...tags, { id: Date.now() + Math.random(), tagName }]);
-    toast.success('Tag added successfully');
+    toast.success(tTags('tagAddedSuccess'));
   };
 
   const handleDeleteTag = (index) => {
@@ -994,24 +894,12 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     setTags(updatedTags);
   };
 
-  // Live course schedule handler
   const handleSaveSchedule = (scheduleData) => {
     setLiveCourseMeta(scheduleData);
-    toast.success('Course schedule saved successfully');
+    toast.success(t('schedulePanel.scheduleSavedSuccess'));
   };
 
-  // Submit handlers
-  // const handleSaveAsDraft = async () => {
-  //   if (!hasRights && courseData.type === 'recorded') {
-  //     toast.error('Please confirm that you have the rights to sell this content');
-  //     return;
-  //   }
-
-  //   await saveDraft(false);
-  // };
-
   const handleConfirmPublish = () => {
-    // Validate before showing confirmation
     if (!validateForPublish()) {
       return;
     }
@@ -1028,9 +916,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     localStorage.removeItem('currentCourseData');
   };
 
-  // Updated saveDraft function
   const saveDraft = async (publish = false) => {
-    // Convert tags from objects to strings for API
     const tagStrings = tags.map(tag => tag.tagName);
 
     const data = {
@@ -1040,7 +926,6 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
       publish
     };
 
-    // Add live course meta if applicable
     if (courseData.type === 'live' && liveCourseMeta) {
       data.liveCourseMeta = liveCourseMeta;
     }
@@ -1048,13 +933,11 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     const success = await saveAdditionalInfo(data);
 
     if (success) {
-      // Always clear localStorage when successfully saving
       clearAllCourseLocalStorage();
 
       if (publish) {
         window.location.href = '/instructor/manage-course';
       } else {
-        // Navigate to previous step
         stepperInstance?.previous();
       }
     }
@@ -1062,56 +945,52 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     return success;
   };
 
-  // Updated handlePublish function
   const handlePublish = async () => {
     return await saveDraft(true);
   };
 
   const validateForPublish = () => {
-    // Validate common fields
     if (faqs.length === 0) {
-      toast.error('Please add at least one FAQ');
+      toast.error(tValidation('addOneFaq'));
       return false;
     }
 
     if (tags.length === 0) {
-      toast.error('Please add at least one tag');
+      toast.error(tValidation('addOneTag'));
       return false;
     }
 
     if (!hasRights && courseData.type === 'recorded') {
-      toast.error('Please confirm that you have the rights to sell this content');
+      toast.error(tValidation('confirmRights'));
       return false;
     }
 
-    // Validate live course specific fields
     if (courseData.type === 'live') {
       if (!liveCourseMeta) {
-        toast.error('Please set up your live course schedule');
+        toast.error(tValidation('setSchedule'));
         return false;
       }
 
       if (!liveCourseMeta.startDate) {
-        toast.error('Please select a start date for your live course');
+        toast.error(tValidation('selectStartDate'));
         return false;
       }
 
       if (!liveCourseMeta.timeSlots || liveCourseMeta.timeSlots.length === 0) {
-        toast.error('Please select at least one time slot for your live course');
+        toast.error(tValidation('selectTimeSlot'));
         return false;
       }
 
       if (!liveCourseMeta.maxEnrollment || liveCourseMeta.maxEnrollment <= 0) {
-        toast.error('Please specify the maximum enrollment for your live course');
+        toast.error(tValidation('specifyMaxEnrollment'));
         return false;
       }
 
-      // Verify plannedLessons compatibility with selected slots
       const plannedLessons = liveCourseMeta.plannedLessons;
       const slotsCount = liveCourseMeta.timeSlots.length;
 
       if (plannedLessons % slotsCount !== 0) {
-        toast.error(`The number of planned lessons (${plannedLessons}) must be divisible by the number of slots per day (${slotsCount})`);
+        toast.error(t('schedulePanel.lessonsDivisibleError', { planned: plannedLessons, slots: slotsCount }));
         return false;
       }
     }
@@ -1123,30 +1002,28 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     stepperInstance?.previous();
   };
 
-  // Show loading spinner if course is still loading in edit mode
   if (mode === 'edit' && courseLoading) {
     return (
       <div id="step-4" role="tabpanel" className="content fade" aria-labelledby="steppertrigger4">
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <div className="text-center">
             <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>Loading course information...</h5>
-            <p className="text-muted">Please wait while we fetch your course information.</p>
+            <h5>{t('loadingInfo')}</h5>
+            <p className="text-muted">{t('loadingSubtext')}</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Show error if in edit mode but failed to load course data
   if (mode === 'edit' && !courseLoading && courseLoadError) {
     return (
       <div id="step-4" role="tabpanel" className="content fade" aria-labelledby="steppertrigger4">
         <Alert variant="danger">
-          <h5>Error Loading Course Information</h5>
-          <p>Unable to load course information: {courseLoadError}</p>
+          <h5>{t('errorLoadingTitle')}</h5>
+          <p>{t('errorLoadingMessage')} {courseLoadError}</p>
           <Button variant="outline-danger" onClick={() => window.location.href = '/instructor/manage-course'}>
-            Back to Course Management
+            {t('backToCourseManagement')}
           </Button>
         </Alert>
       </div>
@@ -1157,45 +1034,42 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
     <div id="step-4" role="tabpanel" className="content fade" aria-labelledby="steppertrigger4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>
-          {mode === 'edit' ? 'Edit Additional Information' : 'Additional Information'}
+          {mode === 'edit' ? t('editTitle') : t('title')}
         </h4>
         {courseData.type === 'live' && (
           <Button
             variant="primary"
             onClick={() => setShowSchedulePanel(true)}
           >
-            <FaCalendarAlt className="me-2" /> {liveCourseMeta ? 'Edit Schedule' : 'Set Schedule'}
+            <FaCalendarAlt className="me-2" /> {liveCourseMeta ? tSchedule('buttonEdit') : tSchedule('buttonSet')}
           </Button>
         )}
       </div>
       <hr />
 
-      {/* Debug Panel - Only in development */}
-      {/* <DebugPanel /> */}
-
       {courseData.type === 'live' && liveCourseMeta && (
         <Card className="mb-4 border shadow-sm">
           <Card.Header className="bg-light">
             <h5 className="mb-0 d-flex align-items-center">
-              <FaCalendarAlt className="me-2" /> Live Course Schedule
+              <FaCalendarAlt className="me-2" /> {tSchedule('cardTitle')}
             </h5>
           </Card.Header>
           <Card.Body>
             <Row>
               <Col md={6}>
-                <h6>Schedule Details</h6>
+                <h6>{tSchedule('scheduleDetails')}</h6>
                 <Table borderless size="sm">
                   <tbody>
                     <tr>
-                      <td className="text-muted" width="40%">Day:</td>
+                      <td className="text-muted" width="40%">{tSchedule('day')}</td>
                       <td>
                         {liveCourseMeta.timeSlots && liveCourseMeta.timeSlots.length > 0
-                          ? WEEKDAYS.find(day => day.value === liveCourseMeta.timeSlots[0].weekDay)?.display || 'Not set'
-                          : 'Not set'}
+                          ? tWeekdays(liveCourseMeta.timeSlots[0].weekDay) || tSchedule('notSet')
+                          : tSchedule('notSet')}
                       </td>
                     </tr>
                     <tr>
-                      <td className="text-muted">Time Slots:</td>
+                      <td className="text-muted">{tSchedule('timeSlots')}</td>
                       <td>
                         {liveCourseMeta.timeSlots && liveCourseMeta.timeSlots.length > 0 ? (
                           <div className="d-flex flex-wrap gap-1">
@@ -1208,50 +1082,50 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                               ) : null;
                             })}
                           </div>
-                        ) : 'No slots selected'}
+                        ) : tSchedule('noSlotsSelected')}
                       </td>
                     </tr>
                     <tr>
-                      <td className="text-muted">Start Date:</td>
+                      <td className="text-muted">{tSchedule('startDate')}</td>
                       <td>
                         {liveCourseMeta.startDate
                           ? new Date(liveCourseMeta.startDate).toLocaleDateString()
-                          : 'Not set'}
+                          : tSchedule('notSet')}
                       </td>
                     </tr>
                     <tr>
-                      <td className="text-muted">End Date:</td>
+                      <td className="text-muted">{tSchedule('endDate')}</td>
                       <td>
                         {liveCourseMeta.endDate
                           ? new Date(liveCourseMeta.endDate).toLocaleDateString()
-                          : 'Not calculated'}
+                          : tSchedule('notCalculated')}
                       </td>
                     </tr>
                   </tbody>
                 </Table>
               </Col>
               <Col md={6}>
-                <h6>Enrollment Details</h6>
+                <h6>{tSchedule('enrollmentDetails')}</h6>
                 <Table borderless size="sm">
                   <tbody>
                     <tr>
-                      <td className="text-muted" width="50%">Planned Lessons:</td>
-                      <td>{liveCourseMeta.plannedLessons || 'Not set'}</td>
+                      <td className="text-muted" width="50%">{tSchedule('plannedLessons')}</td>
+                      <td>{liveCourseMeta.plannedLessons || tSchedule('notSet')}</td>
                     </tr>
                     <tr>
-                      <td className="text-muted">Maximum Enrollment:</td>
-                      <td>{liveCourseMeta.maxEnrollment || 'Not set'}</td>
+                      <td className="text-muted">{tSchedule('maxEnrollment')}</td>
+                      <td>{liveCourseMeta.maxEnrollment || tSchedule('notSet')}</td>
                     </tr>
                     <tr>
-                      <td className="text-muted">Lessons Per Day:</td>
+                      <td className="text-muted">{tSchedule('lessonsPerDay')}</td>
                       <td>{liveCourseMeta.timeSlots ? liveCourseMeta.timeSlots.length : 0}</td>
                     </tr>
                     <tr>
-                      <td className="text-muted">Total Course Days:</td>
+                      <td className="text-muted">{tSchedule('totalCourseDays')}</td>
                       <td>
                         {liveCourseMeta.timeSlots && liveCourseMeta.plannedLessons
                           ? Math.ceil(liveCourseMeta.plannedLessons / liveCourseMeta.timeSlots.length)
-                          : 'Cannot calculate'}
+                          : tSchedule('cannotCalculate')}
                       </td>
                     </tr>
                   </tbody>
@@ -1264,7 +1138,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                 size="sm"
                 onClick={() => setShowSchedulePanel(true)}
               >
-                <FaEdit className="me-1" /> Edit Schedule
+                <FaEdit className="me-1" /> {tSchedule('editScheduleButton')}
               </Button>
             </div>
           </Card.Body>
@@ -1277,7 +1151,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
           <Card className="shadow-sm border">
             <Card.Header className="bg-light">
               <div className="d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">Frequently Asked Questions</h5>
+                <h5 className="mb-0">{tFaq('title')}</h5>
                 <Button
                   variant="primary"
                   size="sm"
@@ -1286,7 +1160,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                     setShowFaqPanel(true);
                   }}
                 >
-                  <FaPlus className="me-1" /> Add FAQ
+                  <FaPlus className="me-1" /> {tFaq('addButton')}
                 </Button>
               </div>
             </Card.Header>
@@ -1294,8 +1168,8 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
               {faqs.length === 0 ? (
                 <div className="text-center py-4 bg-light rounded">
                   <FaExclamationTriangle className="text-warning mb-3" style={{ fontSize: '2rem' }} />
-                  <h6>No FAQs added yet</h6>
-                  <p className="text-muted small mb-3">Help potential students by adding frequently asked questions</p>
+                  <h6>{tFaq('noFaqsTitle')}</h6>
+                  <p className="text-muted small mb-3">{tFaq('noFaqsDescription')}</p>
                   <Button
                     variant="primary"
                     size="sm"
@@ -1304,7 +1178,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                       setShowFaqPanel(true);
                     }}
                   >
-                    <FaPlus className="me-2" /> Add First FAQ
+                    <FaPlus className="me-2" /> {tFaq('addFirstButton')}
                   </Button>
                 </div>
               ) : (
@@ -1346,14 +1220,13 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
           <Card className="shadow-sm border">
             <Card.Header className="bg-light">
               <h5 className="mb-0">
-                <FaTag className="me-2" /> Tags
+                <FaTag className="me-2" /> {tTags('title')}
               </h5>
             </Card.Header>
             <Card.Body>
               <Form.Group>
-                <Form.Label>Select tags to help students find your course</Form.Label>
+                <Form.Label>{tTags('selectLabel')}</Form.Label>
 
-                {/* Tag Search Dropdown */}
                 <TagSearchDropdown
                   onSelect={handleAddTag}
                   selectedTags={tags}
@@ -1381,29 +1254,28 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-muted">No tags selected yet</div>
+                    <div className="text-muted">{tTags('noTagsSelected')}</div>
                   )}
                 </div>
                 <div className="small text-muted mt-2">
-                  Maximum of 14 tags. Select tags that best describe your course content.
+                  {tTags('maxTagsInfo')}
                 </div>
               </Form.Group>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Message to Reviewer Section */}
-        <Col xs={12} >
+        {/* Rights Confirmation */}
+        <Col xs={12}>
           <Card className="shadow-sm border">
             <Card.Body>
-              {/* Rights confirmation checkbox - only for recorded courses */}
               <Form.Group className="mt-3">
                 <Form.Check
                   type="checkbox"
                   id="rights-checkbox"
                   checked={hasRights}
                   onChange={(e) => setHasRights(e.target.checked)}
-                  label="I confirm that any images, sounds, or other assets that are not my own work have been appropriately licensed for use in this course. Other than these items, this work is entirely my own and I have full rights to sell it here."
+                  label={tRights('confirmationLabel')}
                 />
               </Form.Group>
             </Card.Body>
@@ -1411,7 +1283,7 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
         </Col>
 
         {/* Navigation Buttons */}
-        <Col xs={12} >
+        <Col xs={12}>
           <div className="d-md-flex justify-content-between align-items-center mt-2">
             <Button
               variant="light"
@@ -1419,19 +1291,10 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
               disabled={isLoading}
               className="mb-2 mb-md-0"
             >
-              Previous
+              {tButtons('previous')}
             </Button>
 
             <div className="ms-auto">
-              {/* <Button
-                variant="secondary"
-                className="me-2 mb-2 mb-md-0"
-                onClick={handleSaveAsDraft}
-                disabled={isLoading}
-              >
-                {mode === 'edit' ? 'Update as Draft' : 'Save as Draft'}
-              </Button> */}
-
               <Button
                 variant="success"
                 onClick={handleConfirmPublish}
@@ -1441,9 +1304,9 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
                 {isLoading ? (
                   <>
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                    {mode === 'edit' ? 'Updating...' : 'Publishing...'}
+                    {mode === 'edit' ? tButtons('updating') : tButtons('publishing')}
                   </>
-                ) : (mode === 'edit' ? 'Update & Publish' : 'Publish Course')}
+                ) : (mode === 'edit' ? tButtons('updateAndPublish') : tButtons('publishCourse'))}
               </Button>
             </div>
           </div>
@@ -1451,8 +1314,8 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
           <div className="text-muted small mt-3">
             <FaInfoCircle className="me-1" />
             {mode === 'edit'
-              ? 'Your changes will be saved and the course will be updated.'
-              : 'Once you publish your course, it will be reviewed by our team before becoming available to students.'
+              ? tPublish('infoMessageEdit')
+              : tPublish('infoMessage')
             }
           </div>
         </Col>
@@ -1491,13 +1354,13 @@ const Step4 = ({ stepperInstance, mode = 'create' }) => {
         show={showPublishConfirm}
         onHide={() => setShowPublishConfirm(false)}
         onConfirm={handlePublish}
-        title={mode === 'edit' ? 'Update Course' : 'Publish Course'}
+        title={mode === 'edit' ? tPublish('confirmUpdateTitle') : tPublish('confirmTitle')}
         message={mode === 'edit'
-          ? 'Are you ready to update your course? Your changes will be saved and applied immediately.'
-          : 'Are you ready to publish your course? Once published, it will be sent for review before becoming available to students.'
+          ? tPublish('confirmUpdateMessage')
+          : tPublish('confirmMessage')
         }
-        confirmText={mode === 'edit' ? 'Update' : 'Publish'}
-        cancelText="Not yet"
+        confirmText={mode === 'edit' ? tPublish('updateButton') : tPublish('confirmButton')}
+        cancelText={tPublish('cancelButton')}
         variant="success"
       />
     </div>

@@ -1,6 +1,10 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 const CountdownTimer = ({ targetDate, slotTime, onComplete }) => {
+  const t = useTranslations('student.learning.countdown');
   const [timeLeft, setTimeLeft] = useState(null);
   
   useEffect(() => {
@@ -66,23 +70,23 @@ const CountdownTimer = ({ targetDate, slotTime, onComplete }) => {
   
   // Format display time - ALWAYS showing seconds for real-time effect
   const formatTimeLeft = () => {
-    if (!timeLeft) return "Ready";
+    if (!timeLeft) return t('ready');
     
     const { days, hours, minutes, seconds } = timeLeft;
     
     // Always include seconds in the display for real-time effect
     if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      return `${days}${t('days')} ${hours}${t('hours')} ${minutes}${t('minutes')} ${seconds}${t('seconds')}`;
     } else if (hours > 0) {
-      return `${hours}h ${minutes}m ${seconds}s`;
+      return `${hours}${t('hours')} ${minutes}${t('minutes')} ${seconds}${t('seconds')}`;
     } else {
-      return `${minutes}m ${seconds}s`;
+      return `${minutes}${t('minutes')} ${seconds}${t('seconds')}`;
     }
   };
   
   return (
     <div className="d-inline-block text-primary">
-      <small>Starts in: {formatTimeLeft()}</small>
+      <small>{t('startsIn')} {formatTimeLeft()}</small>
     </div>
   );
 };

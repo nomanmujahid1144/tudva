@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { toast } from 'react-hot-toast';
@@ -13,6 +13,7 @@ export default function ProtectedRoute({
 }) {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
+  const { locale } = useParams();
 
   useEffect(() => {
     // Only take action when loading is complete
@@ -22,7 +23,7 @@ export default function ProtectedRoute({
     if (!isAuthenticated || !user) {
       console.log('Not authenticated, redirecting to login');
       toast.error('Please log in to access this page');
-      router.push(redirectTo);
+      router.push(`/${locale}${redirectTo}`);
       return;
     }
 
@@ -32,14 +33,14 @@ export default function ProtectedRoute({
       toast.error(`You don't have permission to access this page`);
       // Redirect based on role
       if (user?.role?.toLowerCase() === 'instructor') {
-        router.push('/instructor/view-profile');
+        router.push(`/${locale}/instructor/profile`);
       } else if (user?.role?.toLowerCase() === 'learner') {
-        router.push('/student/view-profile');
+        router.push(`/${locale}/student/profile`);
       } else {
-        router.push('/');
+        router.push(`/${locale}/`);
       }
     }
-  }, [loading, isAuthenticated, user, router, redirectTo, allowedRoles]);
+  }, [loading, isAuthenticated, user, router, redirectTo, allowedRoles, locale]);
 
   // Show loading state while authentication is being checked
   if (loading) {

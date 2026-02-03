@@ -2636,7 +2636,8 @@ import { useCourseContext } from '@/context/CourseContext';
 import SlidePanel from '../../../../components/side-panel/SlidePanel';
 import ConfirmDialog from '../../../../components/dialog/ConfirmDialog';
 import Image from 'next/image';
-import liveIcon from '../../../../assets/images/live-course.png';
+import liveIcon from '../../../../../assets/images/live-course.png';
+import { useTranslations } from 'next-intl';
 
 // Enhanced Circle Progress Component (from original)
 const CircleProgress = ({ progress, size = 40, strokeWidth = 4, color = 'primary' }) => {
@@ -2693,7 +2694,6 @@ const CircleProgress = ({ progress, size = 40, strokeWidth = 4, color = 'primary
   );
 };
 
-
 // Format seconds to MM:SS (from original)
 const formatDuration = (seconds) => {
   if (!seconds) return '0:00';
@@ -2705,6 +2705,7 @@ const formatDuration = (seconds) => {
 // ENHANCED: File Preview Card Component
 const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
   const [showActions, setShowActions] = useState(false);
+  const t = useTranslations('instructor.course.step3.filePreview');
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -2745,14 +2746,14 @@ const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
             {formatFileSize(fileInfo.size)}
             {fileInfo.uploadProgress !== undefined && (
               <span className="ms-2 text-primary">
-                {fileInfo.uploadProgress}% uploaded
+                {fileInfo.uploadProgress}% {t('uploading')}
               </span>
             )}
           </div>
           {fileInfo.url && (
             <div className="small text-success">
               <FaCheck className="me-1" size={10} />
-              Uploaded successfully
+              {t('uploading')}
             </div>
           )}
         </div>
@@ -2780,7 +2781,7 @@ const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
                     }}
                   >
                     <FaEye className="me-2" size={12} />
-                    View File
+                    {t('viewFile')}
                   </button>
                   <button
                     className="dropdown-item d-flex align-items-center"
@@ -2790,7 +2791,7 @@ const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
                     }}
                   >
                     <FaDownload className="me-2" size={12} />
-                    Download
+                    {t('download')}
                   </button>
                   <div className="dropdown-divider"></div>
                 </>
@@ -2803,7 +2804,7 @@ const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
                 }}
               >
                 <FaTrash className="me-2" size={12} />
-                Remove
+                {t('remove')}
               </button>
             </div>
           )}
@@ -2838,6 +2839,7 @@ const FilePreviewCard = ({ fileInfo, onRemove, onView, onDownload }) => {
 const VideoPlayerModal = ({ show, onHide, videoUrl, videoTitle }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const t = useTranslations('instructor.course.step3.upload');
 
   useEffect(() => {
     if (show) {
@@ -2869,7 +2871,7 @@ const VideoPlayerModal = ({ show, onHide, videoUrl, videoTitle }) => {
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
               <div className="text-center text-white">
                 <Spinner animation="border" variant="light" className="mb-2" />
-                <div>Loading video...</div>
+                <div>{t('loadingVideo')}</div>
               </div>
             </div>
           )}
@@ -2878,8 +2880,8 @@ const VideoPlayerModal = ({ show, onHide, videoUrl, videoTitle }) => {
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
               <div className="text-center text-white">
                 <FaExclamationTriangle size={40} className="mb-2" />
-                <div>Failed to load video</div>
-                <small className="text-muted">Please try again later</small>
+                <div>{t('videoLoadError')}</div>
+                <small className="text-muted">{t('tryAgainLater')}</small>
               </div>
             </div>
           )}
@@ -2906,6 +2908,8 @@ const VideoPlayerModal = ({ show, onHide, videoUrl, videoTitle }) => {
 // Enhanced Video Preview Card Component with all original logic
 const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) => {
   const [showPlayer, setShowPlayer] = useState(false);
+  const t = useTranslations('instructor.course.step3');
+  const tStatus = useTranslations('instructor.course.step3.videoStatus');
 
   // Keep original status logic
   const isProcessing = video.status === 'processing' || video.isProcessing;
@@ -2925,7 +2929,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
   const getAllMaterials = () => {
     const materials = [];
 
-    // New multiple materials format (matches videoMaterialSchema)
     if (video.materials && Array.isArray(video.materials)) {
       materials.push(...video.materials.map(material => ({
         name: material.name,
@@ -2936,7 +2939,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
       })));
     }
 
-    // Legacy single material support (for backward compatibility)
     if (video.materialUrl && !materials.some(m => m.url === video.materialUrl)) {
       materials.push({
         name: video.materialName || 'Course Material',
@@ -2951,7 +2953,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
 
   const materials = getAllMaterials();
 
-  // Format file size helper
   const formatFileSize = (bytes) => {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -2960,7 +2961,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Get material file icon (matches your schema)
   const getMaterialIcon = (materialName) => {
     if (!materialName) return '📁';
     const extension = materialName.split('.').pop()?.toLowerCase();
@@ -2974,7 +2974,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
     return iconMap[extension] || '📁';
   };
 
-  // Download material file (matches your schema structure)
   const downloadMaterial = (material) => {
     if (material.url) {
       const link = document.createElement('a');
@@ -2986,7 +2985,6 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
     }
   };
 
-  // Preview material file
   const previewMaterial = (material) => {
     if (material.url) {
       window.open(material.url, '_blank');
@@ -3002,29 +3000,29 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
   };
 
   const getDetailedStatusText = () => {
-    if (isFailed) return 'Upload Failed - Please try again';
+    if (isFailed) return tStatus('failed');
 
     if (isProcessing) {
-      const phase = video.phase || 'Processing video...';
+      const phase = video.phase || tStatus('processingMessage');
       const processingStep = video.processingStep || 'processing';
 
       const phaseDescriptions = {
-        'combining': `Combining video chunks... ${progress}%`,
-        'uploading': `Uploading to cloud storage... ${progress}%`,
-        'transferring': `Transferring to cloud storage... ${progress}%`,
-        'finalizing': `Finalizing upload... ${progress}%`,
-        'completed': 'Processing completed successfully!'
+        'combining': tStatus('combining', { progress }),
+        'uploading': tStatus('uploadingCloud', { progress }),
+        'transferring': tStatus('transferring', { progress }),
+        'finalizing': tStatus('finalizing', { progress }),
+        'completed': tStatus('completed')
       };
 
       return phaseDescriptions[processingStep] || `${phase} ${progress}%`;
     }
 
     if (isUploading) {
-      return `Uploading chunk ${video.currentChunk || 1}/${video.totalChunks || 1}... ${progress}%`;
+      return tStatus('uploading', { current: video.currentChunk || 1, total: video.totalChunks || 1 });
     }
 
     if (isCompleted) return '';
-    return 'Waiting to start upload';
+    return tStatus('waitingStart');
   };
 
   const handlePlayClick = () => {
@@ -3082,17 +3080,17 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
                 <Spinner animation="border" size="sm" variant="light" className="mb-1" />
                 <div className="small">{Math.min(Math.max(progress, 90), 99)}%</div>
                 <div className="x-small">
-                  {video.processingStep === 'combining' ? 'Combining...' :
-                    video.processingStep === 'uploading' ? 'Uploading...' :
-                      video.processingStep === 'transferring' ? 'Transferring...' :
-                        video.processingStep === 'finalizing' ? 'Finalizing...' :
-                          'Processing...'}
+                  {video.processingStep === 'combining' ? tStatus('combiningMessage') :
+                    video.processingStep === 'uploading' ? tStatus('uploadingMessage') :
+                      video.processingStep === 'transferring' ? tStatus('transferringMessage') :
+                        video.processingStep === 'finalizing' ? tStatus('finalizingMessage') :
+                          tStatus('processingMessage')}
                 </div>
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center">
                 <CircleProgress progress={progress} size={30} color="warning" />
-                <div className="x-small mt-1">Uploading...</div>
+                <div className="x-small mt-1">{tStatus('uploadingMessage')}</div>
               </div>
             )}
           </div>
@@ -3150,7 +3148,7 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
               <div className="position-absolute top-0 start-0 w-100 h-100 bg-danger bg-opacity-75 d-flex align-items-center justify-content-center">
                 <div className="text-center text-white">
                   <FaExclamationTriangle size={20} />
-                  <div className="small">Failed</div>
+                  <div className="small">{tStatus('failed')}</div>
                 </div>
               </div>
             )}
@@ -3205,14 +3203,14 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
                     />
                     <small className={isProcessing ? 'text-info' : 'text-warning'}>
                       {video.phase || (isProcessing ?
-                        'Processing video on cloud storage...' :
-                        `Uploading chunk ${video.currentChunk || 1}/${video.totalChunks || 1}...`
+                        tStatus('processing') :
+                        tStatus('uploading', { current: video.currentChunk || 1, total: video.totalChunks || 1 })
                       )}
                     </small>
                   </div>
                 )}
 
-                {/* ENHANCED: Multiple materials display with proper file information (like SlidePanel) */}
+                {/* ENHANCED: Multiple materials display with proper file information */}
                 {materials.length > 0 && (
                   <div className="mt-2">
                     <div className="materials-grid d-flex flex-wrap gap-2">
@@ -3237,7 +3235,7 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
                     size="sm"
                     className="p-1 mb-1"
                     onClick={handlePlayClick}
-                    title="Play video"
+                    title={t('video.playVideo')}
                   >
                     <FaPlay size={14} />
                   </Button>
@@ -3248,7 +3246,7 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
                   className="p-1 mb-1"
                   onClick={() => onEdit(moduleIndex, videoIndex)}
                   disabled={isUploading || isProcessing}
-                  title="Edit video"
+                  title={t('video.editVideo')}
                 >
                   <FaEdit size={14} />
                 </Button>
@@ -3258,7 +3256,7 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
                   className="p-1"
                   onClick={() => onDelete(moduleIndex, videoIndex)}
                   disabled={isUploading || isProcessing}
-                  title="Delete video"
+                  title={t('video.deleteVideo')}
                 >
                   <FaTimes size={14} />
                 </Button>
@@ -3279,9 +3277,10 @@ const VideoPreviewCard = ({ video, onEdit, onDelete, moduleIndex, videoIndex }) 
   );
 };
 
-// ENHANCED: Compact Material File Card Component (Updated with Remove in Dropdown)
+// ENHANCED: Compact Material File Card Component
 const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemove = false }) => {
   const [showActions, setShowActions] = useState(false);
+  const tFile = useTranslations('instructor.course.step3.materials');
 
   const getMaterialIcon = (materialName) => {
     if (!materialName) return '📁';
@@ -3296,7 +3295,6 @@ const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemov
     return iconMap[extension] || '📁';
   };
 
-  // Truncate filename to show max 12 characters with ...
   const truncateFileName = (name) => {
     if (!name) return 'Unknown';
     if (name.length <= 12) return name;
@@ -3379,7 +3377,7 @@ const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemov
                     }}
                   >
                     <FaEye className="me-2" size={12} />
-                    <small>Preview</small>
+                    <small>{tFile('viewFile')}</small>
                   </button>
                   <button
                     className="dropdown-item d-flex align-items-center py-2 px-3"
@@ -3390,11 +3388,10 @@ const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemov
                     }}
                   >
                     <FaDownload className="me-2" size={12} />
-                    <small>Download</small>
+                    <small>{tFile('downloadFile')}</small>
                   </button>
                 </>
               )}
-              {/* ENHANCED: Add Remove option in dropdown */}
               {showRemove && onRemove && (
                 <>
                   {material.url && <div className="dropdown-divider"></div>}
@@ -3407,7 +3404,7 @@ const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemov
                     }}
                   >
                     <FaTrash className="me-2" size={12} />
-                    <small>Remove</small>
+                    <small>{tFile('removeFile')}</small>
                   </button>
                 </>
               )}
@@ -3430,7 +3427,7 @@ const MaterialFileCard = ({ material, onPreview, onDownload, onRemove, showRemov
   );
 };
 
-// ENHANCED: Upload preview component with real-time progress (keeping original structure)
+// ENHANCED: Upload preview component with real-time progress
 const ChunkedUploadPreview = ({
   file,
   progress,
@@ -3442,24 +3439,26 @@ const ChunkedUploadPreview = ({
   processingStep,
   materialFiles = []
 }) => {
+  const t = useTranslations('instructor.course.step3.upload');
+
   const getPhaseText = () => {
     switch (uploadPhase) {
       case 'preparing':
-        return "Preparing video for upload...";
+        return t('preparingVideo');
       case 'materials':
-        return `Uploading ${materialFiles.length} course material(s)...`;
+        return t('uploadingMaterialsCount', { count: materialFiles.length });
       case 'chunking':
-        return `Uploading ${chunkInfo || 'chunks'}...`;
+        return t('uploadingChunks', { info: chunkInfo || 'chunks' });
       case 'combining':
-        return "Combining video chunks...";
+        return t('combiningChunks');
       case 'gcs_upload':
-        return "Uploading to cloud storage...";
+        return t('uploadingToStorage');
       case 'finalizing':
-        return "Finalizing upload...";
+        return t('finalizingUpload');
       case 'completed':
-        return "Upload completed!";
+        return t('uploadCompleted');
       default:
-        return "Processing video...";
+        return t('processingVideo');
     }
   };
 
@@ -3516,8 +3515,8 @@ const ChunkedUploadPreview = ({
               </div>
               {uploadSpeed && (
                 <div className="small text-muted">
-                  Speed: {uploadSpeed} MB/s
-                  {timeRemaining && ` • ETA: ${timeRemaining}`}
+                  {t('speedLabel')} {uploadSpeed} MB/s
+                  {timeRemaining && ` • ${t('etaLabel')} ${timeRemaining}`}
                 </div>
               )}
             </div>
@@ -3549,16 +3548,16 @@ const ChunkedUploadPreview = ({
 
           {(uploadPhase === 'combining' || uploadPhase === 'gcs_upload' || uploadPhase === 'finalizing') && (
             <div className="small text-info">
-              {uploadPhase === 'combining' && 'Combining video chunks...'}
-              {uploadPhase === 'gcs_upload' && 'Real-time upload to cloud storage...'}
-              {uploadPhase === 'finalizing' && 'Finalizing upload...'}
+              {uploadPhase === 'combining' && t('combiningMessage')}
+              {uploadPhase === 'gcs_upload' && t('realtimeUpload')}
+              {uploadPhase === 'finalizing' && t('finalizingMessage')}
             </div>
           )}
 
           {/* Show material upload progress */}
           {materialFiles.length > 0 && uploadPhase === 'materials' && (
             <div className="small text-primary mt-1">
-              Uploading {materialFiles.length} material file(s)...
+              {t('uploadingMaterialFiles', { count: materialFiles.length })}
             </div>
           )}
         </div>
@@ -3567,16 +3566,15 @@ const ChunkedUploadPreview = ({
   );
 };
 
-// ENHANCED: Course Materials Panel Component for Live Courses with Multiple Materials Support
+// ENHANCED: Course Materials Panel Component for Live Courses
 const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLessons, existingMaterials = [], courseId }) => {
   const [materials, setMaterials] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
 
-  // Use enhanced courseContext for uploads
+  const t = useTranslations('instructor.course.step3.materials');
   const { uploadMultipleCourseMaterials } = useCourseContext();
 
-  // Initialize materials array based on planned lessons with MULTIPLE MATERIALS SUPPORT
   useEffect(() => {
     if (isOpen && plannedLessons > 0) {
       const newMaterials = Array.from({ length: plannedLessons }, (_, index) => {
@@ -3586,10 +3584,7 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
         if (existingMaterial) {
           return {
             lessonNumber,
-            // ENHANCED: Support multiple materials array (matching your Course model)
             materials: existingMaterial.materials || [],
-            
-            // LEGACY: Keep single material fields for backward compatibility
             materialName: existingMaterial.materialName || '',
             materialFile: null,
             materialUrl: existingMaterial.materialUrl || '',
@@ -3599,7 +3594,7 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
         } else {
           return {
             lessonNumber,
-            materials: [], // ENHANCED: Multiple materials array
+            materials: [],
             materialName: '',
             materialFile: null,
             materialUrl: '',
@@ -3618,7 +3613,6 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     }
   }, [isOpen, plannedLessons, existingMaterials]);
 
-  // ENHANCED: Handle multiple files change for a lesson
   const handleMultipleFilesChange = async (lessonIndex, files) => {
     if (!files || files.length === 0) return;
 
@@ -3626,18 +3620,15 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     setIsUploading(true);
 
     try {
-      // Start upload progress tracking
       setUploadProgress(prev => ({ ...prev, [lessonIndex]: 10 }));
 
       console.log('Starting upload for', filesArray.length, 'files...');
 
-      // Upload multiple files using the context method
       let results;
       try {
         results = await uploadMultipleCourseMaterials(
           filesArray,
           (fileIndex, progress, fileName) => {
-            // Update progress for this lesson
             const overallProgress = Math.round(((fileIndex + (progress / 100)) / filesArray.length) * 100);
             setUploadProgress(prev => ({ ...prev, [lessonIndex]: Math.min(overallProgress, 90) }));
             console.log(`File ${fileIndex + 1}/${filesArray.length} (${fileName}): ${progress}%`);
@@ -3653,17 +3644,14 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
 
       console.log('Upload results:', results);
 
-      // FIXED: Handle both array and non-array responses
       let resultsArray;
       if (Array.isArray(results)) {
         resultsArray = results;
       } else if (results && results.results && Array.isArray(results.results)) {
         resultsArray = results.results;
       } else if (results && results.success) {
-        // Single successful result
         resultsArray = [{ success: true, data: results.data || results, file: filesArray[0] }];
       } else {
-        // Fallback: create results array from files
         console.warn('Unexpected results format, creating fallback results');
         resultsArray = filesArray.map((file, index) => ({
           success: false,
@@ -3674,18 +3662,16 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
 
       console.log('Processed results array:', resultsArray);
 
-      // Process successful uploads
       const successfulUploads = resultsArray.filter(r => r && r.success);
-      
+
       if (successfulUploads.length > 0) {
         const updatedMaterials = [...materials];
         const lesson = updatedMaterials[lessonIndex];
-        
-        // Add new materials to the lesson's materials array
+
         const newMaterials = successfulUploads.map(upload => {
           const data = upload.data || {};
           const file = upload.file || {};
-          
+
           return {
             name: data.originalName || data.filename || file.name || 'Unknown File',
             url: data.fileUrl || data.url || '',
@@ -3698,9 +3684,8 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
         lesson.materials = [...(lesson.materials || []), ...newMaterials];
         setMaterials(updatedMaterials);
 
-        toast.success(`${successfulUploads.length} file(s) uploaded successfully for Lesson ${lessonIndex + 1}`);
+        toast.success(t('uploadSuccess', { count: successfulUploads.length, lesson: lessonIndex + 1 }));
 
-        // Auto-save after successful upload
         const materialsToSave = createCompleteMaterialsList(updatedMaterials);
         onAutoSave(materialsToSave);
       }
@@ -3711,7 +3696,6 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
         toast.error(`${failedUploads.length} file(s) failed to upload`);
       }
 
-      // If no successful uploads but no explicit failures, treat as error
       if (successfulUploads.length === 0 && failedUploads.length === 0) {
         console.error('No results processed, treating as failure');
         toast.error('Upload completed but no files were processed successfully');
@@ -3719,7 +3703,7 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
 
     } catch (error) {
       console.error(`Error uploading materials for lesson ${lessonIndex + 1}:`, error);
-      toast.error(`Failed to upload materials for lesson ${lessonIndex + 1}: ${error.message}`);
+      toast.error(t('uploadError', { lesson: lessonIndex + 1 }) + ' ' + error.message);
     } finally {
       setIsUploading(false);
       setUploadProgress(prev => {
@@ -3730,20 +3714,17 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     }
   };
 
-  // ENHANCED: Remove material from lesson
   const removeMaterialFromLesson = (lessonIndex, materialIndex) => {
     const updatedMaterials = [...materials];
     updatedMaterials[lessonIndex].materials.splice(materialIndex, 1);
     setMaterials(updatedMaterials);
 
-    // Auto-save after removal
     const materialsToSave = createCompleteMaterialsList(updatedMaterials);
     onAutoSave(materialsToSave);
-    
-    toast.success('Material removed successfully');
+
+    toast.success(t('removedSuccess'));
   };
 
-  // ENHANCED: Create complete materials list with multiple materials support
   const createCompleteMaterialsList = (currentMaterials) => {
     const completeList = [];
     for (let i = 1; i <= plannedLessons; i++) {
@@ -3751,17 +3732,14 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
       if (existingMaterial) {
         completeList.push({
           lessonNumber: i,
-          // ENHANCED: Multiple materials array
           materials: existingMaterial.materials || [],
-          
-          // LEGACY: Single material fields for backward compatibility
           materialName: existingMaterial.materialName || '',
           materialUrl: existingMaterial.materialUrl || '',
           materialSize: existingMaterial.materialSize || null,
           materialType: existingMaterial.materialType || null,
           hasContent: !!(
             (existingMaterial.materials && existingMaterial.materials.length > 0) ||
-            existingMaterial.materialName || 
+            existingMaterial.materialName ||
             existingMaterial.materialUrl
           )
         });
@@ -3780,38 +3758,33 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     return completeList;
   };
 
-  // ENHANCED: Handle form submit with multiple materials
   const handleSubmit = async (e) => {
     e.preventDefault();
     const materialsToSave = createCompleteMaterialsList(materials);
     onSave(materialsToSave);
-    
-    const totalMaterials = materialsToSave.reduce((count, lesson) => 
+
+    const totalMaterials = materialsToSave.reduce((count, lesson) =>
       count + (lesson.materials ? lesson.materials.length : 0), 0
     );
-    
-    toast.success(`Course materials saved for all ${plannedLessons} lessons (${totalMaterials} total files)`);
+
+    toast.success(t('materialsSaved', { count: plannedLessons, total: totalMaterials }));
     onClose();
   };
 
-  // ENHANCED: Get total materials count for a lesson
   const getLessonMaterialsCount = (lesson) => {
     let count = 0;
-    
-    // Count multiple materials
+
     if (lesson.materials && lesson.materials.length > 0) {
       count += lesson.materials.length;
     }
-    
-    // Count legacy single material if not already counted
+
     if (lesson.materialUrl && !lesson.materials?.some(m => m.url === lesson.materialUrl)) {
       count += 1;
     }
-    
+
     return count;
   };
 
-  // ENHANCED: Download material file
   const downloadMaterial = (material) => {
     if (material.url) {
       const link = document.createElement('a');
@@ -3823,7 +3796,6 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     }
   };
 
-  // ENHANCED: Preview material file
   const previewMaterial = (material) => {
     if (material.url) {
       window.open(material.url, '_blank');
@@ -3834,40 +3806,38 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
     <SlidePanel
       isOpen={isOpen}
       onClose={() => !isUploading && onClose()}
-      title={`Add Course Materials (${plannedLessons} Lessons)`}
+      title={t('panelTitle', { count: plannedLessons })}
       size="lg"
     >
       <div style={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
         <Form onSubmit={handleSubmit} className="h-100 d-flex flex-column">
           <Alert variant="info" className="mb-3 flex-shrink-0">
             <FaInfoCircle className="me-2" />
-            Add multiple materials for each lesson. You can upload multiple files per lesson.
+            {t('infoMessage')}
             <br />
-            <strong>All {plannedLessons} lessons will be saved</strong> (including empty ones).
+            <strong>{t('allLessonsSaved', { count: plannedLessons })}</strong> {t('includingEmpty')}.
           </Alert>
 
-          {/* FIXED: Scrollable content area with fixed height */}
           <div className="flex-grow-1 overflow-auto" style={{ maxHeight: 'calc(80vh - 200px)' }}>
             {materials.map((material, index) => {
               const materialsCount = getLessonMaterialsCount(material);
-              
+
               return (
                 <Card key={index} className="mb-3 border flex-shrink-0">
                   <Card.Header className={`py-2 ${materialsCount > 0 ? 'bg-success bg-opacity-10' : 'bg-light'}`}>
                     <div className="d-flex justify-content-between align-items-center">
-                      <h6 className="mb-0">Lesson {material.lessonNumber}</h6>
+                      <h6 className="mb-0">{t('lessonLabel')} {material.lessonNumber}</h6>
                       {materialsCount > 0 && (
                         <Badge bg="success" size="sm">
                           <FaFileAlt className="me-1" size={10} />
-                          {materialsCount} File{materialsCount !== 1 ? 's' : ''}
+                          {materialsCount} {t('filesLabel')}
                         </Badge>
                       )}
                     </div>
                   </Card.Header>
                   <Card.Body className="py-3">
-                    {/* ENHANCED: Multiple Files Upload */}
                     <Form.Group className="mb-3">
-                      <Form.Label>Upload Multiple Files</Form.Label>
+                      <Form.Label>{t('uploadMultiple')}</Form.Label>
                       <Form.Control
                         type="file"
                         accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
@@ -3876,18 +3846,17 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
                         multiple
                       />
                       <Form.Text className="text-muted">
-                        Select multiple files: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG (Max 50MB each)
+                        {t('uploadHelp')}
                       </Form.Text>
                     </Form.Group>
 
-                    {/* ENHANCED: Display uploaded materials with scrollable grid */}
                     {material.materials && material.materials.length > 0 && (
                       <div className="mb-3">
-                        <Form.Label>Uploaded Materials ({material.materials.length})</Form.Label>
-                        <div 
-                          className="materials-grid-container" 
-                          style={{ 
-                            maxHeight: '200px', 
+                        <Form.Label>{t('uploadedMaterials')} ({material.materials.length})</Form.Label>
+                        <div
+                          className="materials-grid-container"
+                          style={{
+                            maxHeight: '200px',
                             overflowY: 'auto',
                             border: '1px solid #dee2e6',
                             borderRadius: '0.375rem',
@@ -3911,25 +3880,23 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
                       </div>
                     )}
 
-                    {/* Upload Progress */}
                     {uploadProgress[index] && (
                       <div className="mt-2 p-2 bg-warning bg-opacity-10 rounded">
                         <div className="d-flex align-items-center justify-content-between">
                           <div className="d-flex align-items-center">
                             <FaFileAlt className="me-2 text-warning" />
-                            <span className="text-warning">Uploading materials...</span>
+                            <span className="text-warning">{t('uploadingMessage')}</span>
                           </div>
                           <CircleProgress progress={uploadProgress[index]} size={30} />
                         </div>
                       </div>
                     )}
 
-                    {/* Status Display */}
                     {materialsCount > 0 && !uploadProgress[index] && (
                       <div className="mt-2 p-2 bg-success bg-opacity-10 rounded">
                         <div className="d-flex align-items-center">
                           <FaFileAlt className="me-2 text-success" />
-                          <span className="text-success">{materialsCount} material(s) uploaded successfully</span>
+                          <span className="text-success">{materialsCount} {t('uploadedSuccess')}</span>
                         </div>
                       </div>
                     )}
@@ -3938,7 +3905,7 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
                       <div className="mt-2 p-2 bg-light rounded">
                         <div className="d-flex align-items-center">
                           <FaFileAlt className="me-2 text-muted" />
-                          <span className="text-muted">No materials added yet</span>
+                          <span className="text-muted">{t('noMaterialsAdded')}</span>
                         </div>
                       </div>
                     )}
@@ -3948,16 +3915,15 @@ const CourseMaterialsPanel = ({ isOpen, onClose, onSave, onAutoSave, plannedLess
             })}
           </div>
 
-          {/* FIXED: Footer area with fixed position */}
           <div className="mt-3 pt-3 border-top flex-shrink-0">
             <div className="d-grid">
               <Button variant="primary" type="submit" disabled={isUploading}>
                 {isUploading ? (
                   <>
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                    Uploading Materials...
+                    {t('uploadingButton')}
                   </>
-                ) : `Save Course Materials (All ${plannedLessons} Lessons)`}
+                ) : t('saveButton', { count: plannedLessons })}
               </Button>
             </div>
           </div>
@@ -3976,7 +3942,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     saveAdditionalInfo,
     courseLoading,
     courseLoadError,
-    // ENHANCED: Use new context methods
     uploadVideoWithMaterials,
     validateFile,
     generateFilePreview
@@ -3987,17 +3952,23 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
   const [courseMaterials, setCourseMaterials] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  // Dynamic localStorage key based on mode
+  // Translation hooks
+  const t = useTranslations('instructor.course.step3');
+  const tLive = useTranslations('instructor.course.step3.liveCourse');
+  const tRecorded = useTranslations('instructor.course.step3.recorded');
+  const tModule = useTranslations('instructor.course.step3.module');
+  const tVideo = useTranslations('instructor.course.step3.video');
+  const tUpload = useTranslations('instructor.course.step3.upload');
+  const tButtons = useTranslations('instructor.course.step3.buttons');
+
   const STEP3_STORAGE_KEY = `${mode}_course_step3_data`;
 
-  // Panel state (keeping original)
   const [showModulePanel, setShowModulePanel] = useState(false);
   const [showVideoPanel, setShowVideoPanel] = useState(false);
   const [showMaterialsPanel, setShowMaterialsPanel] = useState(false);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(null);
   const [editMode, setEditMode] = useState(false);
 
-  // Form state (keeping original + enhanced multiple materials)
   const [moduleTitle, setModuleTitle] = useState('');
   const [moduleDescription, setModuleDescription] = useState('');
 
@@ -4009,43 +3980,35 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(null);
 
-  // ENHANCED: Multiple material files support
   const [materialFiles, setMaterialFiles] = useState([]);
 
-  // Chunked upload progress state (keeping original)
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadPhase, setUploadPhase] = useState('idle');
   const [chunkInfo, setChunkInfo] = useState('');
   const [uploadSpeed, setUploadSpeed] = useState('');
   const [timeRemaining, setTimeRemaining] = useState('');
 
-  // Confirmation dialog state (keeping original)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [deleteType, setDeleteType] = useState('');
   const [deleteIndexes, setDeleteIndexes] = useState({ moduleIndex: null, videoIndex: null });
   const [confirmMessage, setConfirmMessage] = useState('');
   const [confirmTitle, setConfirmTitle] = useState('');
 
-  // Accordion state (keeping original)
   const [activeKey, setActiveKey] = useState('0');
   const [isMounted, setIsMounted] = useState(false);
 
-  // Load data based on mode and priority - FOLLOWING STEP1/STEP2 PATTERN
   useEffect(() => {
     const loadData = () => {
       if (mode === 'edit') {
-        // In edit mode, prioritize course data from API
         if (courseData && courseData._id && !dataLoaded) {
           console.log('Edit mode: Loading course curriculum data into form', courseData);
           populateFormWithCourseData();
           setDataLoaded(true);
         } else if (!courseData._id && !courseLoading && !dataLoaded) {
-          // If no course data and not loading, try localStorage
           loadFromLocalStorage();
           setDataLoaded(true);
         }
       } else {
-        // Create mode - always try localStorage first
         if (!dataLoaded) {
           loadFromLocalStorage();
           setDataLoaded(true);
@@ -4054,37 +4017,28 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     };
 
     loadData();
-
-    // REMOVED: The problematic reset logic that was causing infinite re-renders
-    // This was the main cause: if (mode === 'edit' && courseData._id && dataLoaded) { setDataLoaded(false); }
-
   }, [courseData._id, mode, courseLoading, dataLoaded]);
 
   useEffect(() => {
-    // Only reset and reload when courseData._id actually changes (not on every courseData update)
     if (mode === 'edit' && courseData._id && dataLoaded) {
       console.log('Course ID changed, reloading data...');
       setDataLoaded(false);
     }
   }, [courseData._id, mode]);
 
-  // Function to populate form with course data (edit mode)
   const populateFormWithCourseData = () => {
     console.log('Populating Step 3 form with course data:', {
       modules: courseData.modules,
       liveCourseMeta: courseData.liveCourseMeta
     });
 
-    // Fix modules loading with better error handling
     if (courseData.modules && Array.isArray(courseData.modules) && courseData.modules.length > 0) {
       console.log('Loading modules from courseData:', courseData.modules);
 
-      // Clean up any persisting upload states on load for edit mode
       const cleanModules = courseData.modules.map(module => ({
         ...module,
         videos: (module.videos || []).map(video => ({
           ...video,
-          // Reset upload states that shouldn't persist
           status: video.url && !video.url.includes('/api/course/upload/finalize/') ? 'completed' : video.status,
           progress: video.url && !video.url.includes('/api/course/upload/finalize/') ? 100 : 0,
           uploadPhase: video.url && !video.url.includes('/api/course/upload/finalize/') ? 'completed' : 'idle',
@@ -4101,7 +4055,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       setModules([]);
     }
 
-    // Fix live course data loading
     if (courseData.type === 'live') {
       if (courseData.liveCourseMeta?.plannedLessons) {
         console.log('Setting plannedLessons:', courseData.liveCourseMeta.plannedLessons);
@@ -4129,7 +4082,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     });
   }, [mode, courseData?._id, modules.length, plannedLessons, courseMaterials.length, dataLoaded, courseLoading]);
 
-  // Function to load from localStorage
   const loadFromLocalStorage = () => {
     const savedData = localStorage.getItem(STEP3_STORAGE_KEY);
     if (savedData) {
@@ -4138,12 +4090,10 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         console.log(`${mode} mode: Loading Step 3 data from localStorage`);
 
         if (parsedData?.modules?.length > 0) {
-          // Clean up any persisting upload states on load
           const cleanModules = parsedData.modules.map(module => ({
             ...module,
             videos: module.videos.map(video => ({
               ...video,
-              // Reset upload states that shouldn't persist
               status: video.url && !video.url.includes('/api/course/upload/finalize/') ? 'completed' : video.status,
               progress: video.url && !video.url.includes('/api/course/upload/finalize/') ? 100 : 0,
               uploadPhase: video.url && !video.url.includes('/api/course/upload/finalize/') ? 'completed' : 'idle',
@@ -4176,7 +4126,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Save form data to localStorage when submitting
   const saveFormToLocalStorage = (data) => {
     localStorage.setItem(STEP3_STORAGE_KEY, JSON.stringify(data));
   };
@@ -4188,7 +4137,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     };
   }, []);
 
-  // Save curriculum to database (keeping original)
   const saveCurriculumToDatabase = async (modulesData) => {
     try {
       const token = document.cookie.split('; ').find(row => row.startsWith('authToken='))?.split('=')[1];
@@ -4217,19 +4165,17 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Handle module operations (keeping original)
   const handleModuleSubmit = (e) => {
     if (e) e.preventDefault();
 
     if (!moduleTitle.trim()) {
-      toast.error('Module title is required');
+      toast.error(tModule('titleRequired'));
       return;
     }
 
     console.log('handleModuleSubmit:', { editMode, currentModuleIndex, moduleTitle });
 
     if (editMode && currentModuleIndex !== null) {
-      // Edit existing module
       const updatedModules = [...modules];
       updatedModules[currentModuleIndex] = {
         ...updatedModules[currentModuleIndex],
@@ -4238,9 +4184,8 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       };
       console.log('Updated modules (edit):', updatedModules);
       setModules(updatedModules);
-      toast.success('Module updated successfully');
+      toast.success(tModule('updatedSuccess'));
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules: updatedModules,
         plannedLessons: parseInt(plannedLessons) || 0,
@@ -4251,7 +4196,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       });
 
-      // FIXED: Auto-save to database in edit mode
       if (mode === 'edit' && courseData._id) {
         saveCurriculumToDatabase(updatedModules).catch(error => {
           console.error('Failed to auto-save curriculum:', error);
@@ -4259,7 +4203,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         });
       }
     } else {
-      // Add new module
       const newModule = {
         title: moduleTitle,
         description: moduleDescription,
@@ -4269,10 +4212,9 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       const updatedModules = [...modules, newModule];
       console.log('Updated modules (add):', updatedModules);
       setModules(updatedModules);
-      toast.success('Module added successfully');
+      toast.success(tModule('addedSuccess'));
       setActiveKey((modules.length).toString());
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules: updatedModules,
         plannedLessons: parseInt(plannedLessons) || 0,
@@ -4283,7 +4225,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       });
 
-      // FIXED: Auto-save to database in edit mode
       if (mode === 'edit' && courseData._id) {
         saveCurriculumToDatabase(updatedModules).catch(error => {
           console.error('Failed to auto-save curriculum:', error);
@@ -4292,7 +4233,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       }
     }
 
-    // Reset form state
     setModuleTitle('');
     setModuleDescription('');
     setEditMode(false);
@@ -4300,17 +4240,16 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     setShowModulePanel(false);
   };
 
-  // ENHANCED: Video submit with multiple materials using context
   const handleVideoSubmit = async (e) => {
     if (e) e.preventDefault();
 
     if (!videoTitle.trim()) {
-      toast.error('Video title is required');
+      toast.error(tVideo('titleRequired'));
       return;
     }
 
     if (!videoFile && !editMode) {
-      toast.error('Video file is required');
+      toast.error(tVideo('fileRequired'));
       return;
     }
 
@@ -4321,9 +4260,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     try {
       let videoResult = null;
 
-      // ENHANCED: Upload video with materials using context
       if (videoFile) {
-        // Prepare material files array
         const materialFilesToUpload = materialFiles.map(fileInfo => fileInfo.file || fileInfo);
 
         videoResult = await uploadVideoWithMaterials(
@@ -4339,7 +4276,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         );
       }
 
-      // Create video object with enhanced materials support
       const videoData = {
         title: videoTitle,
         description: videoDescription,
@@ -4352,7 +4288,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         })
       };
 
-      // Handle editing or adding video (keeping original logic)
       let updatedModules = [...modules];
 
       if (editMode && currentVideoIndex !== null) {
@@ -4366,14 +4301,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
 
       setModules(updatedModules);
 
-      // FIXED: Save to database and context in both modes
       if (mode === 'edit' && courseData._id) {
         await saveCurriculumToDatabase(updatedModules);
       }
 
       setCourseData(prev => ({ ...prev, modules: [...updatedModules] }));
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules: updatedModules,
         plannedLessons: parseInt(plannedLessons) || 0,
@@ -4384,9 +4317,8 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       });
 
-      toast.success(editMode ? 'Video updated successfully' : 'Video added successfully');
+      toast.success(editMode ? tVideo('updatedSuccess') : tVideo('addedSuccess'));
 
-      // Reset form
       setVideoTitle('');
       setVideoDescription('');
       setVideoFile(null);
@@ -4399,9 +4331,8 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
 
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Upload failed: ' + error.message);
+      toast.error(tUpload('uploadFailed') + ' ' + error.message);
 
-      // Update video status to failed if in modules
       if (currentModuleIndex !== null) {
         setModules(prevModules => {
           const updatedModules = [...prevModules];
@@ -4429,7 +4360,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // ENHANCED: Handle video file changes with validation
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -4438,7 +4368,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         if (isValid) {
           setVideoFile(file);
 
-          // Generate thumbnail using context
           try {
             const preview = await generateFilePreview(file);
             setVideoThumbnail(preview.preview);
@@ -4453,12 +4382,10 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // ENHANCED: Handle multiple material files
   const handleMaterialFilesChange = async (e) => {
     const files = Array.from(e.target.files);
 
     try {
-      // Validate all files
       for (const file of files) {
         const isValid = await validateFile(file, 'material');
         if (!isValid) {
@@ -4467,7 +4394,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       }
 
-      // Generate previews for new files
       const newMaterialFiles = [...materialFiles];
 
       for (const file of files) {
@@ -4476,7 +4402,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       }
 
       setMaterialFiles(newMaterialFiles);
-      e.target.value = ''; // Reset input
+      e.target.value = '';
 
     } catch (error) {
       toast.error(error.message);
@@ -4484,7 +4410,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // ENHANCED: Handle material file actions
   const handleMaterialFileAction = (action, fileInfo) => {
     switch (action) {
       case 'remove':
@@ -4506,7 +4431,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Edit and delete handlers (keeping original logic)
   const handleModuleEdit = (index) => {
     setModuleTitle(modules[index].title);
     setModuleDescription(modules[index].description || '');
@@ -4521,7 +4445,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     setVideoDescription(video.description || '');
     setIsPreview(video.isPreview || false);
 
-    // ENHANCED: Handle multiple materials in edit mode
     if (video.materials && video.materials.length > 0) {
       setMaterialFiles(video.materials.map(material => ({
         name: material.name || material.fileName,
@@ -4532,7 +4455,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         icon: '📁'
       })));
     } else if (video.materialUrl) {
-      // Legacy single material support
       setMaterialFiles([{
         name: video.materialName || 'Course Material',
         size: video.materialSize || 0,
@@ -4557,12 +4479,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
 
     setDeleteType('module');
     setDeleteIndexes({ moduleIndex: index, videoIndex: null });
-    setConfirmTitle('Delete Module');
+    setConfirmTitle(tModule('confirmDeleteTitle'));
     setConfirmMessage(
-      `Are you sure you want to delete the module "${moduleName}"? ${videoCount > 0
-        ? `This will also delete ${videoCount} video${videoCount !== 1 ? 's' : ''}.`
-        : ''
-      } This action cannot be undone.`
+      tModule('confirmDeleteMessage', {
+        name: moduleName,
+        count: videoCount
+      })
     );
     setShowConfirmDelete(true);
   };
@@ -4572,9 +4494,9 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
 
     setDeleteType('video');
     setDeleteIndexes({ moduleIndex, videoIndex });
-    setConfirmTitle('Delete Video');
+    setConfirmTitle(tVideo('confirmDeleteTitle'));
     setConfirmMessage(
-      `Are you sure you want to delete the video "${videoName}"? This action cannot be undone.`
+      tVideo('confirmDeleteMessage', { name: videoName })
     );
     setShowConfirmDelete(true);
   };
@@ -4590,9 +4512,8 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       });
 
       setModules(updatedModules);
-      toast.success('Module deleted successfully');
+      toast.success(tModule('deletedSuccess'));
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules: updatedModules,
         plannedLessons: parseInt(plannedLessons) || 0,
@@ -4607,9 +4528,8 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       const updatedModules = [...modules];
       updatedModules[moduleIndex].videos.splice(videoIndex, 1);
       setModules(updatedModules);
-      toast.success('Video deleted successfully');
+      toast.success(tVideo('deletedSuccess'));
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules: updatedModules,
         plannedLessons: parseInt(plannedLessons) || 0,
@@ -4626,15 +4546,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     setShowConfirmDelete(false);
   };
 
-  // FIXED: Auto-save function for live course materials
   const handleAutoSaveCourseMaterials = async (materials) => {
     try {
       console.log('Auto-saving live course materials:', materials);
 
-      // Update local state immediately
       setCourseMaterials(materials);
 
-      // Save to localStorage for persistence
       saveFormToLocalStorage({
         modules,
         courseMaterials: materials,
@@ -4645,7 +4562,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       });
 
-      // Auto-save to database if courseId exists
       if (courseData?._id) {
         try {
           const saveData = {
@@ -4660,7 +4576,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           if (success) {
             console.log('✅ Live course materials auto-saved to database');
 
-            // Update course context
             setCourseData(prev => ({
               ...prev,
               liveCourseMeta: {
@@ -4674,7 +4589,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           }
         } catch (error) {
           console.error('❌ Auto-save to database error:', error);
-          // Don't show error to user for auto-save, just log it
         }
       }
     } catch (error) {
@@ -4682,16 +4596,13 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Course materials handlers (keeping original logic)
   const handleSaveCourseMaterials = async (materials) => {
     try {
       console.log('Saving live course materials:', materials);
 
-      // Update local state
       setCourseMaterials(materials);
       setShowMaterialsPanel(false);
 
-      // Save to localStorage
       saveFormToLocalStorage({
         modules,
         courseMaterials: materials,
@@ -4702,7 +4613,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         }
       });
 
-      // Save to database
       if (courseData?._id) {
         try {
           const saveData = {
@@ -4715,7 +4625,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           const success = await saveAdditionalInfo(saveData);
 
           if (success) {
-            // Update course context
             setCourseData(prev => ({
               ...prev,
               liveCourseMeta: {
@@ -4725,8 +4634,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               }
             }));
 
-            // Calculate total materials for success message
-            const totalMaterials = materials.reduce((count, lesson) => 
+            const totalMaterials = materials.reduce((count, lesson) =>
               count + (lesson.materials ? lesson.materials.length : 0), 0
             );
 
@@ -4747,7 +4655,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     }
   };
 
-  // Save and navigation handlers (keeping original logic)
   const handleSaveLiveCourseInfo = async () => {
     if (!plannedLessons || plannedLessons === '' || parseInt(plannedLessons, 10) <= 0) {
       toast.error('Please enter a valid number of lessons');
@@ -4764,16 +4671,14 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
         if (existingMaterial) {
           completeCourseMaterials.push({
             lessonNumber: i,
-            // ENHANCED: Multiple materials support
             materials: existingMaterial.materials || [],
-            // LEGACY: Single material support
             materialName: existingMaterial.materialName || '',
             materialUrl: existingMaterial.materialUrl || '',
             materialSize: existingMaterial.materialSize || null,
             materialType: existingMaterial.materialType || null,
             hasContent: !!(
               (existingMaterial.materials && existingMaterial.materials.length > 0) ||
-              existingMaterial.materialName || 
+              existingMaterial.materialName ||
               existingMaterial.materialUrl
             )
           });
@@ -4809,7 +4714,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           }
         }));
 
-        // Update localStorage with complete data
         saveFormToLocalStorage({
           modules,
           plannedLessons: numericPlannedLessons,
@@ -4873,47 +4777,63 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     setShowVideoPanel(true);
   };
 
-  // Show loading spinner if course is still loading in edit mode
+  // Download and preview material functions
+  const downloadMaterial = (material) => {
+    if (material.url) {
+      const link = document.createElement('a');
+      link.href = material.url;
+      link.download = material.name || 'download';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const previewMaterial = (material) => {
+    if (material.url) {
+      window.open(material.url, '_blank');
+    }
+  };
+
   if (mode === 'edit' && courseLoading) {
     return (
       <div id="step-3" role="tabpanel" className="content fade" aria-labelledby="steppertrigger3">
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <div className="text-center">
             <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>Loading course curriculum...</h5>
-            <p className="text-muted">Please wait while we fetch your course information.</p>
+            <h5>{t('loadingCurriculum')}</h5>
+            <p className="text-muted">{t('loadingSubtext')}</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Show error if in edit mode but failed to load course data
   if (mode === 'edit' && !courseLoading && !courseData._id && courseLoadError) {
     return (
       <div id="step-3" role="tabpanel" className="content fade" aria-labelledby="steppertrigger3">
         <Alert variant="danger">
-          <h5>Error Loading Course Curriculum</h5>
-          <p>Unable to load course curriculum data: {courseLoadError}</p>
+          <h5>{t('errorLoadingTitle')}</h5>
+          <p>{t('errorLoadingMessage')} {courseLoadError}</p>
           <Button variant="outline-danger" onClick={() => window.location.href = '/instructor/manage-course'}>
-            Back to Course Management
+            {t('backToCourseManagement')}
           </Button>
         </Alert>
       </div>
     );
   }
 
-  // ENHANCED: Special UI for live courses with multiple materials support
+  // LIVE COURSE UI
   if (courseData && courseData.type === 'live') {
     return (
       <div id="step-3" role="tabpanel" className="content fade" aria-labelledby="steppertrigger3">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h4>
-            {mode === 'edit' ? 'Edit Course Curriculum' : 'Course Curriculum'}
+            {mode === 'edit' ? t('editTitle') : t('title')}
           </h4>
           {mode === 'edit' && courseData._id && (
             <div className="text-muted small">
-              Editing: {courseData.title}
+              {t('editingLabel')} {courseData.title}
             </div>
           )}
         </div>
@@ -4931,10 +4851,9 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                     />
                   </div>
                   <div>
-                    <h5 className="mb-2">Define the count of lessons in your course</h5>
+                    <h5 className="mb-2">{tLive('defineTitle')}</h5>
                     <p className="text-muted font-normal fs-5 fw-normal mb-4">
-                      Keep in mind that live-courses need to have a count which has always same amount of lessons per day
-                      (e.g. 3 days with 2 lessons = 6 lessons)
+                      {tLive('defineDescription')}
                     </p>
 
                     <div className="d-flex align-items-center">
@@ -4947,7 +4866,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                         min="1"
                         placeholder="0"
                       />
-                      <span className='font-normal fs-5 fw-normal'>lessons</span>
+                      <span className='font-normal fs-5 fw-normal'>{tLive('lessons')}</span>
                     </div>
                   </div>
                 </div>
@@ -4955,7 +4874,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
             </Col>
           </Row>
 
-          {/* ENHANCED: Course Materials Section for Live Courses with Multiple Materials */}
           {plannedLessons && parseInt(plannedLessons) > 0 && (
             <Row className="mb-4">
               <Col lg={12}>
@@ -4964,7 +4882,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                     <div className="d-flex justify-content-between align-items-center">
                       <h5 className="mb-0">
                         <FaFileAlt className="me-2" />
-                        Course Materials ({parseInt(plannedLessons)} Lessons)
+                        {tLive('courseMaterialsTitle')} ({parseInt(plannedLessons)} {tLive('lessons')})
                       </h5>
                       <Button
                         variant="primary"
@@ -4972,36 +4890,34 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                         onClick={() => setShowMaterialsPanel(true)}
                       >
                         <FaPlus className="me-1" />
-                        {courseMaterials && courseMaterials.length > 0 ? 'Edit Materials' : 'Add Course Files'}
+                        {courseMaterials && courseMaterials.length > 0 ? tLive('editMaterials') : tLive('addCourseFiles')}
                       </Button>
                     </div>
                   </Card.Header>
                   <Card.Body>
                     <div>
-                      {/* ENHANCED: Calculate total materials count including multiple materials */}
                       {(() => {
-                        const lessonsWithContent = courseMaterials.filter(m => 
+                        const lessonsWithContent = courseMaterials.filter(m =>
                           (m.materials && m.materials.length > 0) || m.materialName || m.materialUrl
                         ).length;
-                        const totalMaterials = courseMaterials.reduce((count, lesson) => 
+                        const totalMaterials = courseMaterials.reduce((count, lesson) =>
                           count + (lesson.materials ? lesson.materials.length : (lesson.materialUrl ? 1 : 0)), 0
                         );
-                        
+
                         return (
                           <p className="mb-3">
                             <FaFileAlt className="me-2 text-info" />
-                            Course materials setup: {lessonsWithContent} of {parseInt(plannedLessons)} lessons have content ({totalMaterials} total files).
+                            {tLive('courseMaterialsSetup')} {lessonsWithContent} {tLive('lessonsHaveContent')} {parseInt(plannedLessons)} {tLive('lessonsHaveContentSuffix')} ({totalMaterials} {tLive('totalFiles')}).
                           </p>
                         );
                       })()}
 
-                      {/* ENHANCED: Show ALL lessons with accordion for file display */}
                       <div className="row">
                         {Array.from({ length: parseInt(plannedLessons) }, (_, index) => {
                           const lessonNumber = index + 1;
                           const material = courseMaterials.find(m => m.lessonNumber === lessonNumber);
-                          const materialsCount = material ? 
-                            (material.materials ? material.materials.length : 0) + (material.materialUrl && !material.materials?.some(m => m.url === material.materialUrl) ? 1 : 0) 
+                          const materialsCount = material ?
+                            (material.materials ? material.materials.length : 0) + (material.materialUrl && !material.materials?.some(m => m.url === material.materialUrl) ? 1 : 0)
                             : 0;
                           const hasContent = materialsCount > 0;
 
@@ -5018,18 +4934,18 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                             className={`me-3 ${hasContent ? 'text-success' : 'text-muted'}`}
                                           />
                                           <div>
-                                            <div className="fw-bold">Lesson {lessonNumber}</div>
-                                            <small >
+                                            <div className="fw-bold">{tLive('lessons')} {lessonNumber}</div>
+                                            <small>
                                               {hasContent ? (
-                                                `${materialsCount} file${materialsCount !== 1 ? 's' : ''} attached`
+                                                `${materialsCount} ${tLive('filesAttached')}`
                                               ) : (
-                                                'No materials'
+                                                tLive('noMaterials')
                                               )}
                                             </small>
                                           </div>
                                         </div>
-                                        <Badge 
-                                          bg={hasContent ? 'success' : 'light'} 
+                                        <Badge
+                                          bg={hasContent ? 'success' : 'light'}
                                           text={hasContent ? 'white' : 'dark'}
                                           className="ms-2"
                                         >
@@ -5043,11 +4959,10 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                           <div className="mb-3">
                                             <small className="text-muted">
                                               <FaFileAlt className="me-1" size={12} />
-                                              Materials for Lesson {lessonNumber}
+                                              {tLive('materialsForLesson')} {lessonNumber}
                                             </small>
                                           </div>
-                                          
-                                          {/* Display multiple materials */}
+
                                           {material.materials && material.materials.length > 0 && (
                                             <div className="materials-grid d-flex flex-wrap gap-2 mb-3">
                                               {material.materials.map((materialFile, materialIndex) => (
@@ -5056,13 +4971,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                                   material={materialFile}
                                                   onPreview={() => previewMaterial(materialFile)}
                                                   onDownload={() => downloadMaterial(materialFile)}
-                                                  showRemove={false} // Don't show remove in main view
+                                                  showRemove={false}
                                                 />
                                               ))}
                                             </div>
                                           )}
 
-                                          {/* Display legacy single material if exists and not in materials array */}
                                           {material.materialUrl && !material.materials?.some(m => m.url === material.materialUrl) && (
                                             <div className="materials-grid d-flex flex-wrap gap-2 mb-3">
                                               <MaterialFileCard
@@ -5088,7 +5002,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                           <div className="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
                                             <small className="text-success">
                                               <FaCheck className="me-1" size={10} />
-                                              {materialsCount} file{materialsCount !== 1 ? 's' : ''} ready
+                                              {materialsCount} {tLive('filesReady')}
                                             </small>
                                             <Button
                                               variant="outline-primary"
@@ -5096,14 +5010,14 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                               onClick={() => setShowMaterialsPanel(true)}
                                             >
                                               <FaEdit className="me-1" size={12} />
-                                              Edit Materials
+                                              {tLive('editMaterials')}
                                             </Button>
                                           </div>
                                         </div>
                                       ) : (
                                         <div className="text-center py-4">
                                           <FaFileAlt className="text-muted mb-2" size={24} />
-                                          <div className="text-muted">No materials added yet</div>
+                                          <div className="text-muted">{tLive('noMaterialsYet')}</div>
                                           <Button
                                             variant="primary"
                                             size="sm"
@@ -5111,7 +5025,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                                             onClick={() => setShowMaterialsPanel(true)}
                                           >
                                             <FaPlus className="me-1" size={12} />
-                                            Add Materials
+                                            {tLive('addMaterials')}
                                           </Button>
                                         </div>
                                       )}
@@ -5131,19 +5045,20 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           )}
 
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4>Uploading your lessons</h4>
+            <h4>{tLive('uploadingLessons')}</h4>
           </div>
           <hr />
 
           <div className="text-center py-5">
             <div className="bg-light p-5 rounded-3 mb-4">
               <FaInfoCircle className="text-primary mb-3" style={{ fontSize: '2.5rem' }} />
-              <h4>No pre-defined curriculum in live courses</h4>
+              <h4>{tLive('noPrerecordedTitle')}</h4>
               <p className="text-muted mb-4">
-                Live-Courses have no prerecorded courses. You'll set up your sessions schedule in last step.
+                {tLive('noPrerecordedDescription')}
               </p>
             </div>
           </div>
+
 
           <div className="d-flex justify-content-between">
             <Button
@@ -5152,7 +5067,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               disabled={isLoading}
               className="mb-0"
             >
-              Previous
+              {tButtons('previous')}
             </Button>
             <Button
               variant="primary"
@@ -5163,11 +5078,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               {isLoading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                  {mode === 'edit' ? 'Updating...' : 'Saving...'}
+                  {mode === 'edit' ? tButtons('updating') : tButtons('saving')}
                 </>
-              ) : 'Continue to Next Step'}
+              ) : tButtons('continueNext')}
             </Button>
           </div>
+
         </div>
 
         {/* ENHANCED: Course Materials Panel with Multiple Materials Support */}
@@ -5189,11 +5105,11 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
     <div id="step-3" role="tabpanel" className="content fade" aria-labelledby="steppertrigger3">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>
-          {mode === 'edit' ? 'Edit Course Curriculum' : 'Course Curriculum'}
+          {mode === 'edit' ? t('editTitle') : t('title')}
         </h4>
         {mode === 'edit' && courseData._id && (
           <div className="text-muted small">
-            Editing: {courseData.title}
+            {t('editingLabel')} {courseData.title}
           </div>
         )}
       </div>
@@ -5205,7 +5121,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           setModuleDescription('');
           setShowModulePanel(true);
         }}>
-          <FaPlus className="me-2" /> Add Module
+          <FaPlus className="me-2" /> {tRecorded('addModule')}
         </Button>
       </div>
       <hr />
@@ -5213,17 +5129,15 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
       <div className="alert alert-info d-flex align-items-center mb-4">
         <FaInfoCircle className="me-2 flex-shrink-0" size={18} />
         <div>
-          <strong>Build Your Curriculum:</strong> Add modules and upload videos to create your course content.
-          Each module can contain multiple videos. Mark videos as "Preview" to allow non-enrolled users to watch them.
-          You can also attach multiple course materials (PDFs, documents) to each video.
+          <strong>{tRecorded('buildCurriculumTitle')}</strong> {tRecorded('buildCurriculumDescription')}
         </div>
       </div>
 
       {modules.length === 0 ? (
         <div className="text-center py-5 bg-light rounded">
           <FaExclamationTriangle className="text-warning mb-3" style={{ fontSize: '3rem' }} />
-          <h5>No modules added yet</h5>
-          <p className="text-muted">Start building your course by adding a module</p>
+          <h5>{tRecorded('noModulesTitle')}</h5>
+          <p className="text-muted">{tRecorded('noModulesDescription')}</p>
           <Button
             variant="primary"
             onClick={() => {
@@ -5233,7 +5147,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               setShowModulePanel(true);
             }}
           >
-            <FaPlus className="me-2" /> Add First Module
+            <FaPlus className="me-2" /> {tRecorded('addFirstModule')}
           </Button>
         </div>
       ) : (
@@ -5255,16 +5169,16 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                       {module.title}
                     </div>
                     <Badge bg="info" pill className="ms-2">
-                      {module.videos.length} video{module.videos.length !== 1 ? 's' : ''}
+                      {module.videos.length} {tRecorded('videos')}
                     </Badge>
                   </div>
                 </Accordion.Header>
                 <Accordion.Body className="bg-light">
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                      <h6 className="mb-1">Module Description</h6>
+                      <h6 className="mb-1">{tRecorded('moduleDescription')}</h6>
                       <p className="text-muted mb-0">
-                        {module.description || 'No description provided'}
+                        {module.description || tRecorded('noDescriptionProvided')}
                       </p>
                     </div>
                     <div className='d-flex pl-3'>
@@ -5274,14 +5188,14 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                         className="me-1"
                         onClick={() => handleModuleEdit(moduleIndex)}
                       >
-                        <FaEdit /> Edit
+                        <FaEdit /> {tRecorded('editModule')}
                       </Button>
                       <Button
                         variant="outline-danger"
                         size="sm"
                         onClick={() => showDeleteModuleConfirm(moduleIndex)}
                       >
-                        <FaTimes /> Delete
+                        <FaTimes /> {tRecorded('deleteModule')}
                       </Button>
                     </div>
                   </div>
@@ -5302,7 +5216,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                       ))
                     ) : (
                       <div className="text-center py-4 bg-white rounded shadow-sm">
-                        <p className="text-muted mb-0">No videos added to this module yet</p>
+                        <p className="text-muted mb-0">{tRecorded('noVideos')}</p>
                       </div>
                     )}
                   </div>
@@ -5313,7 +5227,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
                       size="sm"
                       onClick={() => openAddVideoPanel(moduleIndex)}
                     >
-                      <FaPlus className="me-2" /> Add Video
+                      <FaPlus className="me-2" /> {tRecorded('addVideo')}
                     </Button>
                   </div>
                 </Accordion.Body>
@@ -5323,33 +5237,33 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
 
           <div className="d-flex justify-content-between mt-3">
             <Button variant="light" onClick={handlePrevious} disabled={isLoading} className="px-4">
-              Previous
+              {tButtons('previous')}
             </Button>
             <Button variant="primary" onClick={saveAndContinue} disabled={isLoading} className="px-4">
               {isLoading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                  {mode === 'edit' ? 'Updating...' : 'Saving...'}
+                  {mode === 'edit' ? tButtons('updating') : tButtons('saving')}
                 </>
-              ) : 'Save & Continue'}
+              ) : tButtons('next')}
             </Button>
           </div>
         </Row>
       )}
 
-      {/* Add/Edit Module Panel (keeping original) */}
+      {/* Add/Edit Module Panel */}
       <SlidePanel
         isOpen={showModulePanel}
         onClose={() => setShowModulePanel(false)}
-        title={editMode ? 'Edit Module' : 'Add New Module'}
+        title={editMode ? tModule('editTitle') : tModule('addTitle')}
         size="md"
       >
         <Form onSubmit={handleModuleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Module Title <span className="text-danger">*</span></Form.Label>
+            <Form.Label>{tModule('titleLabel')} <span className="text-danger">*</span></Form.Label>
             <Form.Control
               type="text"
-              placeholder="e.g. Introduction to JavaScript"
+              placeholder={tModule('titlePlaceholder')}
               value={moduleTitle}
               onChange={(e) => setModuleTitle(e.target.value)}
               required
@@ -5357,40 +5271,40 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Module Description</Form.Label>
+            <Form.Label>{tModule('descriptionLabel')}</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Brief description of this module"
+              placeholder={tModule('descriptionPlaceholder')}
               value={moduleDescription}
               onChange={(e) => setModuleDescription(e.target.value)}
             />
             <Form.Text className="text-muted">
-              A good description helps students understand what they'll learn in this module.
+              {tModule('descriptionHelp')}
             </Form.Text>
           </Form.Group>
 
           <div className="d-grid mt-4">
             <Button variant="primary" type="submit">
-              {editMode ? 'Update Module' : 'Add Module'}
+              {editMode ? tModule('updateButton') : tModule('addButton')}
             </Button>
           </div>
         </Form>
       </SlidePanel>
 
-      {/* ENHANCED: Add/Edit Video Panel with Multiple Materials Support */}
+      {/* Add/Edit Video Panel */}
       <SlidePanel
         isOpen={showVideoPanel}
         onClose={() => !isUploading && setShowVideoPanel(false)}
-        title={editMode ? 'Edit Video' : 'Add New Video'}
+        title={editMode ? tVideo('editTitle') : tVideo('addTitle')}
         size="lg"
       >
         <Form onSubmit={handleVideoSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Video Title <span className="text-danger">*</span></Form.Label>
+            <Form.Label>{tVideo('titleLabel')} <span className="text-danger">*</span></Form.Label>
             <Form.Control
               type="text"
-              placeholder="e.g. Introduction to Variables"
+              placeholder={tVideo('titlePlaceholder')}
               value={videoTitle}
               onChange={(e) => setVideoTitle(e.target.value)}
               required
@@ -5399,11 +5313,11 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Video Description</Form.Label>
+            <Form.Label>{tVideo('descriptionLabel')}</Form.Label>
             <Form.Control
               as="textarea"
               rows={2}
-              placeholder="Brief description of this video"
+              placeholder={tVideo('descriptionPlaceholder')}
               value={videoDescription}
               onChange={(e) => setVideoDescription(e.target.value)}
               disabled={isUploading}
@@ -5411,7 +5325,7 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>{editMode ? 'Replace Video File (optional)' : 'Video File'} <span className={editMode ? '' : 'text-danger'}>*</span></Form.Label>
+            <Form.Label>{editMode ? tVideo('fileReplaceLabel') : tVideo('fileLabel')} <span className={editMode ? '' : 'text-danger'}>*</span></Form.Label>
             <Form.Control
               type="file"
               accept="video/*"
@@ -5420,13 +5334,12 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               disabled={isUploading}
             />
             <Form.Text className="text-muted">
-              Maximum file size: 500MB. Supported formats: MP4, WebM, MOV, AVI, QuickTime
+              {tVideo('fileHelp')}
             </Form.Text>
           </Form.Group>
 
-          {/* ENHANCED: Multiple Course Materials Upload Field */}
           <Form.Group className="mb-3">
-            <Form.Label>Course Materials (Optional)</Form.Label>
+            <Form.Label>{tVideo('materialsLabel')}</Form.Label>
             <Form.Control
               type="file"
               accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif"
@@ -5435,14 +5348,13 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               multiple
             />
             <Form.Text className="text-muted">
-              Upload multiple materials (PDF, DOC, PPT, Images, etc.) - Max 50MB per file
+              {tVideo('materialsHelp')}
             </Form.Text>
           </Form.Group>
 
-          {/* ENHANCED: Material Files Preview */}
           {materialFiles.length > 0 && (
             <div className="mb-3">
-              <Form.Label>Selected Materials ({materialFiles.length})</Form.Label>
+              <Form.Label>{tVideo('selectedMaterials')} ({materialFiles.length})</Form.Label>
               <div className="material-files-preview">
                 {materialFiles.map((fileInfo, index) => (
                   <FilePreviewCard
@@ -5457,7 +5369,6 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
             </div>
           )}
 
-          {/* ENHANCED: Chunked Upload Progress */}
           {isUploading && videoFile && (
             <ChunkedUploadPreview
               file={videoFile}
@@ -5475,13 +5386,13 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
             <Form.Check
               type="checkbox"
               id="isPreview"
-              label="Make this video available as a free preview"
+              label={tVideo('previewCheckbox')}
               checked={isPreview}
               onChange={(e) => setIsPreview(e.target.checked)}
               disabled={isUploading}
             />
             <Form.Text className="text-muted">
-              Preview videos are visible to non-enrolled students and can help increase enrollment.
+              {tVideo('previewHelp')}
             </Form.Text>
           </Form.Group>
 
@@ -5490,27 +5401,27 @@ const Step3 = ({ stepperInstance, mode = 'create' }) => {
               {isUploading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                  {uploadPhase === 'preparing' ? 'Preparing...' :
-                    uploadPhase === 'materials' ? 'Uploading Materials...' :
-                      uploadPhase === 'chunking' ? 'Uploading Video...' :
-                        uploadPhase === 'gcs_upload' ? 'Uploading to Cloud...' :
-                          'Processing...'}
+                  {uploadPhase === 'preparing' ? tUpload('preparing') :
+                    uploadPhase === 'materials' ? tUpload('uploadingMaterials') :
+                      uploadPhase === 'chunking' ? tUpload('uploadingVideo') :
+                        uploadPhase === 'gcs_upload' ? tUpload('uploadingToCloud') :
+                          tUpload('processing')}
                 </>
-              ) : editMode ? 'Update Video' : 'Add Video'}
+              ) : editMode ? tVideo('updateButton') : tVideo('addButton')}
             </Button>
           </div>
         </Form>
       </SlidePanel>
 
-      {/* Confirmation Dialog (keeping original) */}
+      {/* Confirmation Dialog */}
       <ConfirmDialog
         show={showConfirmDelete}
         onHide={() => setShowConfirmDelete(false)}
         onConfirm={handleConfirmDelete}
         title={confirmTitle}
         message={confirmMessage}
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText={tButtons('delete')}
+        cancelText={tButtons('cancel')}
         variant="danger"
       />
     </div>

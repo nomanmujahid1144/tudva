@@ -1,4 +1,50 @@
 {
+  "home": {
+    "hero": {
+      "badge": "the easiest way to your success",
+      "title": {
+        "line1": "Lifelong",
+        "line2": "learning",
+        "line3": "2.0"
+      },
+      "description": "Your social learning platform. Discover a variety of courses, design your own learning day and become part of a committed community."
+    },
+    "searchCourses": {
+      "heading": "Dive into 300 Lessons with 2528 individual modules.",
+      "subheading": "Learn anything you want – it's always free!",
+      "placeholder": "Find your course (by course name or topic)"
+    },
+    "trendingCourses": {
+      "title": "Trending",
+      "titleHighlight": "Courses",
+      "subtitle": "Find courses that are best for your profession",
+      "badge": {
+        "duration": "month"
+      },
+      "rating": "reviews",
+      "duration": "duration"
+    },
+    "coursesOverview": {
+      "title": "My Courses Overview",
+      "nextLessons": {
+        "title": "My Next Lessons",
+        "learningDay": "Learning Day:",
+        "schoolHour": "school hour",
+        "timeRemaining": "days, {hours} hours, {minutes} minutes",
+        "manageLink": "manage my courses"
+      },
+      "weekPlan": {
+        "title": "Weekplan Preview",
+        "learningDay": "Learning Day: {date} [week {week}/25]",
+        "noCourse": "no course selected",
+        "chooseTopic": "choose the matching topic",
+        "manageLink": "manage my courses"
+      },
+      "moreAbout": {
+        "title": "More About My Courses"
+      }
+    }
+  },
   "auth": {
     "signin": {
       "title": "Login into tudva",
@@ -14,9 +60,11 @@
       "noAccount": "Don't have an account?",
       "signupLink": "Signup here",
       "loginSuccess": "Login successful!",
-      "loginError": "Login failed. Please check your credentials and try again."
+      "loginError": "Login failed. Please check your credentials and try again.",
+      "invalidCredentials": "Invalid email or password. Please try again.",
+      "accountNotVerified": "Please verify your email before logging in.",
+      "accountInactive": "Your account is inactive. Please contact support."
     },
-
     "signup": {
       "title": "Register at tudva",
       "subtitle": "Start your journey with social free studying.",
@@ -39,10 +87,13 @@
       "haveAccount": "Already have an account?",
       "signinLink": "Sign in here",
       "signupSuccess": "Registration successful! Please check your email to confirm your account.",
+      "emailAlreadyExists": "Email already registered. Please sign in or use a different email.",
       "signupError": "Registration failed. Please try again.",
-      "emailAlreadyExists": "Email already registered."
+      "invalidEmail": "Please enter a valid email address.",
+      "weakPassword": "Password is too weak. Use at least 8 characters.",
+      "missingFields": "Please fill in all required fields.",
+      "emailSendFailed": "Failed to send verification email. Please try again."
     },
-
     "forgotPassword": {
       "title": "Forgot password",
       "subtitle": "Enter the email address associated with account.",
@@ -54,9 +105,9 @@
       "resetSuccess": "Password reset instructions sent to your email.",
       "resetError": "Please check your email and try again!",
       "noAccount": "Don't have an account?",
-      "signupLink": "Signup here"
+      "signupLink": "Signup here",
+      "resetEmailFailed": "Failed to send reset email. Please try again."
     },
-
     "confirmEmail": {
       "title": "Verify Your Email",
       "subtitle": "Click the button below to verify your email address and activate your account.",
@@ -66,20 +117,9 @@
       "verifySuccess": "Email verified successfully! You can now log in.",
       "verifyError": "Email verification failed. Please try again.",
       "noToken": "No verification token found in URL",
-      "tokenMissing": "Verification token is missing"
+      "tokenMissing": "Verification token is missing",
+      "invalidToken": "Invalid or expired verification link."
     },
-
-    "confirmChangePassword": {
-      "title": "Verify Your Identity to Proceed",
-      "subtitle": "Click the button below to confirm your identity and continue with resetting your password.",
-      "verifyButton": "Create New Password",
-      "verifying": "Verifying...",
-      "backToLogin": "Back to Sign In",
-      "verifySuccess": "Identity verified! You can now reset your password.",
-      "verifyError": "Invalid or expired reset token. Please request a new one.",
-      "noToken": "No verification token found in URL"
-    },
-
     "resetPassword": {
       "title": "Change Your Password",
       "subtitle": "Please enter your new password and confirm it below.",
@@ -94,9 +134,19 @@
       "resetSuccess": "Password reset successful! You can now log in with your new password.",
       "resetError": "Password reset failed. Please try again.",
       "tokenMissing": "Verification token is missing",
-      "tokenError": "Error: Token is missing. Please use the link provided in the email."
+      "tokenError": "Error: Token is missing. Please use the link provided in the email.",
+      "invalidToken": "Invalid or expired reset link."
     },
-
+    "confirmChangePassword": {
+      "title": "Verify Your Identity to Proceed",
+      "subtitle": "Click the button below to confirm your identity and continue with resetting your password.",
+      "verifyButton": "Create New Password",
+      "verifying": "Verifying...",
+      "backToLogin": "Back to Sign In",
+      "verifySuccess": "Identity verified! You can now reset your password.",
+      "verifyError": "Invalid or expired reset token. Please request a new one.",
+      "noToken": "No verification token found in URL"
+    },
     "validation": {
       "fullNameRequired": "Please enter your Full Name",
       "emailRequired": "Please enter your Email",
@@ -109,7 +159,6 @@
       "roleInvalid": "Please select a valid role",
       "agreementRequired": "You must accept terms of service"
     },
-
     "messages": {
       "sessionExpired": "Session expired. Please login again.",
       "invalidCredentials": "Invalid email or password",
@@ -122,13 +171,83 @@
       "logoutSuccess": "Logged out successfully",
       "logoutError": "Logout failed. Please try again."
     },
-
     "callback": {
       "redirecting": "Redirecting...",
-      "pleaseWait": "Please wait"
+      "pleaseWait": "Please wait",
+      "loginFailed": "Login verification failed"
     }
   },
   "instructor": {
+    "profile": {
+      "title": "Instructor Profile",
+      "myCourses": "My Courses",
+      "editProfile": "Edit Profile",
+      "aboutMe": "About Me",
+      "aboutMePlaceholder": "No information provided yet. Tell students about yourself, your expertise, and your teaching philosophy.",
+      "experienceExpertise": "Experience & Expertise",
+      "education": "Education",
+      "notSpecified": "Not specified",
+      "memberSince": "Member Since",
+      "teachingStats": "Teaching Stats",
+      "courses": "Courses",
+      "students": "Students",
+      "reviews": "Reviews",
+      "loading": "Loading..."
+    },
+    "editProfile": {
+      "title": "Edit Profile",
+      "profilePicture": "Profile picture",
+      "change": "Change",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Full Name",
+      "email": "Email address",
+      "emailPlaceholder": "E-mail",
+      "phoneNumber": "Phone number",
+      "phoneNumberPlaceholder": "Phone Number",
+      "aboutMe": "About me",
+      "aboutMeDescription": "Brief description for your profile.",
+      "saveChanges": "Save Changes",
+      "updating": "Updating...",
+      "notAuthenticated": "Not Authenticated",
+      "notAuthenticatedMessage": "Please log in to access your profile.",
+      "signIn": "Sign In",
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile. Please try again.",
+      "imageSizeError": "Image size exceeds 5MB",
+      "imageProcessError": "Failed to process image"
+    },
+    "manageCourse": {
+      "title": "My Courses",
+      "createNewCourse": "Create new course",
+      "searchPlaceholder": "Search for course title or description",
+      "sortNewest": "Sort by: Newest First",
+      "sortOldest": "Sort by: Oldest First",
+      "sortAZ": "Sort by: A to Z",
+      "sortZA": "Sort by: Z to A",
+      "course": "Course",
+      "status": "Status",
+      "actions": "Actions",
+      "published": "Published",
+      "draft": "Draft",
+      "viewCourse": "View course",
+      "editCourse": "Edit course",
+      "deleteCourse": "Delete course",
+      "loading": "Loading...",
+      "loadingCourses": "Loading courses...",
+      "noCourses": "No courses found.",
+      "createFirstCourse": "Create a new course",
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "entries": "entries",
+      "deleteConfirmTitle": "Delete Course",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+      "deleteConfirmButton": "Delete Course",
+      "cancel": "Cancel",
+      "deleteSuccess": "Course deleted successfully",
+      "deleteError": "Failed to delete course",
+      "loadError": "Failed to load courses"
+    },
     "course": {
       "creation": {
         "pageTitle": "Create New Course",
@@ -147,275 +266,466 @@
         "loadingCourseDetails": "Loading course details...",
         "pleaseWait": "Please wait while we fetch your course information."
       },
-
       "stepper": {
         "step1": "Course details",
         "step2": "Course media",
         "step3": "Curriculum",
         "step4": "Additional info"
       },
-
+      "form": {
+        "create": {
+          "subtitle": "Use this interface to add a new Course...",
+          "recoveryAlert": "You have unsaved course data. You can continue from where you left off."
+        },
+        "edit": {
+          "subtitle": "Edit your course details and update your content...",
+          "recoveryAlert": "You have unsaved changes to this course. You can continue from where you left off."
+        },
+        "stepper": {
+          "step1": "Course details",
+          "step2": "Course media",
+          "step3": "Curriculum",
+          "step4": "Additional information"
+        }
+      },
+      "categories": {
+        "Languages & Communication": "Languages & Communication",
+        "Cooking & Household": "Cooking & Household",
+        "Creativity & Craftsmanship": "Creativity & Craftsmanship",
+        "Digital & IT": "Digital & IT",
+        "Health & Exercise": "Health & Exercise",
+        "Nature & Gardening": "Nature & Gardening",
+        "Career & Education": "Career & Education"
+      },
+      "subcategories": {
+        "Foreign Languages": "Foreign Languages",
+        "Learning the National Language": "Learning the National Language",
+        "Rhetoric & International Communication": "Rhetoric & International Communication",
+        "Cooking & Baking (including International Cuisine)": "Cooking & Baking (including International Cuisine)",
+        "Nutrition & Sustainability": "Nutrition & Sustainability",
+        "Home Economics": "Home Economics",
+        "Painting, Drawing, Photography": "Painting, Drawing, Photography",
+        "Sewing, Crafting, DIY": "Sewing, Crafting, DIY",
+        "Arts & More": "Arts & More",
+        "Computers & Internet": "Computers & Internet",
+        "Social Media & Data Protection": "Social Media & Data Protection",
+        "Software & Tools": "Software & Tools",
+        "Fitness, Yoga & More": "Fitness, Yoga & More",
+        "Relaxation & Stress Management": "Relaxation & Stress Management",
+        "Prevention & Well-being": "Prevention & Well-being",
+        "Gardening & Urban Gardening": "Gardening & Urban Gardening",
+        "Environment & Sustainability": "Environment & Sustainability",
+        "Eco Projects": "Eco Projects",
+        "Soft Skills & Time Management": "Soft Skills & Time Management",
+        "Career Orientation & Qualification": "Career Orientation & Qualification",
+        "Basic Education & Literacy": "Basic Education & Literacy"
+      },
       "step1": {
         "title": "Course Details",
         "editTitle": "Edit Course Details",
-        "courseTitle": "Course title",
-        "courseTitlePlaceholder": "Enter course title",
-        "shortDescription": "Short description",
-        "shortDescriptionPlaceholder": "Brief overview of your course (150 characters max)",
-        "description": "Course description",
-        "descriptionPlaceholder": "Write a detailed description of your course...",
-        "category": "Course category",
-        "selectCategory": "Select category",
-        "subcategory": "Course subcategory",
-        "selectSubcategory": "Select subcategory",
-        "level": "Course level",
-        "selectLevel": "Select course level",
-        "beginner": "Beginner",
-        "intermediate": "Intermediate",
-        "advanced": "Advanced",
-        "allLevels": "All Levels",
-        "language": "Language",
-        "selectLanguage": "Select language",
-        "english": "English",
-        "german": "German",
-        "french": "French",
-        "hindi": "Hindi",
-        "courseType": "Course type",
-        "selectCourseType": "Select course type",
-        "recordedCourse": "Recorded Course",
-        "liveCourse": "Live Course",
-        "promoVideoUrl": "Promo video URL (optional)",
-        "promoVideoPlaceholder": "Enter YouTube or Vimeo URL",
-        "promoVideoHelp": "A short video introducing your course can significantly increase enrollments",
-        "courseTime": "Course time",
-        "enterCourseTime": "Enter course time",
-        "totalLecture": "Total lecture",
-        "enterTotalLecture": "Enter total lecture",
-        "coursePrice": "Course price",
-        "enterCoursePrice": "Enter course price",
-        "discountPrice": "Discount price",
-        "enterDiscount": "Enter discount",
-        "enableDiscount": "Enable this Discount",
-        "featured": "Featured course",
-        "checkFeatured": "Check this for featured course",
-        "addDescription": "Add description",
-        "next": "Next",
-        "saving": "Saving...",
-        "updating": "Updating..."
+        "editingLabel": "Editing:",
+        "loadingMessage": "Loading course details...",
+        "loadingSubtext": "Please wait while we fetch your course information.",
+        "courseTitle": {
+          "label": "Course title",
+          "placeholder": "Enter course title",
+          "counter": "characters"
+        },
+        "shortDescription": {
+          "label": "Short description",
+          "placeholder": "Brief overview of your course (150 characters max)",
+          "counter": "characters"
+        },
+        "category": {
+          "label": "Course category",
+          "placeholder": "Select category"
+        },
+        "subcategory": {
+          "label": "Course subcategory",
+          "placeholder": "Select subcategory"
+        },
+        "level": {
+          "label": "Course level",
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced",
+          "allLevels": "All Levels"
+        },
+        "type": {
+          "label": "Course type",
+          "recorded": "Recorded Course",
+          "live": "Live Course"
+        },
+        "promoVideo": {
+          "label": "Promotional video URL",
+          "placeholder": "Enter URL of your promotional video (YouTube, Vimeo, etc.)",
+          "helperText": "A short video introducing your course can significantly increase enrollments"
+        },
+        "description": {
+          "label": "Course description",
+          "placeholder": "Write a detailed description of your course..."
+        },
+        "buttons": {
+          "next": "Next",
+          "saving": "Saving...",
+          "updating": "Updating..."
+        }
       },
-
       "step2": {
         "title": "Course Media",
         "subTitle": "Setup the combination of color and icon for your course",
         "editTitle": "Edit Course Media",
-        "backgroundColorTitle": "Background Color",
-        "backgroundColorSubtitle": "Choose a background color for your course card",
+        "backgroundColorLabel": "Background Color",
+        "backgroundColorRequired": "*",
         "howItLooks": "How it should Look like?",
-        "iconTitle": "Select an icon",
-        "iconSubtitle": "Select an Icon for Your Course",
-        "iconSearchPlaceHolder": "Search icons...",
+        "selectIconPreview": "Select an icon",
+        "iconTitle": "Select an Icon for Your Course",
+        "iconSearchPlaceholder": "Search icons...",
         "loadingIcons": "Loading icons...",
-        "noIconFound": "No icons found matching",
-        "thumbnailTitle": "Course Thumbnail",
-        "thumbnailSubtitle": "Upload a high-quality image (recommended: 1200x675px)",
-        "uploadThumbnail": "Upload Thumbnail",
-        "changeThumbnail": "Change Thumbnail",
-        "errorLoadingCourse" : "Error Loading Course Media",
-        "unableToLoadCourseMedia" : "Unable to load course media data:",
-        "backToCourseManagement" : "Back to Course Management",
-        "previous": "Previous",
-        "next": "Next",
-        "saving": "Saving...",
-        "updating": "Updating..."
-      },
-
-      "step3": {
-        "loadingCourseCurriculum":"No icons found matching",
-        "waitLoadingCourseCurriculum":"Please wait while we fetch your course information.",  
-        "errorLoadingCourseCurriculum":"Error Loading Course Curriculum",
-        "unableLoadingCourseCurriculum":"Unable to load course curriculum data:",
-        "backToCourseManagement":"Back to Course Management",
-        "defineCourseCount":"Define the count of lessons in your course",
-        "defineCourseCountDescription":"Keep in mind that live-courses need to have a count which has always same amount of lessons per day (e.g. 3 days with 2 lessons = 6 lessons)",
-        "lessons":"lessons",
-
-        "title": "Course Curriculum",
-        "editTitle": "Edit Course Curriculum",
-        "liveCourseCurriculum": "Live Course Setup",
-        "recordedCourseCurriculum": "Recorded Course Curriculum",
-        "addModule": "Add Module",
-        "addFirstModule": "Add First Module",
-        "noModulesYet": "No modules added yet",
-        "startBuilding": "Start building your course by adding a module",
-        "buildCurriculumTitle": "Build Your Curriculum:",
-        "buildCurriculumDescription": "Add modules and upload videos to create your course content. Each module can contain multiple videos. Mark videos as \"Preview\" to allow non-enrolled users to watch them. You can also attach multiple course materials (PDFs, documents) to each video.",
-        "video": "video",
-        "videos": "videos",
-        "editModule": "Edit Module",
-        "deleteModule": "Delete Module",
-        "addVideo": "Add Video",
-        "editVideo": "Edit Video",
-        "deleteVideo": "Delete Video",
-        "preview": "Preview",
-        "duration": "Duration",
-        "uploading": "Uploading",
-        "uploaded": "Uploaded",
-        "processing": "Processing",
-        "completed": "Completed",
-        "failed": "Failed",
-        "noVideos": "No videos added yet",
-        "addFirstVideo": "Add your first video to this module",
-        "continueToNext": "Continue to Next Step",
-        "previous": "Previous",
-        "saving": "Saving...",
-        "updating": "Updating...",
-        
-        "module": {
-          "title": "Module Title",
-          "titlePlaceholder": "e.g. Introduction to JavaScript",
-          "description": "Module Description",
-          "descriptionPlaceholder": "Brief description of this module",
-          "descriptionHelp": "A good description helps students understand what they'll learn in this module.",
-          "addModule": "Add Module",
-          "updateModule": "Update Module",
-          "editModule": "Edit Module",
-          "addNewModule": "Add New Module"
-        },
-
-        "video": {
-          "title": "Video Title",
-          "titlePlaceholder": "e.g. Introduction to Variables",
-          "description": "Video Description",
-          "descriptionPlaceholder": "Brief description of this video",
-          "videoFile": "Video File",
-          "replaceVideo": "Replace Video File (optional)",
-          "chooseVideo": "Choose video file",
-          "maxFileSize": "Maximum file size: 2GB. Supported formats: MP4, WebM, MOV",
-          "thumbnail": "Video Thumbnail (optional)",
-          "chooseThumbnail": "Choose thumbnail image",
-          "recommendedSize": "Recommended: 1280x720px",
-          "allowPreview": "Allow preview",
-          "allowPreviewHelp": "Allow users to watch this video without enrolling in the course",
-          "courseMaterials": "Course Materials (optional)",
-          "addMaterials": "Add Materials",
-          "uploadMaterials": "Upload Materials",
-          "materialsHelp": "Upload PDFs, documents, or other files students can download",
-          "removeFile": "Remove File",
-          "addVideo": "Add Video",
-          "updateVideo": "Update Video",
-          "editVideo": "Edit Video",
-          "addNewVideo": "Add New Video",
-          "uploadProgress": "Upload Progress",
-          "uploadPhase": "Upload Phase",
-          "uploadingChunk": "Uploading chunk",
-          "of": "of",
-          "uploadSpeed": "Upload speed",
-          "timeRemaining": "Time remaining",
-          "initializing": "Initializing upload...",
-          "uploadingVideo": "Uploading video...",
-          "finalizing": "Finalizing upload...",
-          "processingVideo": "Processing video...",
-          "canceling": "Canceling upload...",
-          "cancelUpload": "Cancel Upload"
-        },
-
-        "liveCourse": {
-          "setupTitle": "Live Course Setup",
-          "plannedLessons": "Planned Lessons",
-          "plannedLessonsPlaceholder": "Enter number of planned lessons",
-          "plannedLessonsHelp": "Total number of live sessions you plan to conduct",
-          "maxEnrollment": "Maximum Enrollment",
-          "maxEnrollmentPlaceholder": "Enter maximum students",
-          "maxEnrollmentHelp": "Maximum number of students who can enroll",
-          "courseMaterials": "Course Materials",
-          "addMaterials": "Add Course Materials",
-          "manageMaterials": "Manage Materials",
-          "materialsCount": "material(s)",
-          "materialsHelp": "Upload materials that will be shared with students throughout the course",
-          "scheduleNote": "You'll set up your sessions schedule in last step."
-        },
-
-        "delete": {
-          "confirmTitle": "Confirm Deletion",
-          "deleteModule": "Delete Module",
-          "deleteVideo": "Delete Video",
-          "moduleMessage": "Are you sure you want to delete the module",
-          "moduleMessageWithVideos": "This will also delete",
-          "videoMessage": "Are you sure you want to delete the video",
-          "cannotUndo": "This action cannot be undone.",
-          "cancel": "Cancel",
-          "delete": "Delete"
+        "noIconsFound": "No icons found matching",
+        "loadingCourseMedia": "Loading course media...",
+        "loadingSubtext": "Please wait while we fetch your course information.",
+        "errorLoadingTitle": "Error Loading Course Media",
+        "errorLoadingMessage": "Unable to load course media data:",
+        "backToCourseManagement": "Back to Course Management",
+        "buttons": {
+          "previous": "Previous",
+          "next": "Next",
+          "saving": "Saving...",
+          "updating": "Updating..."
         }
       },
-
+      "step3": {
+        "title": "Course Curriculum",
+        "editTitle": "Edit Course Curriculum",
+        "editingLabel": "Editing:",
+        "loadingCurriculum": "Loading course curriculum...",
+        "loadingSubtext": "Please wait while we fetch your course information.",
+        "errorLoadingTitle": "Error Loading Course Curriculum",
+        "errorLoadingMessage": "Unable to load course curriculum data:",
+        "backToCourseManagement": "Back to Course Management",
+        "liveCourse": {
+          "defineTitle": "Define the count of lessons in your course",
+          "defineDescription": "Keep in mind that live-courses need to have a count which has always same amount of lessons per day (e.g. 3 days with 2 lessons = 6 lessons)",
+          "lessons": "lessons",
+          "noPrerecordedTitle": "No pre-defined curriculum in live courses",
+          "noPrerecordedDescription": "Live-Courses have no prerecorded courses. You'll set up your sessions schedule in last step.",
+          "uploadingLessons": "Uploading your lessons",
+          "courseMaterialsTitle": "Course Materials",
+          "courseMaterialsSetup": "Course materials setup:",
+          "lessonsHaveContent": "of",
+          "lessonsHaveContentSuffix": "lessons have content",
+          "totalFiles": "total files",
+          "editMaterials": "Edit Materials",
+          "addCourseFiles": "Add Course Files",
+          "noMaterials": "No materials",
+          "filesAttached": "file(s) attached",
+          "addMaterials": "Add Materials",
+          "materialsForLesson": "Materials for Lesson",
+          "filesReady": "file(s) ready",
+          "noMaterialsYet": "No materials added yet"
+        },
+        "recorded": {
+          "addModule": "Add Module",
+          "buildCurriculumTitle": "Build Your Curriculum:",
+          "buildCurriculumDescription": "Add modules and upload videos to create your course content. Each module can contain multiple videos. Mark videos as \"Preview\" to allow non-enrolled users to watch them. You can also attach multiple course materials (PDFs, documents) to each video.",
+          "noModulesTitle": "No modules added yet",
+          "noModulesDescription": "Start building your course by adding a module",
+          "addFirstModule": "Add First Module",
+          "moduleDescription": "Module Description",
+          "noDescriptionProvided": "No description provided",
+          "editModule": "Edit",
+          "deleteModule": "Delete",
+          "noVideos": "No videos added to this module yet",
+          "addVideo": "Add Video",
+          "videos": "video(s)"
+        },
+        "module": {
+          "addTitle": "Add New Module",
+          "editTitle": "Edit Module",
+          "titleLabel": "Module Title",
+          "titlePlaceholder": "e.g. Introduction to JavaScript",
+          "titleRequired": "Module title is required",
+          "descriptionLabel": "Module Description",
+          "descriptionPlaceholder": "Brief description of this module",
+          "descriptionHelp": "A good description helps students understand what they'll learn in this module.",
+          "addButton": "Add Module",
+          "updateButton": "Update Module",
+          "addedSuccess": "Module added successfully",
+          "updatedSuccess": "Module updated successfully",
+          "deletedSuccess": "Module deleted successfully",
+          "confirmDeleteTitle": "Delete Module",
+          "confirmDeleteMessage": "Are you sure you want to delete the module \"{name}\"? {count, plural, =0 {} =1 {This will also delete 1 video.} other {This will also delete # videos.}} This action cannot be undone."
+        },
+        "video": {
+          "addTitle": "Add New Video",
+          "editTitle": "Edit Video",
+          "titleLabel": "Video Title",
+          "titlePlaceholder": "e.g. Introduction to Variables",
+          "titleRequired": "Video title is required",
+          "descriptionLabel": "Video Description",
+          "descriptionPlaceholder": "Brief description of this video",
+          "fileLabel": "Video File",
+          "fileReplaceLabel": "Replace Video File (optional)",
+          "fileRequired": "Video file is required",
+          "fileHelp": "Maximum file size: 500MB. Supported formats: MP4, WebM, MOV, AVI, QuickTime",
+          "materialsLabel": "Course Materials (Optional)",
+          "materialsHelp": "Upload multiple materials (PDF, DOC, PPT, Images, etc.) - Max 50MB per file",
+          "selectedMaterials": "Selected Materials",
+          "previewCheckbox": "Make this video available as a free preview",
+          "previewHelp": "Preview videos are visible to non-enrolled students and can help increase enrollment.",
+          "addButton": "Add Video",
+          "updateButton": "Update Video",
+          "addedSuccess": "Video added successfully",
+          "updatedSuccess": "Video updated successfully",
+          "deletedSuccess": "Video deleted successfully",
+          "confirmDeleteTitle": "Delete Video",
+          "confirmDeleteMessage": "Are you sure you want to delete the video \"{name}\"? This action cannot be undone.",
+          "playVideo": "Play video",
+          "editVideo": "Edit video",
+          "deleteVideo": "Delete video"
+        },
+        "upload": {
+          "preparing": "Preparing...",
+          "uploadingMaterials": "Uploading Materials...",
+          "uploadingVideo": "Uploading Video...",
+          "uploadingToCloud": "Uploading to Cloud...",
+          "processing": "Processing...",
+          "preparingVideo": "Preparing video for upload...",
+          "uploadingMaterialsCount": "Uploading {count} course material(s)...",
+          "uploadingChunks": "Uploading {info}...",
+          "combiningChunks": "Combining video chunks...",
+          "uploadingToStorage": "Uploading to cloud storage...",
+          "finalizingUpload": "Finalizing upload...",
+          "uploadCompleted": "Upload completed!",
+          "processingVideo": "Processing video...",
+          "loadingVideo": "Loading video...",
+          "videoLoadError": "Failed to load video",
+          "tryAgainLater": "Please try again later",
+          "uploadFailed": "Upload failed:",
+          "uploadFailedTitle": "Upload Failed - Please try again",
+          "uploadedSuccessfully": "Uploaded successfully",
+          "speedLabel": "Speed:",
+          "etaLabel": "ETA:",
+          "combiningMessage": "Combining video chunks...",
+          "realtimeUpload": "Real-time upload to cloud storage...",
+          "finalizingMessage": "Finalizing upload...",
+          "uploadingMaterialFiles": "Uploading {count} material file(s)...",
+          "failed": "Failed"
+        },
+        "materials": {
+          "panelTitle": "Add Course Materials ({count} Lessons)",
+          "infoMessage": "Add multiple materials for each lesson. You can upload multiple files per lesson.",
+          "allLessonsSaved": "All {count} lessons will be saved",
+          "includingEmpty": "(including empty ones)",
+          "uploadMultiple": "Upload Multiple Files",
+          "uploadHelp": "Select multiple files: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG (Max 50MB each)",
+          "uploadedMaterials": "Uploaded Materials",
+          "uploadingMessage": "Uploading materials...",
+          "uploadedSuccess": "material(s) uploaded successfully",
+          "noMaterialsAdded": "No materials added yet",
+          "saveButton": "Save Course Materials (All {count} Lessons)",
+          "uploadingButton": "Uploading Materials...",
+          "lessonLabel": "Lesson",
+          "filesLabel": "File(s)",
+          "viewFile": "View File",
+          "downloadFile": "Download",
+          "removeFile": "Remove",
+          "materialsSaved": "Course materials saved for all {count} lessons ({total} total files)",
+          "uploadSuccess": "{count} file(s) uploaded successfully for Lesson {lesson}",
+          "uploadError": "Failed to upload materials for lesson {lesson}:",
+          "removedSuccess": "Material removed successfully"
+        },
+        "filePreview": {
+          "viewFile": "View File",
+          "download": "Download",
+          "remove": "Remove",
+          "uploading": "uploaded"
+        },
+        "videoStatus": {
+          "processing": "Processing video...",
+          "uploading": "Uploading chunk {current}/{total}...",
+          "combining": "Combining video chunks... {progress}%",
+          "uploadingCloud": "Uploading to cloud storage... {progress}%",
+          "transferring": "Transferring to cloud storage... {progress}%",
+          "finalizing": "Finalizing upload... {progress}%",
+          "completed": "Processing completed successfully!",
+          "failed": "Upload Failed - Please try again",
+          "waitingStart": "Waiting to start upload",
+          "combiningMessage": "Combining...",
+          "uploadingMessage": "Uploading...",
+          "transferringMessage": "Transferring...",
+          "finalizingMessage": "Finalizing...",
+          "processingMessage": "Processing..."
+        },
+        "buttons": {
+          "previous": "Previous",
+          "next": "Save & Continue",
+          "continueNext": "Continue to Next Step",
+          "saving": "Saving...",
+          "updating": "Updating...",
+          "delete": "Delete",
+          "cancel": "Cancel"
+        }
+      },
       "step4": {
         "title": "Additional Information",
         "editTitle": "Edit Additional Information",
-        "faqs": "FAQs (Frequently Asked Questions)",
-        "addFaq": "Add FAQ",
-        "noFaqsYet": "No FAQs added yet",
-        "addFirstFaq": "Add your first FAQ to help students understand your course better",
-        "editFaq": "Edit FAQ",
-        "deleteFaq": "Delete FAQ",
-        "question": "Question",
-        "questionPlaceholder": "e.g. What will I learn in this course?",
-        "answer": "Answer",
-        "answerPlaceholder": "e.g. Once enrolled, you'll have lifetime access to the course materials.",
-        "addFaqButton": "Add FAQ",
-        "updateFaqButton": "Update FAQ",
-        
-        "tags": "Tags",
-        "addTags": "Add Tags",
-        "tagsPlaceholder": "Enter tags",
-        "tagsHelp": "Maximum of 14 keywords. Keywords should all be in lowercase. e.g. javascript, react, marketing",
-        
-        "reviewerMessage": "Message to a reviewer",
-        "reviewerMessagePlaceholder": "Write a message",
-        "rightsCheckbox": "Any images, sounds, or other assets that are not my own work, have been appropriately licensed for use in the file preview or main course. Other than these items, this work is entirely my own and I have full rights to sell it here.",
-        
-        "liveScheduling": {
-          "title": "Live Course Scheduling",
-          "setupSchedule": "Setup Schedule",
-          "editSchedule": "Edit Schedule",
-          "noScheduleYet": "No schedule set up yet",
-          "addSchedulePrompt": "Configure your live course schedule to let students know when sessions will be held",
-          "startDate": "Start Date",
-          "selectStartDate": "Select start date",
-          "selectDay": "Select Day",
-          "selectTimeSlots": "Select Time Slots",
-          "timeSlotsHelp": "Choose the time slots when you'll conduct live sessions",
-          "scheduleSummary": "Schedule Summary",
-          "selectedDay": "Selected Day:",
-          "selectedSlots": "Selected Time Slots:",
-          "weeksRequired": "Weeks Required:",
-          "cannotCalculate": "Cannot calculate",
-          "totalPlannedLessons": "Total Planned Lessons:",
+        "editingLabel": "Editing:",
+        "loadingInfo": "Loading course information...",
+        "loadingSubtext": "Please wait while we fetch your course information.",
+        "errorLoadingTitle": "Error Loading Course Information",
+        "errorLoadingMessage": "Unable to load course information:",
+        "backToCourseManagement": "Back to Course Management",
+        "schedule": {
+          "buttonEdit": "Edit Schedule",
+          "buttonSet": "Set Schedule",
+          "cardTitle": "Live Course Schedule",
+          "scheduleDetails": "Schedule Details",
+          "enrollmentDetails": "Enrollment Details",
+          "day": "Day:",
+          "timeSlots": "Time Slots:",
+          "startDate": "Start Date:",
+          "endDate": "End Date:",
+          "plannedLessons": "Planned Lessons:",
           "maxEnrollment": "Maximum Enrollment:",
+          "lessonsPerDay": "Lessons Per Day:",
+          "totalCourseDays": "Total Course Days:",
+          "notSet": "Not set",
+          "noSlotsSelected": "No slots selected",
+          "notCalculated": "Not calculated",
+          "cannotCalculate": "Cannot calculate",
+          "editScheduleButton": "Edit Schedule"
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "addButton": "Add FAQ",
+          "noFaqsTitle": "No FAQs added yet",
+          "noFaqsDescription": "Help potential students by adding frequently asked questions",
+          "addFirstButton": "Add First FAQ",
+          "panelAddTitle": "Add New FAQ",
+          "panelEditTitle": "Edit FAQ",
+          "questionLabel": "Question",
+          "questionPlaceholder": "e.g. How long will I have access to the course?",
+          "questionRequired": "Please provide a question.",
+          "answerLabel": "Answer",
+          "answerPlaceholder": "e.g. Once enrolled, you'll have lifetime access to the course materials.",
+          "answerRequired": "Please provide an answer.",
+          "addButtonSubmit": "Add FAQ",
+          "updateButton": "Update FAQ",
+          "addedSuccess": "FAQ added successfully",
+          "updatedSuccess": "FAQ updated successfully",
+          "deletedSuccess": "FAQ deleted successfully"
+        },
+        "tags": {
+          "title": "Tags",
+          "selectLabel": "Select tags to help students find your course",
+          "selectPlaceholder": "Select tags",
+          "searchPlaceholder": "Search tags...",
+          "noTagsMatch": "No tags match your search",
+          "requestNewTag": "Request a new tag",
+          "requestNewTagMessage": "Tag request feature will be available soon!",
+          "noTagsSelected": "No tags selected yet",
+          "maxTagsInfo": "Maximum of 14 tags. Select tags that best describe your course content.",
+          "tagExists": "This tag already exists",
+          "maxTagsReached": "Maximum of 14 tags allowed",
+          "tagAddedSuccess": "Tag added successfully"
+        },
+        "rights": {
+          "confirmationLabel": "I confirm that any images, sounds, or other assets that are not my own work have been appropriately licensed for use in this course. Other than these items, this work is entirely my own and I have full rights to sell it here.",
+          "confirmationRequired": "Please confirm that you have the rights to sell this content"
+        },
+        "schedulePanel": {
+          "title": "Live Course Schedule",
+          "infoMessage": "Set your live course schedule:",
+          "infoDescription": "Select a weekday, time slots, and specify the total number of planned lessons. The system will calculate the end date based on your selections.",
+          "plannedLessonsAlert": "Planned Lessons:",
+          "plannedLessonsCount": "lessons",
+          "plannedLessonsNote": "This value was set in the Curriculum step and determines the total number of sessions.",
+          "lessonWarning": "The number of planned lessons ({planned}) must be divisible by the number of slots per day ({slots}). Please adjust your time slots to ensure equal lessons per day.",
+          "selectWeekdayLabel": "Select Weekday",
+          "selectWeekdayHelp": "Choose the day of the week for your live sessions.",
+          "startDateLabel": "Start Date",
+          "startDatePlaceholder": "Select a {weekday}",
+          "startDatePlaceholderDefault": "Select a weekday first",
+          "startDateRequired": "Please select a start date.",
+          "startDateHelp": "Only {weekday}s will be available to select.",
+          "startDateHelpDefault": "Select a weekday first to enable date selection.",
+          "selectTimeSlotsLabel": "Select Time Slots",
+          "selectTimeSlotsHelp": "Select time slots carefully. The number of lessons ({planned}) must be divisible by the number of slots per day to ensure equal lessons each day.",
+          "selectWeekdayFirst": "Please select a weekday first to enable time slot selection.",
+          "maxEnrollmentLabel": "Maximum Enrollment",
+          "maxEnrollmentPlaceholder": "e.g. 25",
+          "maxEnrollmentRequired": "Please enter the maximum number of students.",
+          "maxEnrollmentHelp": "Maximum number of students who can enroll.",
+          "summaryTitle": "Course Schedule Summary",
+          "summaryDayOfWeek": "Day of Week:",
+          "summaryTimeSlots": "Time Slots:",
+          "summaryStartDate": "Start Date:",
+          "summaryLessonsPerDay": "Lessons Per Day:",
+          "summaryTotalDays": "Total Course Days:",
+          "summaryTotalLessons": "Total Planned Lessons:",
+          "summaryMaxEnrollment": "Maximum Enrollment:",
+          "summaryEndDate": "Estimated End Date:",
+          "notSelected": "Not selected",
           "notSpecified": "Not specified",
-          "estimatedEndDate": "Estimated End Date:",
-          "notCalculated": "Not calculated yet",
-          "saveSchedule": "Save Schedule",
-          "lessonWarning": "Please ensure the schedule can accommodate all planned lessons"
+          "notCalculatedYet": "Not calculated yet",
+          "saveButton": "Save Schedule",
+          "scheduleSavedSuccess": "Course schedule saved successfully",
+          "selectWeekdayError": "Please select a weekday for your sessions",
+          "selectSlotError": "Please select at least one time slot",
+          "selectDateError": "Please select a start date",
+          "lessonsDivisibleError": "The number of planned lessons ({planned}) must be divisible by the number of slots per day ({slots})"
         },
-
-        "actions": {
+        "weekdays": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        },
+        "buttons": {
           "previous": "Previous",
-          "saveDraft": "Save Draft",
-          "previewCourse": "Preview Course",
-          "submitCourse": "Submit a Course",
+          "saveAsDraft": "Save as Draft",
+          "updateAsDraft": "Update as Draft",
           "publishCourse": "Publish Course",
-          "submissionNote": "Once you click \"Submit a Course\", your course will be uploaded and marked as pending for review.",
-          "publishNote": "Once you click \"Publish Course\", your course will be live and available to students."
+          "updateAndPublish": "Update & Publish",
+          "publishing": "Publishing...",
+          "updating": "Updating..."
         },
-
-        "publishConfirm": {
-          "title": "Publish Course?",
-          "message": "Are you sure you want to publish this course? Once published, students will be able to enroll.",
-          "cancel": "Cancel",
-          "publish": "Yes, Publish"
+        "validation": {
+          "addOneFaq": "Please add at least one FAQ",
+          "addOneTag": "Please add at least one tag",
+          "confirmRights": "Please confirm that you have the rights to sell this content",
+          "setSchedule": "Please set up your live course schedule",
+          "selectStartDate": "Please select a start date for your live course",
+          "selectTimeSlot": "Please select at least one time slot for your live course",
+          "specifyMaxEnrollment": "Please specify the maximum enrollment for your live course"
+        },
+        "publish": {
+          "confirmTitle": "Publish Course",
+          "confirmMessage": "Are you ready to publish your course? Once published, it will be sent for review before becoming available to students.",
+          "confirmUpdateTitle": "Update Course",
+          "confirmUpdateMessage": "Are you ready to update your course? Your changes will be saved and applied immediately.",
+          "confirmButton": "Publish",
+          "updateButton": "Update",
+          "cancelButton": "Not yet",
+          "infoMessage": "Once you publish your course, it will be reviewed by our team before becoming available to students.",
+          "infoMessageEdit": "Your changes will be saved and the course will be updated."
         }
       },
-
+      "banner": {
+        "create": {
+          "title": "Create New Course",
+          "description": "Use this interface to add a new course. Fill in all required information to publish your course."
+        },
+        "edit": {
+          "title": "Edit Your Course",
+          "description": "Update your course details and content. Make sure all information is accurate before saving changes."
+        }
+      },
       "validation": {
         "titleRequired": "Please enter course title",
         "titleMaxLength": "Title must be 35 characters or less",
@@ -441,7 +751,6 @@
         "answerRequired": "Please provide an answer",
         "rightsRequired": "You must confirm you have the rights to this content"
       },
-
       "messages": {
         "saveSuccess": "Course saved successfully!",
         "saveError": "Failed to save course. Please try again.",
@@ -465,9 +774,905 @@
         "materialAdded": "Material added successfully!",
         "materialDeleted": "Material deleted successfully!"
       }
+    },
+    "menu": {
+      "myProfile": "My profile",
+      "profile": "Profile",
+      "myCourses": "My Courses",
+      "signOut": "Sign Out"
     }
   },
-  "button": {
-    "loading" : ""
+  "student": {
+    "menu": {
+      "myProfile": "My profile",
+      "profile": "Profile",
+      "myCourses": "My Courses",
+      "mySchedule": "My Schedule",
+      "favorites": "Favorite Courses",
+      "signOut": "Sign Out"
+    },
+    "profile": {
+      "title": "Student Profile",
+      "myCourses": "My Courses",
+      "editProfile": "Edit Profile",
+      "aboutMe": "About Me",
+      "aboutMePlaceholder": "No information provided yet. Share something about yourself, your interests, and your learning goals.",
+      "educationInterests": "Education & Interests",
+      "education": "Education",
+      "notSpecified": "Not specified",
+      "memberSince": "Member Since",
+      "learningStats": "Learning Stats",
+      "enrolledCourses": "Enrolled Courses",
+      "completedCourses": "Completed Courses",
+      "certificatesEarned": "Certificates Earned",
+      "achievements": "Achievements"
+    },
+    "learning": {
+      "countdown": {
+        "ready": "Ready",
+        "startsIn": "Starts in:",
+        "days": "d",
+        "hours": "h",
+        "minutes": "m",
+        "seconds": "s"
+      },
+      "materials": {
+        "title": "Course Materials",
+        "subtitle": "Access all your course materials and resources",
+        "searchPlaceholder": "Search materials...",
+        "loading": "Loading course materials...",
+        "noMaterials": "No materials available",
+        "noMatchingMaterials": "No materials found matching your search",
+        "tryAdjusting": "Try adjusting your search terms",
+        "fileName": "File name",
+        "course": "Course",
+        "module": "Module",
+        "lesson": "Lesson",
+        "size": "Size",
+        "viewFile": "View File",
+        "download": "Download",
+        "showing": "Showing",
+        "of": "of",
+        "materials": "materials",
+        "matching": "matching"
+      },
+      "pageTitle": "my Learning",
+      "subtitle": "Via this page you have access to all your courses and learning materials",
+      "tabs": {
+        "nextLessons": "my next Lessons",
+        "scheduler": "my Scheduler",
+        "materials": "my Materials"
+      },
+      "nextLessons": {
+        "loading": "Loading your next learning day...",
+        "wednesday": "Wednesday",
+        "daysFromNow": "days from now",
+        "today": "Today (Test Mode)",
+        "noCourseScheduled": "No course scheduled",
+        "completed": "Completed",
+        "join": "Join",
+        "watchVideo": "Watch Video"
+      },
+      "videoModal": {
+        "duration": "Duration",
+        "minutes": "minutes",
+        "markCompleted": "Mark as Completed",
+        "close": "Close"
+      },
+      "testMode": {
+        "active": "TEST MODE ACTIVE",
+        "description": "Countdown timers set to 5, 10, 15 seconds",
+        "disable": "Disable Test Mode"
+      }
+    }
+  },
+  "courses": {
+    "detail": {
+      "error": {
+        "title": "Error Loading Course",
+        "notFound": "Course not found",
+        "tryAgain": "Try Again"
+      },
+      "pageIntro": {
+        "enrolled": "Enrolled",
+        "noDescription": "No description available",
+        "liveCourse": "Live Course",
+        "recordedCourse": "Recorded Course"
+      },
+      "details": {
+        "tabs": {
+          "overview": "Overview",
+          "curriculum": "Curriculum",
+          "instructor": "Instructor",
+          "reviews": "Reviews",
+          "faqs": "FAQs"
+        },
+        "pricing": {
+          "participate": "Participate",
+          "copyLink": "Copy link",
+          "linkCopied": "Copied!",
+          "copySuccess": "Course URL copied to clipboard!",
+          "copyError": "Failed to copy course URL. Please try again.",
+          "loginRequired": "Please login first to participate in this course"
+        },
+        "courseOverview": {
+          "title": "Course Overview",
+          "lectures": "Lectures",
+          "duration": "Duration",
+          "level": "Level",
+          "language": "Language"
+        },
+        "tags": {
+          "title": "Tags"
+        }
+      },
+      "relatedCourses": {
+        "title": "Related Courses You May Like"
+      },
+      "overview": {
+        "title": "Course Description",
+        "noDescription": "No description available for this course."
+      },
+      "faqs": {
+        "title": "Frequently Asked Questions",
+        "noFaqs": "No FAQs available for this course yet."
+      },
+      "instructor": {
+        "title": "About the Instructor",
+        "noInfo": "No instructor information available for this course.",
+        "courses": "Courses",
+        "students": "Students",
+        "rating": "Rating",
+        "reviews": "Reviews",
+        "viewAllCourses": "View All Courses by"
+      },
+      "curriculum": {
+        "title": "Course Content",
+        "sections": "sections",
+        "lectures": "lectures",
+        "lecture": "lecture",
+        "totalLength": "total length",
+        "noCurriculum": "Curriculum is being developed. Please check back later.",
+        "courseSchedule": "Course Schedule",
+        "schoolDay": "School day",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "lessonsLabel": "Lessons (daily|total)",
+        "slots": "Slots",
+        "unknownTime": "Unknown time",
+        "importantNote": "Important Note:",
+        "liveSessionInfo": "All live sessions are conducted via our virtual classroom. You will receive access details after enrollment. Make sure to join 5 minutes before the scheduled time."
+      },
+      "reviews": {
+        "title": "Student Reviews",
+        "basedOn": "Based on",
+        "review": "review",
+        "reviews": "reviews",
+        "writeReview": "Write a Review",
+        "alreadyReviewed": "You have already reviewed this course. You can edit or delete your review below.",
+        "signInToReview": "Please sign in to write a review for this course.",
+        "sortBy": "Sort by:",
+        "sortOptions": {
+          "newest": "Newest First",
+          "oldest": "Oldest First",
+          "helpful": "Most Helpful",
+          "ratingHigh": "Highest Rating",
+          "ratingLow": "Lowest Rating"
+        },
+        "noReviews": "No reviews yet. Be the first to review this course!",
+        "form": {
+          "rating": "Rating",
+          "yourReview": "Your Review",
+          "placeholder": "Share your experience with this course...",
+          "submitButton": "Submit Review",
+          "updateButton": "Update Review",
+          "cancelButton": "Cancel",
+          "submitSuccess": "Review submitted successfully!",
+          "updateSuccess": "Review updated successfully!",
+          "submitError": "Failed to submit review",
+          "deleteSuccess": "Review deleted successfully",
+          "deleteError": "Failed to delete review",
+          "voteError": "Failed to record vote"
+        },
+        "item": {
+          "verifiedPurchase": "Verified Purchase",
+          "wasHelpful": "Was this helpful?",
+          "instructor": "Instructor",
+          "edit": "Edit Review",
+          "delete": "Delete Review",
+          "deleteConfirm": "Are you sure you want to delete this review? This action cannot be undone."
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "loading": "Loading reviews..."
+      }
+    },
+    "list": {
+      "filters": {
+        "title": "Filter Courses",
+        "resultsCount": "{count} courses",
+        "search": {
+          "label": "Search",
+          "placeholder": "Search for courses..."
+        },
+        "courseType": {
+          "label": "Course Type",
+          "all": "All",
+          "live": "Live",
+          "recorded": "Recorded"
+        },
+        "level": {
+          "label": "Level",
+          "all": "All Levels",
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced",
+          "allLevels": "All Levels"
+        },
+        "category": {
+          "label": "Category",
+          "all": "All Categories"
+        },
+        "subcategory": {
+          "label": "Subcategory",
+          "all": "All Subcategories"
+        },
+        "sortBy": {
+          "label": "Sort By",
+          "mostRelevant": "Most Relevant",
+          "popular": "Most Popular",
+          "mostViewed": "Most Viewed",
+          "newest": "Newest First",
+          "oldest": "Oldest First"
+        },
+        "clearAll": "Clear All"
+      },
+      "activeFilters": {
+        "title": "Active Filters:",
+        "resultsFound": "{count} results found"
+      },
+      "results": {
+        "loading": "Loading courses...",
+        "showing": "Showing {count} of {total} courses",
+        "noCoursesFound": "No courses found",
+        "page": "Page {current} of {total}"
+      },
+      "noResults": {
+        "title": "No courses found",
+        "message": "We couldn't find any courses matching your current filters.",
+        "clearFilters": "Clear All Filters"
+      },
+      "card": {
+        "unknownInstructor": "Unknown Instructor",
+        "liveCourse": "Live Course",
+        "recordedCourse": "Recorded Course"
+      }
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {number}"
+    }
+  },
+  "scheduler": {
+    "title": "Course Schedule",
+    "schoolDay": {
+      "label": "School Day",
+      "wednesday": "Wednesday",
+      "note": "Currently, all courses are scheduled on Wednesdays"
+    },
+    "timeSlots": "Time Slots",
+    "availableCourses": "Available Courses",
+    "search": {
+      "placeholder": "Search courses...",
+      "button": "Search"
+    },
+    "filters": {
+      "all": "All",
+      "live": "Live",
+      "recorded": "Recorded"
+    },
+    "course": {
+      "level": "Level",
+      "progress": "Progress",
+      "startDate": "Start Date",
+      "timeSlots": "Time Slots",
+      "addAllSessions": "Add All Sessions",
+      "availableLessons": "Available Lessons:",
+      "alreadyScheduled": "Already scheduled",
+      "scheduled": "Scheduled",
+      "add": "Add"
+    },
+    "slot": {
+      "occupied": "This time slot is already occupied",
+      "cannotMixLive": "Cannot mix with live course"
+    },
+    "actions": {
+      "removeLecture": "Remove Lecture",
+      "addCourse": "Add Course",
+      "updating": "Updating schedule...",
+      "adding": "Adding course to schedule...",
+      "removing": "Removing from schedule..."
+    },
+    "messages": {
+      "scheduleLoaded": "Schedule loaded successfully",
+      "courseAdded": "Course added to schedule",
+      "courseRescheduled": "Course rescheduled",
+      "courseRemoved": "Item removed from schedule",
+      "orderUpdated": "Course order updated",
+      "loadError": "Failed to load your schedule",
+      "addError": "Failed to add course to schedule",
+      "rescheduleError": "Failed to reschedule course",
+      "removeError": "Failed to remove item",
+      "orderError": "Failed to update lesson order",
+      "tryAgain": "Please try again.",
+      "noCourses": "No courses found. Try a different search.",
+      "noLessons": "No available lessons for this course.",
+      "loadingSchedule": "Loading course scheduler...",
+      "loadingCourses": "Loading courses..."
+    },
+    "modal": {
+      "removeTitle": "Remove Lecture",
+      "removeMessage": "Are you sure you want to remove this lecture?",
+      "confirmYes": "Yes",
+      "confirmNo": "No"
+    },
+    "footer": {
+      "importantNote": "Important Note:",
+      "virtualClassroom": "All live sessions are conducted via our virtual classroom. You will receive access details after enrollment. Make sure to join 5 minutes before the scheduled time."
+    },
+    "timeSlotNames": {
+      "slot1": "SLOT 1",
+      "slot2": "SLOT 2",
+      "slot3": "SLOT 3",
+      "slot4": "SLOT 4",
+      "slot5": "SLOT 5",
+      "slot6": "SLOT 6"
+    },
+    "badges": {
+      "live": "Live",
+      "recorded": "Recorded"
+    }
+  },
+  "categories": {
+    "all": "All Categories",
+    "languagesCommunication": {
+      "title": "Languages & Communication",
+      "foreignLanguages": "Foreign Languages",
+      "nationalLanguage": "Learning the National Language",
+      "rhetoric": "Rhetoric & International Communication"
+    },
+    "cookingHousehold": {
+      "title": "Cooking & Household",
+      "cooking": "Cooking & Baking (including International Cuisine)",
+      "nutrition": "Nutrition & Sustainability",
+      "homeEconomics": "Home Economics"
+    },
+    "creativityCraftsmanship": {
+      "title": "Creativity & Craftsmanship",
+      "painting": "Painting, Drawing, Photography",
+      "sewing": "Sewing, Crafting, DIY",
+      "arts": "Arts & More"
+    },
+    "digitalIT": {
+      "title": "Digital & IT",
+      "computers": "Computers & Internet",
+      "socialMedia": "Social Media & Data Protection",
+      "software": "Software & Tools"
+    },
+    "healthExercise": {
+      "title": "Health & Exercise",
+      "fitness": "Fitness, Yoga & More",
+      "relaxation": "Relaxation & Stress Management",
+      "prevention": "Prevention & Well-being"
+    },
+    "natureGardening": {
+      "title": "Nature & Gardening",
+      "gardening": "Gardening & Urban Gardening",
+      "environment": "Environment & Sustainability",
+      "ecoProjects": "Eco Projects"
+    },
+    "careerEducation": {
+      "title": "Career & Education",
+      "softSkills": "Soft Skills & Time Management",
+      "careerOrientation": "Career Orientation & Qualification",
+      "basicEducation": "Basic Education & Literacy"
+    }
+  },
+  "pages": {
+    "courses": {
+      "metadata": {
+        "title": "All Courses - Tudva",
+        "description": "Explore our comprehensive collection of courses across various categories including Languages, Cooking, Creativity, Digital Skills, Health, Nature, and Career Development.",
+        "keywords": "online courses, live courses, recorded courses, learning, education, skills development"
+      },
+      "banner": {
+        "headline": "Discover Your Next Learning Adventure",
+        "subtext": "Explore our comprehensive collection of courses designed to help you grow personally and professionally"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "courses": "Courses"
+      }
+    },
+    "whyTudva": {
+      "metadata": {
+        "title": "Why Tudva"
+      },
+      "banner": {
+        "headline": "Why Tudva"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "whyTudva": "Why Tudva"
+      },
+      "hero": {
+        "title": "Why Choose Tudva?",
+        "subtitle": "Discover the benefits of learning with Tudva, a platform designed for lifelong learning."
+      },
+      "features": {
+        "flexible": {
+          "title": "Flexible Learning",
+          "description": "Configure your own weekly learning schedule. Choose from live and recorded courses to fit your life.",
+          "alt": "Flexible Learning"
+        },
+        "community": {
+          "title": "Community-Based",
+          "description": "Learn alongside a vibrant community of students and volunteer instructors. Share knowledge and grow together.",
+          "alt": "Community Based"
+        },
+        "free": {
+          "title": "Free Access",
+          "description": "High-quality education should be accessible to everyone. Tudva is completely free to use.",
+          "alt": "Free Access"
+        }
+      },
+      "howItWorks": {
+        "title": "How Tudva Works",
+        "intro": "Tudva is built on the principle of flexible, community-driven learning. Here's a brief overview:",
+        "steps": {
+          "schedule": {
+            "title": "Create Your Schedule:",
+            "description": "Students can configure their ideal learning day by selecting from a variety of courses."
+          },
+          "courses": {
+            "title": "Live and Recorded Courses:",
+            "description": "Choose between interactive live sessions or flexible recorded content."
+          },
+          "trainingRooms": {
+            "title": "Training Rooms:",
+            "description": "Institutions provide spaces for students to participate online together."
+          },
+          "instructors": {
+            "title": "Volunteer Instructors:",
+            "description": "Courses are created and led by passionate volunteers."
+          },
+          "folder": {
+            "title": "Personal Learning Folder:",
+            "description": "Access course materials and recordings in your personal learning folder."
+          },
+          "interaction": {
+            "title": "Community Interaction:",
+            "description": "Connect with other learners and instructors, contributing to a supportive learning environment."
+          }
+        },
+        "cta": {
+          "text": "Ready to get started?",
+          "exploreCourses": "Explore our courses",
+          "or": "or",
+          "createAccount": "create an account",
+          "today": "today!"
+        }
+      }
+    },
+    "getStarted": {
+      "metadata": {
+        "title": "Get Started | Tudva",
+        "description": "Learn how to get started with Tudva and begin your learning journey."
+      },
+      "banner": {
+        "headline": "Get Started"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "getStarted": "Get Started"
+      },
+      "hero": {
+        "title": "Welcome to Tudva!",
+        "subtitle": "Ready to start learning? This guide will walk you through the basics of using the Tudva platform."
+      },
+      "steps": {
+        "step1": {
+          "title": "Step 1: Create Your Free Account",
+          "description": "To access Tudva's courses, you'll need a free account. Click the Sign Up button in the top right corner of the page (or visit",
+          "registerLink": "/auth/sign-up",
+          "description2": "). You'll need to provide your email address, name, and choose a secure password. Don't forget to confirm your email address after signing up!"
+        },
+        "step2": {
+          "title": "Step 2: Browse the Course Catalog",
+          "description": "Once you're logged in, you can explore our wide range of courses. Go to the",
+          "coursesLink": "Courses",
+          "description2": "page to see all available courses. You can filter by subject, format (live or recorded), and the day of the week the course is offered."
+        },
+        "step3": {
+          "title": "Step 3: Configure Your Learning Day",
+          "description": "Tudva allows you to create a personalized weekly learning schedule. Currently, we offer courses on a specific day of the week (e.g., Wednesday). You can choose up to 6 lessons to fill your learning day.",
+          "list": {
+            "item1": "Go to the",
+            "myScheduleLink": "My Schedule",
+            "item1b": "page (this link might need adjustment).",
+            "item2": "You'll see a list of available time slots for the designated learning day.",
+            "item3": "Browse the available courses and click \"Book\" to add a course to a specific time slot.",
+            "item4": "The system will automatically prevent you from booking conflicting courses.",
+            "item5": "Once you've filled your schedule, you're ready to learn!"
+          }
+        },
+        "step4": {
+          "title": "Step 4: Attend Live Courses (or Watch Recordings)",
+          "description": "For live courses, join the session at the scheduled time. You'll be able to interact with the instructor and other learners via live chat. If you miss a live session, or if you've chosen a recorded course, you can find the recording in your personal learning folder."
+        },
+        "step5": {
+          "title": "Step 5: Access Learning Materials",
+          "description": "Instructors can upload course materials (PDFs, audio files, etc.) to their courses. You can find these materials in your personal learning folder. Only the latest versions of materials are displayed, but older versions are archived for your reference."
+        },
+        "step6": {
+          "title": "Step 6: Join the Community (Optional)",
+          "description": "Connect with other learners and instructors in our community forums (link to forums, if you have them). Share your experiences, ask questions, and learn from others."
+        },
+        "step7": {
+          "title": "Step 7: (Optional) Consider becoming an instructor.",
+          "description": "Share your knowledge with others."
+        }
+      },
+      "help": {
+        "title": "Need Help?",
+        "description": "Check out our",
+        "faqLink": "FAQ",
+        "or": "page or",
+        "contactLink": "contact us",
+        "description2": "if you have any questions."
+      },
+      "cta": {
+        "button": "Create Your Account"
+      }
+    },
+    "ourMission": {
+      "metadata": {
+        "title": "Our Mission | Tudva",
+        "description": "Learn about Tudva's mission to provide free, community-based, flexible education."
+      },
+      "banner": {
+        "headline": "Our Mission"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "ourMission": "Our Mission"
+      },
+      "whatDrivesUs": {
+        "title": "What Drives Us",
+        "lead": "At Tudva, we believe that learning should be a lifelong pursuit, unconstrained by cost, location, or background. We're building a platform where knowledge is freely shared, communities thrive, and individuals are empowered to reach their full potential.",
+        "vision": "We envision a world where anyone, anywhere, can access the education they need to improve their lives and contribute to society.",
+        "imageAlt": "People learning together"
+      },
+      "coreValues": {
+        "title": "Our Core Values",
+        "accessibility": {
+          "title": "Accessibility",
+          "description": "Education is a right, not a privilege.",
+          "imageAlt": "Accessibility"
+        },
+        "community": {
+          "title": "Community",
+          "description": "Learning is better together.",
+          "imageAlt": "Community"
+        },
+        "quality": {
+          "title": "Quality",
+          "description": "High standards for content and experience.",
+          "imageAlt": "Quality"
+        }
+      }
+    },
+    "howItWorks": {
+      "metadata": {
+        "title": "How It Works | Tudva",
+        "description": "Empowering Lifelong Learning for Everyone, Free of Charge and Community-Based."
+      },
+      "banner": {
+        "headline": "How It Works"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "howItWorks": "How It Works"
+      },
+      "whatDrivesUs": {
+        "title": "What Drives Us",
+        "lead": "At Tudva, we believe that learning should be a lifelong pursuit, unconstrained by cost, location, or background. We're building a platform where knowledge is freely shared, communities thrive, and individuals are empowered to reach their full potential.",
+        "vision": "We envision a world where anyone, anywhere, can access the education they need to improve their lives and contribute to society.",
+        "imageAlt": "People learning together"
+      },
+      "ourValues": {
+        "title": "Our Values",
+        "features": {
+          "flexibleScheduling": {
+            "title": "Flexible Scheduling",
+            "description": "Create a personalized learning schedule that fits your life.",
+            "imageAlt": "Flexible Scheduling Icon"
+          },
+          "liveRecorded": {
+            "title": "Live & Recorded Courses",
+            "description": "Choose from interactive live sessions or watch recorded courses at your own pace.",
+            "imageAlt": "Live & Recorded Courses Icon"
+          },
+          "communitySupport": {
+            "title": "Community Support",
+            "description": "Connect with fellow learners and instructors in a supportive environment.",
+            "imageAlt": "Community Support Icon"
+          },
+          "freeAccess": {
+            "title": "Free Access",
+            "description": "All courses are completely free of charge.",
+            "imageAlt": "Free Access Icon"
+          },
+          "diverseSubjects": {
+            "title": "Diverse Subjects",
+            "description": "Explore a wide range of subjects, from languages to digital skills.",
+            "imageAlt": "Diverse Subjects Icon"
+          },
+          "personalFolder": {
+            "title": "Personal Learning Folder",
+            "description": "Easily access course materials and recordings.",
+            "imageAlt": "Personal Learning Folder Icon"
+          }
+        }
+      }
+    },
+    "whatMeansTudva": {
+      "metadata": {
+        "title": "What Does Tudva Mean | Tudva",
+        "description": "Discover the meaning behind the name Tudva and how it reflects our mission and values."
+      },
+      "banner": {
+        "headline": "Tudva Means"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "whatMeansTudva": "What Tudva Means"
+      },
+      "hero": {
+        "title": "What Does \"Tudva\" Mean?"
+      },
+      "content": {
+        "paragraph1": "\"Tudva\" is a Hungarian word that means \"knowingly\" or \"with knowledge.\" It reflects our core values of knowledge, accessibility, community, and lifelong learning. We chose this name because it embodies the essence of conscious, intentional learning – the idea that education should be pursued with awareness and purpose.",
+        "paragraph2": "The word \"Tudva\" comes from the Hungarian verb \"tudni,\" which means \"to know.\" When you do something \"tudva,\" you do it with full awareness and understanding. This perfectly captures our philosophy: learning should not be passive or accidental, but an active, informed choice that empowers individuals to grow and contribute to their communities.",
+        "paragraph3": "By choosing this name, we wanted to emphasize that education on our platform is intentional and meaningful. Every course, every lesson, and every interaction is designed to help you learn \"tudva\" – with knowledge, purpose, and understanding. We believe that when you learn consciously, you not only gain knowledge but also develop the wisdom to apply it effectively in your life.",
+        "conclusion": "We hope that the name \"Tudva\" will inspire you on your learning journey!"
+      }
+    },
+    "becomeTeacher": {
+      "metadata": {
+        "title": "Become a Teacher | Tudva",
+        "description": "Share your knowledge and passion with the world. Learn how to become a volunteer instructor on Tudva."
+      },
+      "banner": {
+        "headline": "Become a Teacher"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "becomeTeacher": "Become a Teacher"
+      },
+      "hero": {
+        "title": "Become a Tudva Instructor",
+        "subtitle": "Share your expertise and passion with a global community of learners."
+      },
+      "whyTeach": {
+        "title": "Why Teach on Tudva?",
+        "imageAlt": "Teacher with students",
+        "reasons": {
+          "makeDifference": "Make a Difference: Contribute to making high-quality education accessible to everyone.",
+          "sharePassion": "Share Your Passion: Connect with students who are eager to learn what you know.",
+          "flexibleSchedule": "Flexible Schedule: Create and deliver courses on your own terms, choosing times that work for you.",
+          "communitySupport": "Community Support: Join a network of passionate volunteer instructors.",
+          "noFees": "No Fees: Tudva is a free platform, both for learners and instructors.",
+          "easyTools": "Easy-to-Use Tools: Our platform provides the tools you need to create and manage your courses, upload materials, and interact with students."
+        }
+      },
+      "howToBecome": {
+        "title": "How to Become a Teacher",
+        "steps": {
+          "step1": {
+            "text": "Create an Account: If you don't already have one,",
+            "linkText": "register for a free Tudva account",
+            "textEnd": "."
+          },
+          "step2": "Apply to Teach: Fill out our instructor application form [Link to Application Form - e.g., /become-teacher/apply]. Tell us about your expertise, the topics you'd like to teach, and your teaching experience (if any). Prior teaching experience is not required.",
+          "step3": "Review Process: Our team will review your application. We'll look for a clear passion for teaching, expertise in your chosen subject, and a commitment to Tudva's mission.",
+          "step4": "Get Approved: If your application is approved, you'll receive an email with instructions on how to get started.",
+          "step5": "Create Your Course: Use our platform's tools to create your course, including modules, schedules, and learning materials.",
+          "step6": "Start Teaching!: Connect with students and share your knowledge!"
+        }
+      },
+      "requirements": {
+        "title": "Requirements",
+        "intro": "While we welcome instructors of all backgrounds, we do have some basic requirements:",
+        "list": {
+          "expertise": "Expertise: You should have a strong understanding of the subject you want to teach.",
+          "passion": "Passion: A genuine enthusiasm for sharing your knowledge with others.",
+          "commitment": "Commitment: A willingness to dedicate the time needed to create and deliver high-quality courses.",
+          "communication": "Communication Skills: The ability to communicate clearly and effectively with learners.",
+          "technical": "Technical Proficiency: Basic computer skills and the ability to use our online platform."
+        }
+      }
+    },
+    "learningRoom": {
+      "metadata": {
+        "title": "Learning Rooms | Tudva",
+        "description": "Discover Tudva Learning Rooms: collaborative spaces for online learning."
+      },
+      "banner": {
+        "headline": "Learning Room"
+      },
+      "breadcrumb": {
+        "home": "Home",
+        "learningRoom": "Learning Room"
+      },
+      "hero": {
+        "title": "Tudva Learning Rooms",
+        "subtitle": "Experience the power of collaborative learning in a supportive environment."
+      },
+      "whatAre": {
+        "title": "What are Learning Rooms?",
+        "paragraph1": "Tudva Learning Rooms are physical spaces, provided by institutions and organizations, where students can gather to participate in Tudva's online courses together. They offer a dedicated environment for focused learning, fostering a sense of community and providing access to resources that might not be available at home.",
+        "paragraph2": "Learning Rooms can be equipped with computers, reliable internet access, and headphones, allowing students to participate in live sessions and access recorded content without distractions. They're also a great place to connect with other learners in your area.",
+        "imageAlt": "Students in a learning room"
+      },
+      "findNearYou": {
+        "title": "Find a Learning Room Near You",
+        "description": "Use our interactive map to find a Tudva Learning Room in your area.",
+        "mapPlaceholder": "Map/Search Placeholder. Integrate your map/search component here.",
+        "cantFind": "Can't find a Learning Room near you? Contact us to suggest a potential location!",
+        "suggestButton": "Suggest a Location",
+        "imageAlt": "Map of learning room locations"
+      },
+      "forInstitutions": {
+        "title": "For Institutions: Host a Learning Room",
+        "intro": "Are you an institution interested in providing a Tudva Learning Room? We'd love to partner with you! Hosting a Learning Room offers several benefits:",
+        "benefits": {
+          "expandAccess": "Expand access to education in your community.",
+          "provideResource": "Provide a valuable resource for students who may lack access to technology or a quiet study space.",
+          "fosterCommunity": "Foster a sense of community and collaboration among learners.",
+          "enhanceReputation": "Enhance your institution's reputation as a supporter of lifelong learning."
+        },
+        "outro": "To learn more about hosting a Learning Room, please contact us.",
+        "contactButton": "Contact Us",
+        "imageAlt": "Institution hosting a learning room"
+      }
+    }
+  },
+  "navbar": {
+    "search": {
+      "placeholder": "Search",
+      "button": "Search"
+    },
+    "auth": {
+      "joinUs": "Join Us",
+      "loading": "Loading..."
+    },
+    "learner": {
+      "myLearning": "My Learning",
+      "favorites": "My Favorite Courses",
+      "myLiveSessions": "My Live Sessions"
+    },
+    "category": "Category",
+    "profile": {
+      "profileAndAccount": "Profile and Account",
+      "favoriteCourses": "Favorite Courses",
+      "help": "Help",
+      "signOut": "Sign Out",
+      "logoutSuccess": "Logged out successfully",
+      "logoutError": "Logout failed"
+    }
+  },
+  "menuItems": {
+    "home": {
+      "languagesCommunication": {
+        "title": "Languages & Communication",
+        "foreignLanguages": "Foreign Languages",
+        "nationalLanguage": "Learning the National Language",
+        "rhetoric": "Rhetoric & International Communication"
+      },
+      "cookingHousehold": {
+        "title": "Cooking & Household",
+        "cooking": "Cooking & Baking (including International Cuisine)",
+        "nutrition": "Nutrition & Sustainability",
+        "homeEconomics": "Home Economics"
+      },
+      "creativityCraftsmanship": {
+        "title": "Creativity & Craftsmanship",
+        "painting": "Painting, Drawing, Photography",
+        "sewing": "Sewing, Crafting, DIY",
+        "arts": "Arts & More"
+      },
+      "digitalIT": {
+        "title": "Digital & IT",
+        "computers": "Computers & Internet",
+        "socialMedia": "Social Media & Data Protection",
+        "software": "Software & Tools"
+      },
+      "healthExercise": {
+        "title": "Health & Exercise",
+        "fitness": "Fitness, Yoga & More",
+        "relaxation": "Relaxation & Stress Management",
+        "prevention": "Prevention & Well-being"
+      },
+      "natureGardening": {
+        "title": "Nature & Gardening",
+        "gardening": "Gardening & Urban Gardening",
+        "environment": "Environment & Sustainability",
+        "ecoProjects": "Eco Projects"
+      },
+      "careerEducation": {
+        "title": "Career & Education",
+        "softSkills": "Soft Skills & Time Management",
+        "careerOrientation": "Career Orientation & Qualification",
+        "basicEducation": "Basic Education & Literacy"
+      }
+    },
+    "other": {
+      "allCourses": "All Courses on Tudva",
+      "myCurriculum": "My Curriculum",
+      "myDocuments": "My Documents",
+      "mySupport": "My Support",
+      "firstSteps": "First Steps",
+      "tutorials": "Tutorials",
+      "helpCenter": "Help Center",
+      "helpCommunity": "Help Community"
+    }
+  },
+  "footer": {
+    "tagline": {
+      "title": "Free access to high-quality education",
+      "description": "Together we enable lifelong learning for all - free of charge and community-based."
+    },
+    "links": {
+      "learn": {
+        "title": "Learn",
+        "courses": "Courses",
+        "mySchedule": "My Schedule",
+        "whyUseTudva": "Why use tudva",
+        "getStarted": "Get Started"
+      },
+      "aboutTudva": {
+        "title": "About tudva",
+        "ourMission": "Our Mission",
+        "howItWorks": "How it Works",
+        "tudvaMeans": "What means \"tudva\"?",
+        "aboutUs": "About us",
+        "transparency": "Transparency"
+      },
+      "community": {
+        "title": "Community",
+        "blog": "Blog",
+        "support": "Support",
+        "becomeTeacher": "Become teacher",
+        "learningRooms": "Learning Rooms"
+      },
+      "helpContact": {
+        "title": "Help & Contact",
+        "helpdesk": "Helpdesk",
+        "faq": "FAQ",
+        "contactUs": "Contact Us",
+        "imprint": "Imprint"
+      }
+    },
+    "copyright": "Copyrights © {year} 151",
+    "company": "concepts",
+    "legal": {
+      "termsOfUse": "Terms of use",
+      "privacyPolicy": "Privacy policy",
+      "imprint": "Imprint"
+    }
   }
 }

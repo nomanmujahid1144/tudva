@@ -7,13 +7,20 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { FaEnvelope } from 'react-icons/fa';
 import { forgetPasswordSchema } from '@/validations/userSchema';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 const ForgotPassword = () => {
+  // Translations
+  const t = useTranslations('auth.forgotPassword');
+  const tValidation = useTranslations('auth.validation');
+  const params = useParams();
+  const locale = params.locale || 'en';
 
   const { requestPasswordReset, authLoading: loading } = useAuth();
 
   const { handleSubmit, formState: { errors }, control } = useForm({
-    resolver: yupResolver(forgetPasswordSchema),
+    resolver: yupResolver(forgetPasswordSchema(tValidation)),
     defaultValues: {
       email: '',
     },
@@ -21,37 +28,33 @@ const ForgotPassword = () => {
 
   const onSubmit = async (data) => {
     try {
-      const email = {
-        email: data.email
-      };
-
-      await requestPasswordReset(email.email);
-
+      await requestPasswordReset({email: data.email, locale});
     } catch (err) {
-      console.error('Unexpected login error:', err);
+      console.error('Unexpected password reset error:', err);
     }
   };
 
-
-
-  return <form onSubmit={handleSubmit(onSubmit)}>
-    <div className="mb-4">
-      <IconTextFormInput
-        control={control}
-        icon={FaEnvelope}
-        placeholder='E-mail'
-        label='Email address *'
-        name='email'
-        error={errors.email?.message}
-      />
-    </div>
-    <div className="align-items-center">
-      <div className="d-grid">
-        <button className="btn btn-primary mb-0" type="submit" disabled={loading}>
-          {loading ? 'Reset Password...' : 'Reset Password'}
-        </button>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="mb-4">
+        <IconTextFormInput
+          control={control}
+          icon={FaEnvelope}
+          placeholder={t('emailPlaceholder')}
+          label={t('emailLabel')}
+          name='email'
+          error={errors.email?.message}
+        />
       </div>
-    </div>
-  </form>;
+      <div className="align-items-center">
+        <div className="d-grid">
+          <button className="btn btn-primary mb-0" type="submit" disabled={loading}>
+            {loading ? t('resetting') : t('resetButton')}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 };
+
 export default ForgotPassword;

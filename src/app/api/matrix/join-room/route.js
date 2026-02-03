@@ -1,16 +1,21 @@
-// ================================================================
 // src/app/api/matrix/join-room/route.js
+// FIXED: Detect user role and use correct Matrix user prefix
+
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://chat.151.hu';
+const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
+const MATRIX_DOMAIN = process.env.MATRIX_DOMAIN || '151.hu';
 
 export async function POST(request) {
   try {
-    // Authenticate request
     const auth = await authenticateRequest(request);
+
+    console.log(request.headers.get('Authorization')?.replace('Bearer ', ''));
+
+    console.log(auth, 'AUTH')
     if (!auth.success) {
       return NextResponse.json({
         success: false,
@@ -18,18 +23,24 @@ export async function POST(request) {
       }, { status: 401 });
     }
 
-    const { roomId, userId } = await request.json();
+    const { roomId, userRole } = await request.json();
 
-    // Generate Matrix user ID for this user
-    const matrixUserId = `@user_${auth.user.id}:chat.151.hu`;
+    // ✅ FIXED: Determine correct Matrix user ID based on role
+    let matrixUserId;
+    
+    if (userRole === 'instructor') {
+      matrixUserId = `@instructor_${auth.user.id}:${MATRIX_DOMAIN}`;
+      console.log('🎓 Instructor joining as:', matrixUserId);
+    } else {
+      matrixUserId = `@student_${auth.user.id}:${MATRIX_DOMAIN}`;
+      console.log('👨‍🎓 Student joining as:', matrixUserId);
+    }
 
-    // Invite user to the room (using service account)
+    // Invite user to the room (will fail if already invited - that's ok)
     try {
       await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/invite`,
-        {
-          user_id: matrixUserId
-        },
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`,
+        { user_id: matrixUserId },
         {
           headers: {
             'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
@@ -37,48 +48,59 @@ export async function POST(request) {
           }
         }
       );
+      console.log('✅ User invited to room');
     } catch (inviteError) {
-      // User might already be invited, continue
-      console.log('User already invited or invitation failed:', inviteError.response?.data?.errcode);
+      // Already invited or already in room - this is normal
+      const errCode = inviteError.response?.data?.errcode;
+      if (errCode === 'M_FORBIDDEN' || errCode === 'M_UNKNOWN') {
+        console.log('ℹ️ User already in room or invited');
+      } else {
+        console.log('ℹ️ Invite error (continuing):', errCode);
+      }
     }
 
     // Get room info
     let roomInfo = { roomName: 'Live Session', memberCount: 0 };
     try {
       const roomStateResponse = await axios.get(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/state`,
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/state`,
         {
-          headers: {
-            'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`
-          }
+          headers: { 'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}` }
         }
       );
       
-      const roomNameEvent = roomStateResponse.data.find(event => event.type === 'm.room.name');
+      const roomNameEvent = roomStateResponse.data.find(e => e.type === 'm.room.name');
       if (roomNameEvent) {
         roomInfo.roomName = roomNameEvent.content.name;
       }
+      console.log('✅ Room info fetched:', roomInfo.roomName);
     } catch (stateError) {
-      console.log('Could not fetch room state:', stateError.response?.data?.errcode);
+      console.log('ℹ️ Could not fetch room state');
     }
 
-    // Send welcome message
-    try {
-      await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
-        {
-          msgtype: 'm.text',
-          body: `${auth.user.fullName || 'User'} has joined the session.`
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-            'Content-Type': 'application/json'
+    // Send welcome message (only for students, not instructors)
+    if (userRole !== 'instructor') {
+      try {
+        const txnId = Date.now();
+        await axios.put(
+          `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
+          {
+            msgtype: 'm.text',
+            body: `${auth.user.fullName || 'User'} has joined the session.`
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
           }
-        }
-      );
-    } catch (messageError) {
-      console.log('Welcome message failed:', messageError.response?.data?.errcode);
+        );
+        console.log('✅ Welcome message sent');
+      } catch (messageError) {
+        console.log('ℹ️ Welcome message failed');
+      }
+    } else {
+      console.log('ℹ️ Skipping welcome message for instructor');
     }
 
     return NextResponse.json({
@@ -86,13 +108,14 @@ export async function POST(request) {
       data: {
         roomId,
         matrixUserId,
+        userRole,
         ...roomInfo,
-        messages: [] // Initial empty messages, will be populated by polling
+        messages: []
       }
     });
 
   } catch (error) {
-    console.error('Failed to join Matrix room:', error);
+    console.error('❌ Failed to join Matrix room:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to join room'

@@ -53,6 +53,9 @@ importers:
       file-loader:
         specifier: ^6.2.0
         version: 6.2.0(webpack@5.98.0)
+      flag-icons:
+        specifier: ^7.5.0
+        version: 7.5.0
       formidable:
         specifier: ^3.5.4
         version: 3.5.4
@@ -137,6 +140,9 @@ importers:
       react-sticky-el:
         specifier: ^2.1.0
         version: 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      recordrtc:
+        specifier: ^5.6.2
+        version: 5.6.2
       resend:
         specifier: ^4.4.0
         version: 4.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1586,6 +1592,9 @@ packages:
   fizzy-ui-utils@2.0.7:
     resolution: {integrity: sha512-CZXDVXQ1If3/r8s0T+v+qVeMshhfcuq0rqIFgJnrtd+Bu8GmDmqMjntjUePypVtjHXKJ6V4sw9zeyox34n9aCg==}
 
+  flag-icons@7.5.0:
+    resolution: {integrity: sha512-kd+MNXviFIg5hijH766tt+3x76ele1AXlo4zDdCxIvqWZhKt4T83bOtxUOOMlTx/EcFdUMH5yvQgYlFh1EqqFg==}
+
   flat-cache@3.2.0:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -2626,6 +2635,9 @@ packages:
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
+
+  recordrtc@5.6.2:
+    resolution: {integrity: sha512-1QNKKNtl7+KcwD1lyOgP3ZlbiJ1d0HtXnypUy7yq49xEERxk31PHvE9RCciDrulPCY7WJ+oz0R9hpNxgsIurGQ==}
 
   redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
@@ -4772,6 +4784,8 @@ snapshots:
     dependencies:
       desandro-matches-selector: 2.0.2
 
+  flag-icons@7.5.0: {}
+
   flat-cache@3.2.0:
     dependencies:
       flatted: 3.3.3
@@ -5894,6 +5908,8 @@ snapshots:
       util-deprecate: 1.0.2
 
   readdirp@4.1.2: {}
+
+  recordrtc@5.6.2: {}
 
   redux@4.2.1:
     dependencies:

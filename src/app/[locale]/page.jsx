@@ -7,7 +7,6 @@ export const metadata = {
 };
 const AcademicHome = () => {
   return <>
-    {console.log('AT HOME PAGE')}
     <Hero />
     <SearchCourses />
     <CoursesOverview />

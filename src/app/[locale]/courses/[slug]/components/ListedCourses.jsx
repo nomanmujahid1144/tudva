@@ -7,6 +7,7 @@ import { Card, CardBody, CardTitle, Container, Row } from "react-bootstrap";
 import { renderToString } from "react-dom/server";
 import { FaChevronLeft, FaChevronRight, FaCircle, FaShoppingCart, FaStar, FaUserGraduate } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 // Default placeholder image
 import placeholderImg from '@/assets/images/courses/4by3/01.jpg';
@@ -127,6 +128,8 @@ const CourseCard = ({ course }) => {
 };
 
 const ListedCourses = ({ relatedCourses = [] }) => {
+  const t = useTranslations('courses.detail.relatedCourses');
+  
   // If there are no related courses, don't show this section
   if (!relatedCourses || relatedCourses.length === 0) return null;
   
@@ -166,7 +169,7 @@ const ListedCourses = ({ relatedCourses = [] }) => {
     <section className="pt-0 pt-md-5">
       <Container>
         <Row className="mb-4">
-          <h2 className="mb-0">Related Courses You May Like</h2>
+          <h2 className="mb-0">{t('title')}</h2>
         </Row>
         <Row>
           <div className="tiny-slider arrow-round arrow-blur arrow-hover">

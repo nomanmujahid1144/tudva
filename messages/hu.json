@@ -1,4 +1,50 @@
 {
+  "home": {
+    "hero": {
+      "badge": "a legegyszerűbb út a sikerhez",
+      "title": {
+        "line1": "Élethosszig tartó",
+        "line2": "tanulás",
+        "line3": "2.0"
+      },
+      "description": "A te szociális tanulási platformod. Fedezz fel különféle kurzusokat, tervezd meg saját tanulási napodat és válj egy elkötelezett közösség részévé."
+    },
+    "searchCourses": {
+      "heading": "Merülj el 300 leckében 2528 egyedi modullal.",
+      "subheading": "Tanulj bármit, amit akarsz – mindig ingyenes!",
+      "placeholder": "Találd meg a kurzusod (kurzusnév vagy téma szerint)"
+    },
+    "trendingCourses": {
+      "title": "Népszerű",
+      "titleHighlight": "Kurzusok",
+      "subtitle": "Találd meg a szakmádhoz legjobban illő kurzusokat",
+      "badge": {
+        "duration": "hónap"
+      },
+      "rating": "értékelés",
+      "duration": "időtartam"
+    },
+    "coursesOverview": {
+      "title": "Kurzusaim áttekintése",
+      "nextLessons": {
+        "title": "Következő leckéim",
+        "learningDay": "Tanulási nap:",
+        "schoolHour": "tanóra",
+        "timeRemaining": "nap, {hours} óra, {minutes} perc",
+        "manageLink": "kurzusaim kezelése"
+      },
+      "weekPlan": {
+        "title": "Heti terv előnézet",
+        "learningDay": "Tanulási nap: {date} [hét {week}/25]",
+        "noCourse": "nincs kiválasztott kurzus",
+        "chooseTopic": "válaszd ki a megfelelő témát",
+        "manageLink": "kurzusaim kezelése"
+      },
+      "moreAbout": {
+        "title": "Többet a kurzusaimról"
+      }
+    }
+  },
   "auth": {
     "signin": {
       "title": "Bejelentkezés a tudvába",
@@ -14,7 +60,10 @@
       "noAccount": "Nincs még fiókod?",
       "signupLink": "Regisztrálj itt",
       "loginSuccess": "Sikeres bejelentkezés!",
-      "loginError": "Sikertelen bejelentkezés. Kérjük, ellenőrizd az adataidat és próbáld újra."
+      "loginError": "Bejelentkezés sikertelen. Kérjük, ellenőrizd az adataidat és próbáld újra.",
+      "invalidCredentials": "Érvénytelen e-mail vagy jelszó.",
+      "accountNotVerified": "Erősítsd meg az e-mailed a bejelentkezés előtt.",
+      "accountInactive": "A fiókod inaktív. Lépj kapcsolatba az ügyfélszolgálattal."
     },
     "signup": {
       "title": "Regisztráció a tudvára",
@@ -39,7 +88,11 @@
       "signinLink": "Jelentkezz be itt",
       "signupSuccess": "Sikeres regisztráció! Kérjük, ellenőrizd az e-mailed a fiókod megerősítéséhez.",
       "signupError": "Sikertelen regisztráció. Kérjük, próbáld újra.",
-      "emailAlreadyExists": "Ez az e-mail cím már regisztrálva van."
+      "emailAlreadyExists": "Ez az e-mail cím már regisztrálva van. Kérjük, jelentkezz be vagy használj másik e-mail címet.",
+      "invalidEmail": "Adj meg egy érvényes e-mail címet.",
+      "weakPassword": "A jelszó túl gyenge. Használj legalább 8 karaktert.",
+      "missingFields": "Töltsd ki az összes kötelező mezőt.",
+      "emailSendFailed": "Sikertelen a megerősítő e-mail küldése."
     },
     "forgotPassword": {
       "title": "Elfelejtett jelszó",
@@ -52,7 +105,8 @@
       "resetSuccess": "A jelszó-visszaállítási utasításokat elküldtük az e-mail címedre.",
       "resetError": "Kérjük, ellenőrizd az e-mailed és próbáld újra!",
       "noAccount": "Nincs még fiókod?",
-      "signupLink": "Regisztrálj itt"
+      "signupLink": "Regisztrálj itt",
+      "resetEmailFailed": "Sikertelen a visszaállítási e-mail küldése."
     },
     "confirmEmail": {
       "title": "Erősítsd meg az e-mail címedet",
@@ -63,7 +117,8 @@
       "verifySuccess": "Az e-mail címed sikeresen megerősítve! Most már bejelentkezhetsz.",
       "verifyError": "Az e-mail megerősítése sikertelen. Kérjük, próbáld újra.",
       "noToken": "Nincs megerősítő token az URL-ben",
-      "tokenMissing": "Hiányzik a megerősítő token"
+      "tokenMissing": "Hiányzik a megerősítő token",
+      "invalidToken": "Érvénytelen vagy lejárt megerősítési link."
     },
     "confirmChangePassword": {
       "title": "A folytatáshoz azonosítsd magad",
@@ -88,7 +143,8 @@
       "resetSuccess": "Sikeres jelszó-visszaállítás! Most már bejelentkezhetsz az új jelszavaddal.",
       "resetError": "A jelszó visszaállítása sikertelen. Kérjük, próbáld újra.",
       "tokenMissing": "Hiányzik a megerősítő token",
-      "tokenError": "Hiba: Hiányzik a token. Kérjük, használd az e-mailben kapott linket."
+      "tokenError": "Hiba: Hiányzik a token. Kérjük, használd az e-mailben kapott linket.",
+      "invalidToken": "Érvénytelen vagy lejárt visszaállítási link."
     },
     "validation": {
       "fullNameRequired": "Kérjük, add meg a teljes nevedet",
@@ -116,10 +172,81 @@
     },
     "callback": {
       "redirecting": "Átirányítás...",
-      "pleaseWait": "Kérjük, várj"
+      "pleaseWait": "Kérjük, várj",
+      "loginFailed": "Bejelentkezés ellenőrzése sikertelen"
     }
   },
   "instructor": {
+    "profile": {
+      "title": "Oktatói profil",
+      "myCourses": "Kurzusaim",
+      "editProfile": "Profil szerkesztése",
+      "aboutMe": "Rólam",
+      "aboutMePlaceholder": "Még nincsenek megadott információk. Mesélj a diákoknak magadról, a szaktudásodról és a tanítási filozófiádról.",
+      "experienceExpertise": "Tapasztalat és szakértelem",
+      "education": "Végzettség",
+      "notSpecified": "Nincs megadva",
+      "memberSince": "Tag",
+      "teachingStats": "Oktatási statisztikák",
+      "courses": "Kurzusok",
+      "students": "Diákok",
+      "reviews": "Értékelések",
+      "loading": "Betöltés..."
+    },
+    "editProfile": {
+      "title": "Profil szerkesztése",
+      "profilePicture": "Profilkép",
+      "change": "Módosítás",
+      "fullName": "Teljes név",
+      "fullNamePlaceholder": "Teljes név",
+      "email": "E-mail cím",
+      "emailPlaceholder": "E-mail",
+      "phoneNumber": "Telefonszám",
+      "phoneNumberPlaceholder": "Telefonszám",
+      "aboutMe": "Rólam",
+      "aboutMeDescription": "Rövid leírás a profilodhoz.",
+      "saveChanges": "Változtatások mentése",
+      "updating": "Frissítés...",
+      "notAuthenticated": "Nincs hitelesítve",
+      "notAuthenticatedMessage": "Kérjük, jelentkezz be a profilod eléréséhez.",
+      "signIn": "Bejelentkezés",
+      "success": "Profil sikeresen frissítve",
+      "error": "A profil frissítése sikertelen. Kérjük, próbáld újra.",
+      "imageSizeError": "A képméret meghaladja az 5 MB-ot",
+      "imageProcessError": "Hiba a kép feldolgozása során"
+    },
+    "manageCourse": {
+      "title": "Kurzusaim",
+      "createNewCourse": "Új kurzus létrehozása",
+      "searchPlaceholder": "Keresés kurzus címre vagy leírásra",
+      "sortNewest": "Rendezés: Legújabb először",
+      "sortOldest": "Rendezés: Legrégebbi először",
+      "sortAZ": "Rendezés: A-tól Z-ig",
+      "sortZA": "Rendezés: Z-től A-ig",
+      "course": "Kurzus",
+      "status": "Állapot",
+      "actions": "Műveletek",
+      "published": "Közzétéve",
+      "draft": "Piszkozat",
+      "viewCourse": "Kurzus megtekintése",
+      "editCourse": "Kurzus szerkesztése",
+      "deleteCourse": "Kurzus törlése",
+      "loading": "Betöltés...",
+      "loadingCourses": "Kurzusok betöltése...",
+      "noCourses": "Nem találhatók kurzusok.",
+      "createFirstCourse": "Új kurzus létrehozása",
+      "showing": "Megjelenítés",
+      "to": "-",
+      "of": "/",
+      "entries": "bejegyzés",
+      "deleteConfirmTitle": "Kurzus törlése",
+      "deleteConfirmMessage": "Biztosan törölni szeretnéd a(z) \"{title}\" kurzust? Ez a művelet nem vonható vissza.",
+      "deleteConfirmButton": "Kurzus törlése",
+      "cancel": "Mégse",
+      "deleteSuccess": "Kurzus sikeresen törölve",
+      "deleteError": "A kurzus törlése sikertelen",
+      "loadError": "A kurzusok betöltése sikertelen"
+    },
     "course": {
       "creation": {
         "pageTitle": "Új kurzus létrehozása",
@@ -144,251 +271,458 @@
         "step3": "Tanterv",
         "step4": "További információk"
       },
+      "form": {
+        "create": {
+          "subtitle": "Használd ezt a felületet új kurzus hozzáadásához...",
+          "recoveryAlert": "Mentetlen kurzusadataid vannak. Folytathatod ott, ahol abbahagytad."
+        },
+        "edit": {
+          "subtitle": "Szerkeszd a kurzus részleteit és frissítsd a tartalmat...",
+          "recoveryAlert": "Mentetlen változtatásaid vannak ezen a kurzuson. Folytathatod ott, ahol abbahagytad."
+        },
+        "stepper": {
+          "step1": "Kurzus részletei",
+          "step2": "Kurzus média",
+          "step3": "Tanmenet",
+          "step4": "További információk"
+        }
+      },
+      "categories": {
+        "Languages & Communication": "Nyelvek és kommunikáció",
+        "Cooking & Household": "Főzés és háztartás",
+        "Creativity & Craftsmanship": "Kreativitás és kézművesség",
+        "Digital & IT": "Digitális és IT",
+        "Health & Exercise": "Egészség és testmozgás",
+        "Nature & Gardening": "Természet és kertészkedés",
+        "Career & Education": "Karrier és oktatás"
+      },
+      "subcategories": {
+        "Foreign Languages": "Idegen nyelvek",
+        "Learning the National Language": "Nemzeti nyelv tanulása",
+        "Rhetoric & International Communication": "Retorika és nemzetközi kommunikáció",
+        "Cooking & Baking (including International Cuisine)": "Főzés és sütés (nemzetközi konyha)",
+        "Nutrition & Sustainability": "Táplálkozás és fenntarthatóság",
+        "Home Economics": "Háztartástan",
+        "Painting, Drawing, Photography": "Festés, rajzolás, fényképezés",
+        "Sewing, Crafting, DIY": "Varrás, kézműveskedés, barkácsolás",
+        "Arts & More": "Művészet és még több",
+        "Computers & Internet": "Számítógépek és internet",
+        "Social Media & Data Protection": "Közösségi média és adatvédelem",
+        "Software & Tools": "Szoftver és eszközök",
+        "Fitness, Yoga & More": "Fitnesz, jóga és még több",
+        "Relaxation & Stress Management": "Relaxáció és stresszkezelés",
+        "Prevention & Well-being": "Megelőzés és jólét",
+        "Gardening & Urban Gardening": "Kertészkedés és városi kertészet",
+        "Environment & Sustainability": "Környezet és fenntarthatóság",
+        "Eco Projects": "Ökológiai projektek",
+        "Soft Skills & Time Management": "Soft skillek és időgazdálkodás",
+        "Career Orientation & Qualification": "Karriertervezés és képesítés",
+        "Basic Education & Literacy": "Alapoktatás és írástudás"
+      },
       "step1": {
         "title": "Kurzus részletei",
         "editTitle": "Kurzus részleteinek szerkesztése",
-        "courseTitle": "Kurzus címe",
-        "courseTitlePlaceholder": "Add meg a kurzus címét",
-        "shortDescription": "Rövid leírás",
-        "shortDescriptionPlaceholder": "A kurzusod rövid áttekintése (max. 150 karakter)",
-        "description": "Kurzus leírása",
-        "descriptionPlaceholder": "Írj egy részletes leírást a kurzusodról...",
-        "category": "Kurzus kategóriája",
-        "selectCategory": "Válassz kategóriát",
-        "subcategory": "Kurzus alkategóriája",
-        "selectSubcategory": "Válassz alkategóriát",
-        "level": "Kurzus szintje",
-        "selectLevel": "Válaszd ki a kurzus szintjét",
-        "beginner": "Kezdő",
-        "intermediate": "Középhaladó",
-        "advanced": "Haladó",
-        "allLevels": "Minden szint",
-        "language": "Nyelv",
-        "selectLanguage": "Válassz nyelvet",
-        "english": "Angol",
-        "german": "Német",
-        "french": "Francia",
-        "hindi": "Hindi",
-        "courseType": "Kurzus típusa",
-        "selectCourseType": "Válaszd ki a kurzus típusát",
-        "recordedCourse": "Felvett kurzus",
-        "liveCourse": "Élő kurzus",
-        "promoVideoUrl": "Promóciós videó URL (opcionális)",
-        "promoVideoPlaceholder": "Add meg a YouTube vagy Vimeo URL-t",
-        "promoVideoHelp": "Egy rövid bemutatkozó videó a kurzusodról jelentősen növelheti a beiratkozások számát",
-        "courseTime": "Kurzus időtartama",
-        "enterCourseTime": "Add meg a kurzus időtartamát",
-        "totalLecture": "Összes lecke",
-        "enterTotalLecture": "Add meg az összes lecke számát",
-        "coursePrice": "Kurzus ára",
-        "enterCoursePrice": "Add meg a kurzus árát",
-        "discountPrice": "Kedvezményes ár",
-        "enterDiscount": "Add meg a kedvezményt",
-        "enableDiscount": "Kedvezmény engedélyezése",
-        "featured": "Kiemelt kurzus",
-        "checkFeatured": "Jelöld be, ha kiemelt kurzus",
-        "addDescription": "Leírás hozzáadása",
-        "next": "Tovább",
-        "saving": "Mentés...",
-        "updating": "Frissítés..."
+        "editingLabel": "Szerkesztés:",
+        "loadingMessage": "Kurzus részleteinek betöltése...",
+        "loadingSubtext": "Kérjük, várj, amíg betöltjük a kurzus adatait.",
+        "courseTitle": {
+          "label": "Kurzus címe",
+          "placeholder": "Add meg a kurzus címét",
+          "counter": "karakter"
+        },
+        "shortDescription": {
+          "label": "Rövid leírás",
+          "placeholder": "A kurzus rövid áttekintése (maximum 150 karakter)",
+          "counter": "karakter"
+        },
+        "category": {
+          "label": "Kurzus kategóriája",
+          "placeholder": "Válassz kategóriát"
+        },
+        "subcategory": {
+          "label": "Kurzus alkategóriája",
+          "placeholder": "Válassz alkategóriát"
+        },
+        "level": {
+          "label": "Kurzus szintje",
+          "beginner": "Kezdő",
+          "intermediate": "Haladó",
+          "advanced": "Szakértő",
+          "allLevels": "Minden szint"
+        },
+        "type": {
+          "label": "Kurzus típusa",
+          "recorded": "Felvett kurzus",
+          "live": "Élő kurzus"
+        },
+        "promoVideo": {
+          "label": "Promóciós videó URL",
+          "placeholder": "Add meg a promóciós videód URL-jét (YouTube, Vimeo stb.)",
+          "helperText": "Egy rövid bemutató videó jelentősen növelheti a jelentkezések számát"
+        },
+        "description": {
+          "label": "Kurzus leírása",
+          "placeholder": "Írj részletes leírást a kurzusodról..."
+        },
+        "buttons": {
+          "next": "Tovább",
+          "saving": "Mentés...",
+          "updating": "Frissítés..."
+        }
       },
       "step2": {
         "title": "Kurzus média",
         "subTitle": "Állítsd be a kurzusod szín- és ikonkombinációját",
         "editTitle": "Kurzus média szerkesztése",
-        "backgroundColorTitle": "Háttérszín",
-        "backgroundColorSubtitle": "Válassz egy háttérszínt a kurzuskártyádhoz",
-        "howItLooks": "Hogyan kellene kinéznie?",
-        "iconTitle": "Válassz egy ikont",
-        "iconSubtitle": "Válassz egy ikont a kurzusodhoz",
-        "iconSearchPlaceHolder": "Ikonok keresése...",
+        "backgroundColorLabel": "Háttérszín",
+        "backgroundColorRequired": "*",
+        "howItLooks": "Hogyan fog kinézni?",
+        "selectIconPreview": "Válassz egy ikont",
+        "iconTitle": "Válassz egy ikont a kurzusodhoz",
+        "iconSearchPlaceholder": "Ikonok keresése...",
         "loadingIcons": "Ikonok betöltése...",
-        "noIconFound": "Nincs találat",
-        "thumbnailTitle": "Kurzus bélyegképe",
-        "thumbnailSubtitle": "Tölts fel egy jó minőségű képet (ajánlott: 1200x675px)",
-        "uploadThumbnail": "Bélyegkép feltöltése",
-        "changeThumbnail": "Bélyegkép cseréje",
-        "errorLoadingCourse": "Hiba a kurzus média betöltésekor",
-        "unableToLoadCourseMedia": "Nem sikerült betölteni a kurzus média adatait:",
+        "noIconsFound": "Nem találhatók ikonok erre:",
+        "loadingCourseMedia": "Kurzus média betöltése...",
+        "loadingSubtext": "Kérjük, várj, amíg betöltjük a kurzus adatait.",
+        "errorLoadingTitle": "Hiba a kurzus média betöltésekor",
+        "errorLoadingMessage": "Nem sikerült betölteni a kurzus média adatokat:",
         "backToCourseManagement": "Vissza a kurzuskezeléshez",
-        "previous": "Előző",
-        "next": "Tovább",
-        "saving": "Mentés...",
-        "updating": "Frissítés..."
+        "buttons": {
+          "previous": "Vissza",
+          "next": "Tovább",
+          "saving": "Mentés...",
+          "updating": "Frissítés..."
+        }
       },
       "step3": {
-        "loadingCourseCurriculum": "Nincs találat",
-        "waitLoadingCourseCurriculum": "Kérjük, várj, amíg lekérjük a kurzusod adatait.",
-        "errorLoadingCourseCurriculum": "Hiba a kurzus tantervének betöltésekor",
-        "unableLoadingCourseCurriculum": "Nem sikerült betölteni a kurzus tantervének adatait:",
-        "backToCourseManagement": "Vissza a kurzuskezeléshez",
-        "defineCourseCount": "Határozd meg a leckék számát a kurzusodon",
-        "defineCourseCountDescription": "Ne feledd, hogy az élő kurzusoknál a leckék számának olyannak kell lennie, hogy minden nap ugyanannyi lecke legyen (pl. 3 nap, napi 2 lecke = 6 lecke)",
-        "lessons": "leckék",
         "title": "Kurzus tanterve",
         "editTitle": "Kurzus tantervének szerkesztése",
-        "liveCourseCurriculum": "Élő kurzus beállítása",
-        "recordedCourseCurriculum": "Felvett kurzus tanterve",
-        "addModule": "Modul hozzáadása",
-        "addFirstModule": "Első modul hozzáadása",
-        "noModulesYet": "Még nincsenek modulok hozzáadva",
-        "startBuilding": "Kezdd el a kurzusod felépítését egy modul hozzáadásával",
-        "buildCurriculumTitle": "Építsd fel a tanterved:",
-        "buildCurriculumDescription": "Adj hozzá modulokat és tölts fel videókat a kurzus tartalmának létrehozásához. Minden modul több videót is tartalmazhat. Jelöld a videókat \"Előnézet\"-ként, hogy a be nem iratkozott felhasználók is megnézhessék őket. Minden videóhoz több tananyagot is csatolhatsz (PDF-eket, dokumentumokat).",
-        "video": "videó",
-        "videos": "videó",
-        "editModule": "Modul szerkesztése",
-        "deleteModule": "Modul törlése",
-        "addVideo": "Videó hozzáadása",
-        "editVideo": "Videó szerkesztése",
-        "deleteVideo": "Videó törlése",
-        "preview": "Előnézet",
-        "duration": "Időtartam",
-        "uploading": "Feltöltés",
-        "uploaded": "Feltöltve",
-        "processing": "Feldolgozás",
-        "completed": "Befejezve",
-        "failed": "Sikertelen",
-        "noVideos": "Még nincsenek videók hozzáadva",
-        "addFirstVideo": "Add hozzá az első videódat ehhez a modulhoz",
-        "continueToNext": "Tovább a következő lépésre",
-        "previous": "Előző",
-        "saving": "Mentés...",
-        "updating": "Frissítés...",
-        "module": {
-          "title": "Modul címe",
-          "titlePlaceholder": "pl. Bevezetés a JavaScriptbe",
-          "description": "Modul leírása",
-          "descriptionPlaceholder": "A modul rövid leírása",
-          "descriptionHelp": "Egy jó leírás segít a diákoknak megérteni, mit fognak tanulni ebben a modulban.",
+        "editingLabel": "Szerkesztés:",
+        "loadingCurriculum": "Kurzus tanterv betöltése...",
+        "loadingSubtext": "Kérjük, várj, amíg betöltjük a kurzus adatait.",
+        "errorLoadingTitle": "Hiba a kurzus tanterv betöltésekor",
+        "errorLoadingMessage": "Nem sikerült betölteni a kurzus tanterv adatait:",
+        "backToCourseManagement": "Vissza a kurzuskezeléshez",
+        "liveCourse": {
+          "defineTitle": "Határozd meg a leckék számát a kurzusodban",
+          "defineDescription": "Ne feledd, hogy az élő kurzusoknál a leckék számának olyannak kell lennie, hogy minden nap ugyanannyi lecke legyen (pl. 3 nap, napi 2 lecke = 6 lecke)",
+          "lessons": "leckék",
+          "noPrerecordedTitle": "Nincs előre meghatározott tanterv élő kurzusokban",
+          "noPrerecordedDescription": "Az élő kurzusoknak nincsenek előre felvett leckéi. Az utolsó lépésben állítod be a foglalkozások időbeosztását.",
+          "uploadingLessons": "Leckék feltöltése",
+          "courseMaterialsTitle": "Kurzus anyagok",
+          "courseMaterialsSetup": "Kurzus anyagok beállítása:",
+          "lessonsHaveContent": "/",
+          "lessonsHaveContentSuffix": "leckének van tartalma",
+          "totalFiles": "összes fájl",
+          "editMaterials": "Anyagok szerkesztése",
+          "addCourseFiles": "Kurzus fájlok hozzáadása",
+          "noMaterials": "Nincs anyag",
+          "filesAttached": "fájl csatolva",
+          "addMaterials": "Anyagok hozzáadása",
+          "materialsForLesson": "Anyagok a leckéhez:",
+          "filesReady": "fájl kész",
+          "noMaterialsYet": "Még nincsenek anyagok hozzáadva"
+        },
+        "recorded": {
           "addModule": "Modul hozzáadása",
-          "updateModule": "Modul frissítése",
-          "editModule": "Modul szerkesztése",
-          "addNewModule": "Új modul hozzáadása"
+          "buildCurriculumTitle": "Építsd fel a tanterved:",
+          "buildCurriculumDescription": "Adj hozzá modulokat és tölts fel videókat a kurzus tartalmának létrehozásához. Minden modul több videót is tartalmazhat. Jelöld a videókat \"Előnézet\"-ként, hogy a be nem iratkozott felhasználók is megnézhessék őket. Minden videóhoz több tananyagot is csatolhatsz (PDF-eket, dokumentumokat).",
+          "noModulesTitle": "Még nincsenek modulok hozzáadva",
+          "noModulesDescription": "Kezdd el a kurzusod felépítését egy modul hozzáadásával",
+          "addFirstModule": "Első modul hozzáadása",
+          "moduleDescription": "Modul leírása",
+          "noDescriptionProvided": "Nincs leírás megadva",
+          "editModule": "Szerkesztés",
+          "deleteModule": "Törlés",
+          "noVideos": "Még nincsenek videók hozzáadva ehhez a modulhoz",
+          "addVideo": "Videó hozzáadása",
+          "videos": "videó"
+        },
+        "module": {
+          "addTitle": "Új modul hozzáadása",
+          "editTitle": "Modul szerkesztése",
+          "titleLabel": "Modul címe",
+          "titlePlaceholder": "pl. Bevezetés a JavaScriptbe",
+          "titleRequired": "A modul címe kötelező",
+          "descriptionLabel": "Modul leírása",
+          "descriptionPlaceholder": "Rövid leírás erről a modulról",
+          "descriptionHelp": "Egy jó leírás segít a tanulóknak megérteni, mit fognak tanulni ebben a modulban.",
+          "addButton": "Modul hozzáadása",
+          "updateButton": "Modul frissítése",
+          "addedSuccess": "Modul sikeresen hozzáadva",
+          "updatedSuccess": "Modul sikeresen frissítve",
+          "deletedSuccess": "Modul sikeresen törölve",
+          "confirmDeleteTitle": "Modul törlése",
+          "confirmDeleteMessage": "Biztosan törölni szeretnéd a(z) \"{name}\" modult? {count, plural, =0 {} =1 {Ez 1 videót is töröl.} other {Ez # videót is töröl.}} Ez a művelet nem vonható vissza."
         },
         "video": {
-          "title": "Videó címe",
+          "addTitle": "Új videó hozzáadása",
+          "editTitle": "Videó szerkesztése",
+          "titleLabel": "Videó címe",
           "titlePlaceholder": "pl. Bevezetés a változókba",
-          "description": "Videó leírása",
-          "descriptionPlaceholder": "A videó rövid leírása",
-          "videoFile": "Videófájl",
-          "replaceVideo": "Videófájl cseréje (opcionális)",
-          "chooseVideo": "Válassz videófájlt",
-          "maxFileSize": "Maximális fájlméret: 2GB. Támogatott formátumok: MP4, WebM, MOV",
-          "thumbnail": "Videó bélyegképe (opcionális)",
-          "chooseThumbnail": "Válassz bélyegképet",
-          "recommendedSize": "Ajánlott: 1280x720px",
-          "allowPreview": "Előnézet engedélyezése",
-          "allowPreviewHelp": "Engedélyezd a felhasználóknak, hogy megnézhessék ezt a videót a kurzusra való beiratkozás nélkül",
-          "courseMaterials": "Tananyagok (opcionális)",
-          "addMaterials": "Tananyagok hozzáadása",
-          "uploadMaterials": "Tananyagok feltöltése",
-          "materialsHelp": "Tölts fel PDF-eket, dokumentumokat vagy más fájlokat, amelyeket a diákok letölthetnek",
-          "removeFile": "Fájl eltávolítása",
-          "addVideo": "Videó hozzáadása",
-          "updateVideo": "Videó frissítése",
+          "titleRequired": "A videó címe kötelező",
+          "descriptionLabel": "Videó leírása",
+          "descriptionPlaceholder": "Rövid leírás erről a videóról",
+          "fileLabel": "Videó fájl",
+          "fileReplaceLabel": "Videó fájl cseréje (opcionális)",
+          "fileRequired": "A videó fájl kötelező",
+          "fileHelp": "Maximális fájlméret: 500MB. Támogatott formátumok: MP4, WebM, MOV, AVI, QuickTime",
+          "materialsLabel": "Kurzus anyagok (Opcionális)",
+          "materialsHelp": "Több anyag feltöltése (PDF, DOC, PPT, képek stb.) - Max. 50MB fájlonként",
+          "selectedMaterials": "Kiválasztott anyagok",
+          "previewCheckbox": "Tedd elérhetővé ezt a videót ingyenes előnézetként",
+          "previewHelp": "Az előnézeti videók láthatók a be nem iratkozott tanulók számára, és segíthetnek növelni a beiratkozásokat.",
+          "addButton": "Videó hozzáadása",
+          "updateButton": "Videó frissítése",
+          "addedSuccess": "Videó sikeresen hozzáadva",
+          "updatedSuccess": "Videó sikeresen frissítve",
+          "deletedSuccess": "Videó sikeresen törölve",
+          "confirmDeleteTitle": "Videó törlése",
+          "confirmDeleteMessage": "Biztosan törölni szeretnéd a(z) \"{name}\" videót? Ez a művelet nem vonható vissza.",
+          "playVideo": "Videó lejátszása",
           "editVideo": "Videó szerkesztése",
-          "addNewVideo": "Új videó hozzáadása",
-          "uploadProgress": "Feltöltés állapota",
-          "uploadPhase": "Feltöltési fázis",
-          "uploadingChunk": "Rész feltöltése:",
-          "of": "/",
-          "uploadSpeed": "Feltöltési sebesség",
-          "timeRemaining": "Hátralévő idő",
-          "initializing": "Feltöltés inicializálása...",
+          "deleteVideo": "Videó törlése"
+        },
+        "upload": {
+          "preparing": "Előkészítés...",
+          "uploadingMaterials": "Anyagok feltöltése...",
           "uploadingVideo": "Videó feltöltése...",
-          "finalizing": "Feltöltés véglegesítése...",
+          "uploadingToCloud": "Felhőbe feltöltés...",
+          "processing": "Feldolgozás...",
+          "preparingVideo": "Videó előkészítése feltöltéshez...",
+          "uploadingMaterialsCount": "{count} kurzus anyag feltöltése...",
+          "uploadingChunks": "{info} feltöltése...",
+          "combiningChunks": "Videó részek összefűzése...",
+          "uploadingToStorage": "Felhő tárhelyre feltöltés...",
+          "finalizingUpload": "Feltöltés befejezése...",
+          "uploadCompleted": "Feltöltés befejezve!",
           "processingVideo": "Videó feldolgozása...",
-          "canceling": "Feltöltés megszakítása...",
-          "cancelUpload": "Feltöltés megszakítása"
+          "loadingVideo": "Videó betöltése...",
+          "videoLoadError": "Nem sikerült betölteni a videót",
+          "tryAgainLater": "Kérjük, próbáld újra később",
+          "uploadFailed": "Feltöltés sikertelen:",
+          "uploadFailedTitle": "Feltöltés sikertelen - Kérjük, próbáld újra",
+          "uploadedSuccessfully": "Sikeresen feltöltve",
+          "speedLabel": "Sebesség:",
+          "etaLabel": "Hátralévő idő:",
+          "combiningMessage": "Videó részek összefűzése...",
+          "realtimeUpload": "Valós idejű feltöltés a felhőbe...",
+          "finalizingMessage": "Feltöltés befejezése...",
+          "uploadingMaterialFiles": "{count} anyag fájl feltöltése...",
+          "failed": "Sikertelen"
         },
-        "liveCourse": {
-          "setupTitle": "Élő kurzus beállítása",
-          "plannedLessons": "Tervezett leckék",
-          "plannedLessonsPlaceholder": "Add meg a tervezett leckék számát",
-          "plannedLessonsHelp": "Az összes élő alkalom száma, amit tervezel",
-          "maxEnrollment": "Maximális létszám",
-          "maxEnrollmentPlaceholder": "Add meg a maximális diáklétszámot",
-          "maxEnrollmentHelp": "A diákok maximális száma, akik beiratkozhatnak",
-          "courseMaterials": "Tananyagok",
-          "addMaterials": "Tananyagok hozzáadása",
-          "manageMaterials": "Tananyagok kezelése",
-          "materialsCount": "tananyag",
-          "materialsHelp": "Tölts fel anyagokat, amelyeket a kurzus során megosztasz a diákokkal",
-          "scheduleNote": "Az órarendet az utolsó lépésben állíthatod be."
+        "materials": {
+          "panelTitle": "Kurzus anyagok hozzáadása ({count} lecke)",
+          "infoMessage": "Adj hozzá több anyagot minden leckéhez. Leckénként több fájlt is feltölthetsz.",
+          "allLessonsSaved": "Mind a(z) {count} lecke mentésre kerül",
+          "includingEmpty": "(az üreseket is beleértve)",
+          "uploadMultiple": "Több fájl feltöltése",
+          "uploadHelp": "Válassz több fájlt: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG (Max. 50MB fájlonként)",
+          "uploadedMaterials": "Feltöltött anyagok",
+          "uploadingMessage": "Anyagok feltöltése...",
+          "uploadedSuccess": "anyag sikeresen feltöltve",
+          "noMaterialsAdded": "Még nincsenek anyagok hozzáadva",
+          "saveButton": "Kurzus anyagok mentése (Mind a(z) {count} lecke)",
+          "uploadingButton": "Anyagok feltöltése...",
+          "lessonLabel": "Lecke",
+          "filesLabel": "Fájl(ok)",
+          "viewFile": "Fájl megtekintése",
+          "downloadFile": "Letöltés",
+          "removeFile": "Eltávolítás",
+          "materialsSaved": "Kurzus anyagok mentve mind a(z) {count} leckéhez ({total} fájl összesen)",
+          "uploadSuccess": "{count} fájl sikeresen feltöltve a(z) {lesson}. leckéhez",
+          "uploadError": "Nem sikerült feltölteni az anyagokat a(z) {lesson}. leckéhez:",
+          "removedSuccess": "Anyag sikeresen eltávolítva"
         },
-        "delete": {
-          "confirmTitle": "Törlés megerősítése",
-          "deleteModule": "Modul törlése",
-          "deleteVideo": "Videó törlése",
-          "moduleMessage": "Biztosan törölni szeretnéd a modult?",
-          "moduleMessageWithVideos": "Ez törölni fogja a benne lévő",
-          "videoMessage": "Biztosan törölni szeretnéd a videót?",
-          "cannotUndo": "Ez a művelet nem vonható vissza.",
-          "cancel": "Mégse",
-          "delete": "Törlés"
+        "filePreview": {
+          "viewFile": "Fájl megtekintése",
+          "download": "Letöltés",
+          "remove": "Eltávolítás",
+          "uploading": "feltöltve"
+        },
+        "videoStatus": {
+          "processing": "Videó feldolgozása...",
+          "uploading": "{current}/{total} rész feltöltése...",
+          "combining": "Videó részek összefűzése... {progress}%",
+          "uploadingCloud": "Felhőbe feltöltés... {progress}%",
+          "transferring": "Felhő tárhelyre átvitel... {progress}%",
+          "finalizing": "Feltöltés befejezése... {progress}%",
+          "completed": "Feldolgozás sikeresen befejezve!",
+          "failed": "Feltöltés sikertelen - Kérjük, próbáld újra",
+          "waitingStart": "Várakozás a feltöltés indítására",
+          "combiningMessage": "Összefűzés...",
+          "uploadingMessage": "Feltöltés...",
+          "transferringMessage": "Átvitel...",
+          "finalizingMessage": "Befejezés...",
+          "processingMessage": "Feldolgozás..."
+        },
+        "buttons": {
+          "previous": "Előző",
+          "next": "Mentés és folytatás",
+          "continueNext": "Folytatás a következő lépéssel",
+          "saving": "Mentés...",
+          "updating": "Frissítés...",
+          "delete": "Törlés",
+          "cancel": "Mégse"
         }
       },
       "step4": {
         "title": "További információk",
         "editTitle": "További információk szerkesztése",
-        "faqs": "GYIK (Gyakran Ismételt Kérdések)",
-        "addFaq": "GYIK hozzáadása",
-        "noFaqsYet": "Még nincsenek GYIK-ok hozzáadva",
-        "addFirstFaq": "Add hozzá az első GYIK-odat, hogy segíts a diákoknak jobban megérteni a kurzusodat",
-        "editFaq": "GYIK szerkesztése",
-        "deleteFaq": "GYIK törlése",
-        "question": "Kérdés",
-        "questionPlaceholder": "pl. Mit fogok tanulni ezen a kurzuson?",
-        "answer": "Válasz",
-        "answerPlaceholder": "pl. A beiratkozás után élethosszig tartó hozzáférést kapsz a tananyagokhoz.",
-        "addFaqButton": "GYIK hozzáadása",
-        "updateFaqButton": "GYIK frissítése",
-        "tags": "Címkék",
-        "addTags": "Címkék hozzáadása",
-        "tagsPlaceholder": "Add meg a címkéket",
-        "tagsHelp": "Maximum 14 kulcsszó. A kulcsszavak legyenek kisbetűvel. pl. javascript, react, marketing",
-        "reviewerMessage": "Üzenet az ellenőrnek",
-        "reviewerMessagePlaceholder": "Írj egy üzenetet",
-        "rightsCheckbox": "Minden kép, hang vagy egyéb tartalom, amely nem a saját munkám, megfelelő licenccel rendelkezik a fájl előnézetében vagy a fő kurzusban való felhasználásra. Ezeken kívül ez a munka teljes mértékben a sajátom, és teljes jogom van itt értékesíteni.",
-        "liveScheduling": {
-          "title": "Élő kurzus ütemezése",
-          "setupSchedule": "Órarend beállítása",
-          "editSchedule": "Órarend szerkesztése",
-          "noScheduleYet": "Még nincs beállítva órarend",
-          "addSchedulePrompt": "Állítsd be az élő kurzusod órarendjét, hogy a diákok tudják, mikor lesznek az órák",
-          "startDate": "Kezdés dátuma",
-          "selectStartDate": "Válaszd ki a kezdés dátumát",
-          "selectDay": "Válassz napot",
-          "selectTimeSlots": "Válassz időpontokat",
-          "timeSlotsHelp": "Válaszd ki azokat az időpontokat, amikor az élő órákat tartod",
-          "scheduleSummary": "Órarend összefoglaló",
-          "selectedDay": "Kiválasztott nap:",
-          "selectedSlots": "Kiválasztott időpontok:",
-          "weeksRequired": "Szükséges hetek:",
-          "cannotCalculate": "Nem számítható",
-          "totalPlannedLessons": "Összes tervezett lecke:",
+        "editingLabel": "Szerkesztés:",
+        "loadingInfo": "Kurzus információk betöltése...",
+        "loadingSubtext": "Kérjük, várj, amíg betöltjük a kurzus adatait.",
+        "errorLoadingTitle": "Hiba a kurzus információk betöltésekor",
+        "errorLoadingMessage": "Nem sikerült betölteni a kurzus információkat:",
+        "backToCourseManagement": "Vissza a kurzuskezeléshez",
+        "schedule": {
+          "buttonEdit": "Időbeosztás szerkesztése",
+          "buttonSet": "Időbeosztás beállítása",
+          "cardTitle": "Élő kurzus időbeosztása",
+          "scheduleDetails": "Időbeosztás részletei",
+          "enrollmentDetails": "Beiratkozási részletek",
+          "day": "Nap:",
+          "timeSlots": "Időpontok:",
+          "startDate": "Kezdő dátum:",
+          "endDate": "Befejező dátum:",
+          "plannedLessons": "Tervezett leckék:",
           "maxEnrollment": "Maximális létszám:",
+          "lessonsPerDay": "Leckék naponta:",
+          "totalCourseDays": "Összes kurzusnap:",
+          "notSet": "Nincs beállítva",
+          "noSlotsSelected": "Nincsenek időpontok kiválasztva",
+          "notCalculated": "Nincs kiszámítva",
+          "cannotCalculate": "Nem lehet kiszámítani",
+          "editScheduleButton": "Időbeosztás szerkesztése"
+        },
+        "faq": {
+          "title": "Gyakran Ismételt Kérdések",
+          "addButton": "GYIK hozzáadása",
+          "noFaqsTitle": "Még nincsenek GYIK-ek hozzáadva",
+          "noFaqsDescription": "Segíts a potenciális tanulóknak gyakran ismételt kérdések hozzáadásával",
+          "addFirstButton": "Első GYIK hozzáadása",
+          "panelAddTitle": "Új GYIK hozzáadása",
+          "panelEditTitle": "GYIK szerkesztése",
+          "questionLabel": "Kérdés",
+          "questionPlaceholder": "pl. Meddig férhetek hozzá a kurzushoz?",
+          "questionRequired": "Kérjük, adj meg egy kérdést.",
+          "answerLabel": "Válasz",
+          "answerPlaceholder": "pl. A beiratkozás után élethosszig hozzáférsz a kurzus anyagaihoz.",
+          "answerRequired": "Kérjük, adj meg egy választ.",
+          "addButtonSubmit": "GYIK hozzáadása",
+          "updateButton": "GYIK frissítése",
+          "addedSuccess": "GYIK sikeresen hozzáadva",
+          "updatedSuccess": "GYIK sikeresen frissítve",
+          "deletedSuccess": "GYIK sikeresen törölve"
+        },
+        "tags": {
+          "title": "Címkék",
+          "selectLabel": "Válassz címkéket, hogy segíts a tanulóknak megtalálni a kurzusodat",
+          "selectPlaceholder": "Címkék kiválasztása",
+          "searchPlaceholder": "Címkék keresése...",
+          "noTagsMatch": "Nincs találat a keresésedre",
+          "requestNewTag": "Új címke igénylése",
+          "requestNewTagMessage": "A címke igénylési funkció hamarosan elérhető lesz!",
+          "noTagsSelected": "Még nincsenek címkék kiválasztva",
+          "maxTagsInfo": "Maximum 14 címke. Válaszd ki azokat a címkéket, amelyek a legjobban leírják a kurzus tartalmát.",
+          "tagExists": "Ez a címke már létezik",
+          "maxTagsReached": "Elérted a maximális 14 címkét",
+          "tagAddedSuccess": "Címke sikeresen hozzáadva"
+        },
+        "rights": {
+          "confirmationLabel": "Megerősítem, hogy minden olyan kép, hang vagy más eszköz, amely nem az én saját munkám, megfelelően licencelve van ehhez a kurzushoz. Ezektől az elemektől eltekintve ez a munka teljes mértékben az enyém, és teljes jogom van értékesíteni itt.",
+          "confirmationRequired": "Kérjük, erősítsd meg, hogy jogod van ezt a tartalmat értékesíteni"
+        },
+        "schedulePanel": {
+          "title": "Élő kurzus időbeosztása",
+          "infoMessage": "Állítsd be az élő kurzus időbeosztását:",
+          "infoDescription": "Válassz egy hét napját, időpontokat, és add meg a tervezett leckék teljes számát. A rendszer kiszámítja a befejező dátumot a kiválasztásaid alapján.",
+          "plannedLessonsAlert": "Tervezett leckék:",
+          "plannedLessonsCount": "leckék",
+          "plannedLessonsNote": "Ezt az értéket a Tanterv lépésben állítottad be, és ez határozza meg az összes foglalkozás számát.",
+          "lessonWarning": "A tervezett leckék számának ({planned}) oszthatónak kell lennie a napi időpontok számával ({slots}). Kérjük, állítsd be az időpontjaidat, hogy minden nap egyenlő számú lecke legyen.",
+          "selectWeekdayLabel": "Válassz hétnapot",
+          "selectWeekdayHelp": "Válaszd ki a hét napját az élő foglalkozásokhoz.",
+          "startDateLabel": "Kezdő dátum",
+          "startDatePlaceholder": "Válassz egy {weekday}",
+          "startDatePlaceholderDefault": "Először válassz egy hétnapot",
+          "startDateRequired": "Kérjük, válassz egy kezdő dátumot.",
+          "startDateHelp": "Csak {weekday} napok lesznek elérhetők a kiválasztáshoz.",
+          "startDateHelpDefault": "Először válassz egy hétnapot a dátumválasztás engedélyezéséhez.",
+          "selectTimeSlotsLabel": "Válassz időpontokat",
+          "selectTimeSlotsHelp": "Válaszd ki az időpontokat gondosan. A leckék számának ({planned}) oszthatónak kell lennie a napi időpontok számával, hogy minden nap egyenlő számú lecke legyen.",
+          "selectWeekdayFirst": "Kérjük, először válassz egy hétnapot az időpontválasztás engedélyezéséhez.",
+          "maxEnrollmentLabel": "Maximális létszám",
+          "maxEnrollmentPlaceholder": "pl. 25",
+          "maxEnrollmentRequired": "Kérjük, add meg a maximális létszámot.",
+          "maxEnrollmentHelp": "A beiratkozható tanulók maximális száma.",
+          "summaryTitle": "Kurzus időbeosztás összefoglalója",
+          "summaryDayOfWeek": "Hét napja:",
+          "summaryTimeSlots": "Időpontok:",
+          "summaryStartDate": "Kezdő dátum:",
+          "summaryLessonsPerDay": "Leckék naponta:",
+          "summaryTotalDays": "Összes kurzusnap:",
+          "summaryTotalLessons": "Összes tervezett lecke:",
+          "summaryMaxEnrollment": "Maximális létszám:",
+          "summaryEndDate": "Becsült befejező dátum:",
+          "notSelected": "Nincs kiválasztva",
           "notSpecified": "Nincs megadva",
-          "estimatedEndDate": "Becsült befejezési dátum:",
-          "notCalculated": "Még nincs kiszámítva",
-          "saveSchedule": "Órarend mentése",
-          "lessonWarning": "Kérjük, győződj meg róla, hogy az órarendben elfér az összes tervezett lecke"
+          "notCalculatedYet": "Még nincs kiszámítva",
+          "saveButton": "Időbeosztás mentése",
+          "scheduleSavedSuccess": "Kurzus időbeosztás sikeresen mentve",
+          "selectWeekdayError": "Kérjük, válassz egy hétnapot a foglalkozásokhoz",
+          "selectSlotError": "Kérjük, válassz legalább egy időpontot",
+          "selectDateError": "Kérjük, válassz egy kezdő dátumot",
+          "lessonsDivisibleError": "A tervezett leckék számának ({planned}) oszthatónak kell lennie a napi időpontok számával ({slots})"
         },
-        "actions": {
-          "previous": "Előző",
-          "saveDraft": "Piszkozat mentése",
-          "previewCourse": "Kurzus előnézete",
-          "submitCourse": "Kurzus beküldése",
+        "weekdays": {
+          "monday": "Hétfő",
+          "tuesday": "Kedd",
+          "wednesday": "Szerda",
+          "thursday": "Csütörtök",
+          "friday": "Péntek",
+          "saturday": "Szombat",
+          "sunday": "Vasárnap"
+        },
+        "buttons": {
+          "previous": "Vissza",
+          "saveAsDraft": "Mentés vázlatként",
+          "updateAsDraft": "Frissítés vázlatként",
           "publishCourse": "Kurzus közzététele",
-          "submissionNote": "Amint a \"Kurzus beküldése\" gombra kattintasz, a kurzusod feltöltődik és ellenőrzésre váróként lesz megjelölve.",
-          "publishNote": "Amint a \"Kurzus közzététele\" gombra kattintasz, a kurzusod éles lesz és elérhető a diákok számára."
+          "updateAndPublish": "Frissítés és közzététel",
+          "publishing": "Közzététel...",
+          "updating": "Frissítés..."
         },
-        "publishConfirm": {
-          "title": "Közzéteszed a kurzust?",
-          "message": "Biztosan közzé szeretnéd tenni ezt a kurzust? A közzététel után a diákok beiratkozhatnak.",
-          "cancel": "Mégse",
-          "publish": "Igen, közzéteszem"
+        "validation": {
+          "addOneFaq": "Kérjük, adj hozzá legalább egy GYIK-et",
+          "addOneTag": "Kérjük, adj hozzá legalább egy címkét",
+          "confirmRights": "Kérjük, erősítsd meg, hogy jogod van ezt a tartalmat értékesíteni",
+          "setSchedule": "Kérjük, állítsd be az élő kurzus időbeosztását",
+          "selectStartDate": "Kérjük, válassz egy kezdő dátumot az élő kurzushoz",
+          "selectTimeSlot": "Kérjük, válassz legalább egy időpontot az élő kurzushoz",
+          "specifyMaxEnrollment": "Kérjük, add meg a maximális létszámot az élő kurzushoz"
+        },
+        "publish": {
+          "confirmTitle": "Kurzus közzététele",
+          "confirmMessage": "Készen állsz a kurzus közzétételére? A közzététel után felülvizsgálatra kerül, mielőtt elérhetővé válik a tanulók számára.",
+          "confirmUpdateTitle": "Kurzus frissítése",
+          "confirmUpdateMessage": "Készen állsz a kurzus frissítésére? A változtatásaid mentésre kerülnek és azonnal alkalmazásra kerülnek.",
+          "confirmButton": "Közzététel",
+          "updateButton": "Frissítés",
+          "cancelButton": "Még nem",
+          "infoMessage": "Miután közzéteszed a kurzusodat, csapatunk felülvizsgálja, mielőtt elérhetővé válik a tanulók számára.",
+          "infoMessageEdit": "A változtatásaid mentésre kerülnek, és a kurzus frissül."
+        }
+      },
+      "banner": {
+        "create": {
+          "title": "Új kurzus létrehozása",
+          "description": "Használd ezt a felületet új kurzus hozzáadásához. Töltsd ki az összes szükséges információt a kurzus közzétételéhez."
+        },
+        "edit": {
+          "title": "Kurzus szerkesztése",
+          "description": "Frissítsd a kurzus részleteit és tartalmát. Győződj meg róla, hogy minden információ pontos a változtatások mentése előtt."
         }
       },
       "validation": {
@@ -439,6 +773,905 @@
         "materialAdded": "Tananyag sikeresen hozzáadva!",
         "materialDeleted": "Tananyag sikeresen törölve!"
       }
+    },
+    "menu": {
+      "myProfile": "Profilom",
+      "profile": "Profil",
+      "myCourses": "Kurzusaim",
+      "signOut": "Kijelentkezés"
+    }
+  },
+  "student": {
+    "menu": {
+      "myProfile": "Profilom",
+      "profile": "Profil",
+      "myCourses": "Kurzusaim",
+      "mySchedule": "Időbeosztásom",
+      "favorites": "Kedvenc kurzusok",
+      "signOut": "Kijelentkezés"
+    },
+    "profile": {
+      "title": "Hallgatói profil",
+      "myCourses": "Kurzusaim",
+      "editProfile": "Profil szerkesztése",
+      "aboutMe": "Rólam",
+      "aboutMePlaceholder": "Még nincsenek megadott információk. Mesélj magadról, érdeklődési köreidről és tanulási célokról.",
+      "educationInterests": "Végzettség és érdeklődési körök",
+      "education": "Végzettség",
+      "notSpecified": "Nincs megadva",
+      "memberSince": "Tag",
+      "learningStats": "Tanulási statisztikák",
+      "enrolledCourses": "Beiratkozott kurzusok",
+      "completedCourses": "Befejezett kurzusok",
+      "certificatesEarned": "Megszerzett tanúsítványok",
+      "achievements": "Eredmények"
+    },
+    "learning": {
+      "countdown": {
+        "ready": "Kész",
+        "startsIn": "Kezdés:",
+        "days": "n",
+        "hours": "ó",
+        "minutes": "p",
+        "seconds": "mp"
+      },
+      "materials": {
+        "title": "Kurzus anyagok",
+        "subtitle": "Hozzáférés az összes kurzusanyaghoz és forráshoz",
+        "searchPlaceholder": "Anyagok keresése...",
+        "loading": "Kurzusanyagok betöltése...",
+        "noMaterials": "Nincsenek elérhető anyagok",
+        "noMatchingMaterials": "Nem található a keresésnek megfelelő anyag",
+        "tryAdjusting": "Próbálja módosítani a keresési kifejezéseket",
+        "fileName": "Fájlnév",
+        "course": "Kurzus",
+        "module": "Modul",
+        "lesson": "Lecke",
+        "size": "Méret",
+        "viewFile": "Fájl megtekintése",
+        "download": "Letöltés",
+        "showing": "Megjelenítés",
+        "of": "/",
+        "materials": "anyag",
+        "matching": "egyező"
+      },
+      "pageTitle": "a Tanulás",
+      "subtitle": "Ezen az oldalon hozzáférhet az összes kurzusához és tananyagához",
+      "tabs": {
+        "nextLessons": "következő Leckéim",
+        "scheduler": "az Ütemezőm",
+        "materials": "az Anyagaim"
+      },
+      "nextLessons": {
+        "loading": "A következő tanulási nap betöltése...",
+        "wednesday": "Szerda",
+        "daysFromNow": "nap múlva",
+        "today": "Ma (Teszt mód)",
+        "noCourseScheduled": "Nincs ütemezett kurzus",
+        "completed": "Befejezve",
+        "join": "Csatlakozás",
+        "watchVideo": "Videó megtekintése"
+      },
+      "videoModal": {
+        "duration": "Időtartam",
+        "minutes": "perc",
+        "markCompleted": "Megjelölés befejezettként",
+        "close": "Bezárás"
+      },
+      "testMode": {
+        "active": "TESZT MÓD AKTÍV",
+        "description": "Visszaszámlálók 5, 10, 15 másodpercre állítva",
+        "disable": "Teszt mód kikapcsolása"
+      }
+    }
+  },
+  "courses": {
+    "detail": {
+      "error": {
+        "title": "Hiba a kurzus betöltésekor",
+        "notFound": "Kurzus nem található",
+        "tryAgain": "Próbáld újra"
+      },
+      "pageIntro": {
+        "enrolled": "Beiratkozott",
+        "noDescription": "Nincs elérhető leírás",
+        "liveCourse": "Élő kurzus",
+        "recordedCourse": "Felvett kurzus"
+      },
+      "details": {
+        "tabs": {
+          "overview": "Áttekintés",
+          "curriculum": "Tanmenet",
+          "instructor": "Oktató",
+          "reviews": "Értékelések",
+          "faqs": "GYIK"
+        },
+        "pricing": {
+          "participate": "Részvétel",
+          "copyLink": "Link másolása",
+          "linkCopied": "Másolva!",
+          "copySuccess": "Kurzus URL másolva a vágólapra!",
+          "copyError": "Sikertelen URL másolás. Kérjük, próbálja újra.",
+          "loginRequired": "Kérjük, először jelentkezzen be a kurzusban való részvételhez"
+        },
+        "courseOverview": {
+          "title": "Kurzus áttekintés",
+          "lectures": "Leckék",
+          "duration": "Időtartam",
+          "level": "Szint",
+          "language": "Nyelv"
+        },
+        "tags": {
+          "title": "Címkék"
+        }
+      },
+      "relatedCourses": {
+        "title": "Kapcsolódó kurzusok, amelyek érdekelhetnek"
+      },
+      "overview": {
+        "title": "Kurzus leírása",
+        "noDescription": "Ehhez a kurzushoz nem érhető el leírás."
+      },
+      "faqs": {
+        "title": "Gyakran Ismételt Kérdések",
+        "noFaqs": "Ehhez a kurzushoz még nem érhetők el GYIK-ok."
+      },
+      "instructor": {
+        "title": "Az oktatóról",
+        "noInfo": "Ehhez a kurzushoz nem érhetők el oktató információk.",
+        "courses": "Kurzusok",
+        "students": "Hallgatók",
+        "rating": "Értékelés",
+        "reviews": "Vélemények",
+        "viewAllCourses": "Összes kurzus megtekintése:"
+      },
+      "curriculum": {
+        "title": "Kurzus tartalma",
+        "sections": "fejezet",
+        "lectures": "leckék",
+        "lecture": "lecke",
+        "totalLength": "teljes időtartam",
+        "noCurriculum": "A tanmenet fejlesztés alatt áll. Kérjük, nézzen vissza később.",
+        "courseSchedule": "Kurzus időbeosztás",
+        "schoolDay": "Iskolai nap",
+        "startDate": "Kezdő dátum",
+        "endDate": "Befejező dátum",
+        "lessonsLabel": "Leckék (napi|összes)",
+        "slots": "Időpontok",
+        "unknownTime": "Ismeretlen időpont",
+        "importantNote": "Fontos megjegyzés:",
+        "liveSessionInfo": "Az összes élő foglalkozás virtuális tanterműnkben zajlik. A beiratkozás után megkapja a hozzáférési adatokat. Ügyeljen arra, hogy 5 perccel a tervezett időpont előtt csatlakozzon."
+      },
+      "reviews": {
+        "title": "Hallgatói értékelések",
+        "basedOn": "Alapja:",
+        "review": "értékelés",
+        "reviews": "értékelés",
+        "writeReview": "Értékelés írása",
+        "alreadyReviewed": "Már értékelted ezt a kurzust. Lentebb szerkesztheted vagy törölheted az értékelésedet.",
+        "signInToReview": "Kérjük, jelentkezz be, hogy értékelést írj ehhez a kurzushoz.",
+        "sortBy": "Rendezés:",
+        "sortOptions": {
+          "newest": "Legújabb először",
+          "oldest": "Legrégebbi először",
+          "helpful": "Leghasznosabb",
+          "ratingHigh": "Legmagasabb értékelés",
+          "ratingLow": "Legalacsonyabb értékelés"
+        },
+        "noReviews": "Még nincsenek értékelések. Légy az első, aki értékeli ezt a kurzust!",
+        "form": {
+          "rating": "Értékelés",
+          "yourReview": "Az értékelésed",
+          "placeholder": "Oszd meg a tapasztalataidat ezzel a kurzussal...",
+          "submitButton": "Értékelés beküldése",
+          "updateButton": "Értékelés frissítése",
+          "cancelButton": "Mégse",
+          "submitSuccess": "Értékelés sikeresen beküldve!",
+          "updateSuccess": "Értékelés sikeresen frissítve!",
+          "submitError": "Sikertelen értékelés beküldés",
+          "deleteSuccess": "Értékelés sikeresen törölve",
+          "deleteError": "Sikertelen értékelés törlés",
+          "voteError": "Sikertelen szavazat rögzítés"
+        },
+        "item": {
+          "verifiedPurchase": "Igazolt vásárlás",
+          "wasHelpful": "Hasznos volt?",
+          "instructor": "Oktató",
+          "edit": "Értékelés szerkesztése",
+          "delete": "Értékelés törlése",
+          "deleteConfirm": "Biztosan törölni szeretnéd ezt az értékelést? Ez a művelet nem vonható vissza."
+        },
+        "pagination": {
+          "previous": "Előző",
+          "next": "Következő"
+        },
+        "loading": "Értékelések betöltése..."
+      }
+    },
+    "list": {
+      "filters": {
+        "title": "Kurzusok szűrése",
+        "resultsCount": "{count} kurzus",
+        "search": {
+          "label": "Keresés",
+          "placeholder": "Kurzusok keresése..."
+        },
+        "courseType": {
+          "label": "Kurzus típusa",
+          "all": "Összes",
+          "live": "Élő",
+          "recorded": "Felvett"
+        },
+        "level": {
+          "label": "Szint",
+          "all": "Minden szint",
+          "beginner": "Kezdő",
+          "intermediate": "Középhaladó",
+          "advanced": "Haladó",
+          "allLevels": "Minden szint"
+        },
+        "category": {
+          "label": "Kategória",
+          "all": "Minden kategória"
+        },
+        "subcategory": {
+          "label": "Alkategória",
+          "all": "Minden alkategória"
+        },
+        "sortBy": {
+          "label": "Rendezés",
+          "mostRelevant": "Legrelevánsabb",
+          "popular": "Legnépszerűbb",
+          "mostViewed": "Legtöbbet megtekintett",
+          "newest": "Legújabb először",
+          "oldest": "Legrégebbi először"
+        },
+        "clearAll": "Összes törlése"
+      },
+      "activeFilters": {
+        "title": "Aktív szűrők:",
+        "resultsFound": "{count} találat"
+      },
+      "results": {
+        "loading": "Kurzusok betöltése...",
+        "showing": "{count} kurzus megjelenítése {total}-ból",
+        "noCoursesFound": "Nem találhatók kurzusok",
+        "page": "{current}. oldal {total}-ból"
+      },
+      "noResults": {
+        "title": "Nem találhatók kurzusok",
+        "message": "Nem találtunk kurzust, amely megfelel a jelenlegi szűrőknek.",
+        "clearFilters": "Összes szűrő törlése"
+      },
+      "card": {
+        "unknownInstructor": "Ismeretlen oktató",
+        "liveCourse": "Élő kurzus",
+        "recordedCourse": "Felvett kurzus"
+      }
+    },
+    "pagination": {
+      "previous": "Előző",
+      "next": "Következő",
+      "page": "{number}. oldal"
+    }
+  },
+  "scheduler": {
+    "title": "Kurzus időbeosztás",
+    "schoolDay": {
+      "label": "Tanítási nap",
+      "wednesday": "Szerda",
+      "note": "Jelenleg minden kurzus szerdán van ütemezve"
+    },
+    "timeSlots": "Időpontok",
+    "availableCourses": "Elérhető kurzusok",
+    "search": {
+      "placeholder": "Kurzusok keresése...",
+      "button": "Keresés"
+    },
+    "filters": {
+      "all": "Összes",
+      "live": "Élő",
+      "recorded": "Felvett"
+    },
+    "course": {
+      "level": "Szint",
+      "progress": "Haladás",
+      "startDate": "Kezdő dátum",
+      "timeSlots": "Időpontok",
+      "addAllSessions": "Összes foglalkozás hozzáadása",
+      "availableLessons": "Elérhető leckék:",
+      "alreadyScheduled": "Már ütemezve",
+      "scheduled": "Ütemezve",
+      "add": "Hozzáadás"
+    },
+    "slot": {
+      "occupied": "Ez az időpont már foglalt",
+      "cannotMixLive": "Nem keverhető élő kurzussal"
+    },
+    "actions": {
+      "removeLecture": "Előadás eltávolítása",
+      "addCourse": "Kurzus hozzáadása",
+      "updating": "Időbeosztás frissítése...",
+      "adding": "Kurzus hozzáadása az időbeosztáshoz...",
+      "removing": "Eltávolítás az időbeosztásból..."
+    },
+    "messages": {
+      "scheduleLoaded": "Időbeosztás sikeresen betöltve",
+      "courseAdded": "Kurzus hozzáadva az időbeosztáshoz",
+      "courseRescheduled": "Kurzus újraütemezve",
+      "courseRemoved": "Elem eltávolítva az időbeosztásból",
+      "orderUpdated": "Kurzus sorrend frissítve",
+      "loadError": "Nem sikerült betölteni az időbeosztást",
+      "addError": "Nem sikerült hozzáadni a kurzust az időbeosztáshoz",
+      "rescheduleError": "Nem sikerült újraütemezni a kurzust",
+      "removeError": "Nem sikerült eltávolítani az elemet",
+      "orderError": "Nem sikerült frissíteni a leckék sorrendjét",
+      "tryAgain": "Kérjük, próbálja újra.",
+      "noCourses": "Nem található kurzus. Próbáljon más keresést.",
+      "noLessons": "Nincs elérhető lecke ehhez a kurzushoz.",
+      "loadingSchedule": "Kurzus ütemező betöltése...",
+      "loadingCourses": "Kurzusok betöltése..."
+    },
+    "modal": {
+      "removeTitle": "Előadás eltávolítása",
+      "removeMessage": "Biztosan eltávolítja ezt az előadást?",
+      "confirmYes": "Igen",
+      "confirmNo": "Nem"
+    },
+    "footer": {
+      "importantNote": "Fontos megjegyzés:",
+      "virtualClassroom": "Minden élő foglalkozás a virtuális osztálytermünkben zajlik. A beiratkozás után megkapja a hozzáférési adatokat. Mindenképpen csatlakozzon 5 perccel az ütemezett időpont előtt."
+    },
+    "timeSlotNames": {
+      "slot1": "IDŐPONT 1",
+      "slot2": "IDŐPONT 2",
+      "slot3": "IDŐPONT 3",
+      "slot4": "IDŐPONT 4",
+      "slot5": "IDŐPONT 5",
+      "slot6": "IDŐPONT 6"
+    },
+    "badges": {
+      "live": "Élő",
+      "recorded": "Felvett"
+    }
+  },
+  "categories": {
+    "all": "Minden kategória",
+    "languagesCommunication": {
+      "title": "Nyelvek & Kommunikáció",
+      "foreignLanguages": "Idegen nyelvek",
+      "nationalLanguage": "Nemzeti nyelv tanulása",
+      "rhetoric": "Retorika & Nemzetközi kommunikáció"
+    },
+    "cookingHousehold": {
+      "title": "Főzés & Háztartás",
+      "cooking": "Főzés & Sütés (beleértve a nemzetközi konyhát)",
+      "nutrition": "Táplálkozás & Fenntarthatóság",
+      "homeEconomics": "Háztartástan"
+    },
+    "creativityCraftsmanship": {
+      "title": "Kreativitás & Kézművesség",
+      "painting": "Festészet, Rajzolás, Fényképezés",
+      "sewing": "Varrás, Kézművesség, Barkácsolás",
+      "arts": "Művészetek & Több"
+    },
+    "digitalIT": {
+      "title": "Digitális & IT",
+      "computers": "Számítógépek & Internet",
+      "socialMedia": "Közösségi média & Adatvédelem",
+      "software": "Szoftver & Eszközök"
+    },
+    "healthExercise": {
+      "title": "Egészség & Testmozgás",
+      "fitness": "Fitness, Jóga & Több",
+      "relaxation": "Relaxáció & Stresszkezelés",
+      "prevention": "Megelőzés & Jólét"
+    },
+    "natureGardening": {
+      "title": "Természet & Kertészkedés",
+      "gardening": "Kertészkedés & Városi kertészkedés",
+      "environment": "Környezet & Fenntarthatóság",
+      "ecoProjects": "Öko projektek"
+    },
+    "careerEducation": {
+      "title": "Karrier & Oktatás",
+      "softSkills": "Soft skillek & Időgazdálkodás",
+      "careerOrientation": "Karrier orientáció & Képesítés",
+      "basicEducation": "Alapképzés & Írástudás"
+    }
+  },
+  "pages": {
+    "courses": {
+      "metadata": {
+        "title": "Minden kurzus - Tudva",
+        "description": "Fedezd fel átfogó kurzusgyűjteményünket különböző kategóriákban, beleértve a nyelveket, főzést, kreativitást, digitális készségeket, egészséget, természetet és karrierfejlesztést.",
+        "keywords": "online kurzusok, élő kurzusok, felvett kurzusok, tanulás, oktatás, készségfejlesztés"
+      },
+      "banner": {
+        "headline": "Fedezd fel következő tanulási kalandodat",
+        "subtext": "Fedezd fel átfogó kurzusgyűjteményünket, amely segít személyes és szakmai fejlődésedben"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "courses": "Kurzusok"
+      }
+    },
+    "whyTudva": {
+      "metadata": {
+        "title": "Miért a Tudva"
+      },
+      "banner": {
+        "headline": "Miért a Tudva"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "whyTudva": "Miért a Tudva"
+      },
+      "hero": {
+        "title": "Miért válaszd a Tudvát?",
+        "subtitle": "Fedezd fel a Tudvával való tanulás előnyeit, egy élethosszig tartó tanulásra tervezett platformon."
+      },
+      "features": {
+        "flexible": {
+          "title": "Rugalmas tanulás",
+          "description": "Állítsd be saját heti tanulási ütemtervedet. Válassz élő és felvett kurzusok közül, hogy illeszkedjen az életedhez.",
+          "alt": "Rugalmas tanulás"
+        },
+        "community": {
+          "title": "Közösség-alapú",
+          "description": "Tanulj egy élénk hallgatói és önkéntes oktatói közösség mellett. Oszd meg a tudást és fejlődj együtt.",
+          "alt": "Közösség-alapú"
+        },
+        "free": {
+          "title": "Ingyenes hozzáférés",
+          "description": "A minőségi oktatásnak mindenki számára elérhetőnek kell lennie. A Tudva teljesen ingyenes.",
+          "alt": "Ingyenes hozzáférés"
+        }
+      },
+      "howItWorks": {
+        "title": "Hogyan működik a Tudva",
+        "intro": "A Tudva a rugalmas, közösség-vezérelt tanulás elvére épül. Itt egy rövid áttekintés:",
+        "steps": {
+          "schedule": {
+            "title": "Hozd létre az ütemtervedet:",
+            "description": "A hallgatók konfigurálhatják ideális tanulási napjukat különböző kurzusok kiválasztásával."
+          },
+          "courses": {
+            "title": "Élő és felvett kurzusok:",
+            "description": "Válassz interaktív élő előadások vagy rugalmas felvett tartalmak között."
+          },
+          "trainingRooms": {
+            "title": "Képzési termek:",
+            "description": "Az intézmények tereket biztosítanak a hallgatóknak, hogy online együtt vehessenek részt."
+          },
+          "instructors": {
+            "title": "Önkéntes oktatók:",
+            "description": "A kurzusokat szenvedélyes önkéntesek hozzák létre és vezetik."
+          },
+          "folder": {
+            "title": "Személyes tanulási mappa:",
+            "description": "Férj hozzá a kurzusanyagokhoz és felvételekhez a személyes tanulási mappádban."
+          },
+          "interaction": {
+            "title": "Közösségi interakció:",
+            "description": "Kapcsolódj más tanulókhoz és oktatókhoz, hozzájárulva egy támogató tanulási környezethez."
+          }
+        },
+        "cta": {
+          "text": "Készen állsz a kezdésre?",
+          "exploreCourses": "Fedezd fel kurzusainkat",
+          "or": "vagy",
+          "createAccount": "hozz létre egy fiókot",
+          "today": "ma!"
+        }
+      }
+    },
+    "getStarted": {
+      "metadata": {
+        "title": "Kezdő lépések | Tudva",
+        "description": "Tudd meg, hogyan kezdj hozzá a Tudvával és indítsd el tanulási utadat."
+      },
+      "banner": {
+        "headline": "Kezdő lépések"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "getStarted": "Kezdő lépések"
+      },
+      "hero": {
+        "title": "Üdvözlünk a Tudván!",
+        "subtitle": "Készen állsz a tanulásra? Ez az útmutató végigvezet a Tudva platform használatának alapjain."
+      },
+      "steps": {
+        "step1": {
+          "title": "1. lépés: Hozd létre ingyenes fiókodat",
+          "description": "A Tudva kurzusainak eléréséhez ingyenes fiókra van szükséged. Kattints a Regisztráció gombra az oldal jobb felső sarkában (vagy látogass el ide:",
+          "registerLink": "/auth/sign-up",
+          "description2": "). Meg kell adnod az e-mail címedet, nevedet és választanod kell egy biztonságos jelszót. Ne felejtsd el megerősíteni az e-mail címedet a regisztráció után!"
+        },
+        "step2": {
+          "title": "2. lépés: Böngészd a kurzuskatalógust",
+          "description": "Miután bejelentkeztél, felfedezheted kurzusaink széles választékát. Menj a",
+          "coursesLink": "Kurzusok",
+          "description2": "oldalra, hogy lásd az összes elérhető kurzust. Szűrhetsz téma, formátum (élő vagy felvett) és a hét napja szerint, amikor a kurzust kínálják."
+        },
+        "step3": {
+          "title": "3. lépés: Állítsd be tanulási napodat",
+          "description": "A Tudva lehetővé teszi, hogy személyre szabott heti tanulási ütemtervet hozz létre. Jelenleg egy meghatározott napon (pl. szerda) kínálunk kurzusokat. Akár 6 leckét is választhatsz tanulási napod kitöltéséhez.",
+          "list": {
+            "item1": "Menj az",
+            "myScheduleLink": "Ütemtervem",
+            "item1b": "oldalra (ezt a linket esetleg módosítani kell).",
+            "item2": "Látni fogod a kijelölt tanulási napra elérhető időpontok listáját.",
+            "item3": "Böngészd az elérhető kurzusokat és kattints a \"Foglalás\" gombra, hogy hozzáadj egy kurzust egy adott időponthoz.",
+            "item4": "A rendszer automatikusan megakadályozza, hogy ütköző kurzusokat foglalj.",
+            "item5": "Miután kitöltötted az ütemtervedet, készen állsz a tanulásra!"
+          }
+        },
+        "step4": {
+          "title": "4. lépés: Vegyél részt élő kurzusokon (vagy nézd meg a felvételeket)",
+          "description": "Élő kurzusoknál csatlakozz az előadáshoz az ütemezett időben. Élő chaten keresztül tudsz kommunikálni az oktatóval és más tanulókkal. Ha lemaradsz egy élő előadásról, vagy felvett kurzust választottál, a felvételt megtalálod személyes tanulási mappádban."
+        },
+        "step5": {
+          "title": "5. lépés: Férj hozzá a tananyagokhoz",
+          "description": "Az oktatók feltölthetnek kurzusanyagokat (PDF-eket, hangfájlokat stb.) a kurzusaikba. Ezeket az anyagokat megtalálod személyes tanulási mappádban. Csak az anyagok legújabb verziói jelennek meg, de a régebbi verziók archiválva vannak hivatkozásként."
+        },
+        "step6": {
+          "title": "6. lépés: Csatlakozz a közösséghez (Opcionális)",
+          "description": "Kapcsolódj más tanulókhoz és oktatókhoz közösségi fórumainkon (link a fórumokhoz, ha vannak). Oszd meg tapasztalataidat, tegyél fel kérdéseket és tanulj másoktól."
+        },
+        "step7": {
+          "title": "7. lépés: (Opcionális) Fontold meg, hogy oktató leszel.",
+          "description": "Oszd meg tudásodat másokkal."
+        }
+      },
+      "help": {
+        "title": "Segítségre van szükséged?",
+        "description": "Nézd meg a",
+        "faqLink": "GYIK",
+        "or": "oldalunkat vagy",
+        "contactLink": "lépj kapcsolatba velünk",
+        "description2": "ha kérdésed van."
+      },
+      "cta": {
+        "button": "Hozd létre fiókodat"
+      }
+    },
+    "ourMission": {
+      "metadata": {
+        "title": "Küldetésünk | Tudva",
+        "description": "Ismerd meg a Tudva küldetését, hogy ingyenes, közösségi alapú, rugalmas oktatást nyújtson."
+      },
+      "banner": {
+        "headline": "Küldetésünk"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "ourMission": "Küldetésünk"
+      },
+      "whatDrivesUs": {
+        "title": "Mi hajt minket",
+        "lead": "A Tudvánál hisszük, hogy a tanulásnak egy életen át tartó törekvésnek kell lennie, amelyet nem korlátoznak a költségek, a helyszín vagy a háttér. Olyan platformot építünk, ahol a tudás szabadon megosztható, a közösségek virágoznak, és az egyének képessé válnak teljes potenciáljuk elérésére.",
+        "vision": "Olyan világot képzelünk el, ahol bárki, bárhol hozzáférhet az oktatáshoz, amelyre szüksége van életének jobbítására és a társadalomhoz való hozzájárulásra.",
+        "imageAlt": "Emberek együtt tanulnak"
+      },
+      "coreValues": {
+        "title": "Alapértékeink",
+        "accessibility": {
+          "title": "Hozzáférhetőség",
+          "description": "Az oktatás jog, nem kiváltság.",
+          "imageAlt": "Hozzáférhetőség"
+        },
+        "community": {
+          "title": "Közösség",
+          "description": "A tanulás jobb együtt.",
+          "imageAlt": "Közösség"
+        },
+        "quality": {
+          "title": "Minőség",
+          "description": "Magas színvonalú tartalom és élmény.",
+          "imageAlt": "Minőség"
+        }
+      }
+    },
+    "howItWorks": {
+      "metadata": {
+        "title": "Hogyan működik | Tudva",
+        "description": "Élethosszig tartó tanulás lehetővé tétele mindenki számára, ingyenesen és közösségi alapon."
+      },
+      "banner": {
+        "headline": "Hogyan működik"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "howItWorks": "Hogyan működik"
+      },
+      "whatDrivesUs": {
+        "title": "Mi hajt minket",
+        "lead": "A Tudvánál hisszük, hogy a tanulásnak egy életen át tartó törekvésnek kell lennie, amelyet nem korlátoznak a költségek, a helyszín vagy a háttér. Olyan platformot építünk, ahol a tudás szabadon megosztható, a közösségek virágoznak, és az egyének képessé válnak teljes potenciáljuk elérésére.",
+        "vision": "Olyan világot képzelünk el, ahol bárki, bárhol hozzáférhet az oktatáshoz, amelyre szüksége van életének jobbítására és a társadalomhoz való hozzájárulásra.",
+        "imageAlt": "Emberek együtt tanulnak"
+      },
+      "ourValues": {
+        "title": "Értékeink",
+        "features": {
+          "flexibleScheduling": {
+            "title": "Rugalmas ütemezés",
+            "description": "Hozz létre személyre szabott tanulási ütemtervet, amely illeszkedik az életedhez.",
+            "imageAlt": "Rugalmas ütemezés ikon"
+          },
+          "liveRecorded": {
+            "title": "Élő és felvett kurzusok",
+            "description": "Válassz interaktív élő előadások vagy saját tempódban megtekinthető felvett kurzusok között.",
+            "imageAlt": "Élő és felvett kurzusok ikon"
+          },
+          "communitySupport": {
+            "title": "Közösségi támogatás",
+            "description": "Kapcsolódj társakhoz és oktatókhoz egy támogató környezetben.",
+            "imageAlt": "Közösségi támogatás ikon"
+          },
+          "freeAccess": {
+            "title": "Ingyenes hozzáférés",
+            "description": "Minden kurzus teljesen ingyenes.",
+            "imageAlt": "Ingyenes hozzáférés ikon"
+          },
+          "diverseSubjects": {
+            "title": "Változatos témák",
+            "description": "Fedezz fel széles témakört, a nyelvektől a digitális készségekig.",
+            "imageAlt": "Változatos témák ikon"
+          },
+          "personalFolder": {
+            "title": "Személyes tanulási mappa",
+            "description": "Könnyen hozzáférhetsz a kurzusanyagokhoz és felvételekhez.",
+            "imageAlt": "Személyes tanulási mappa ikon"
+          }
+        }
+      }
+    },
+    "whatMeansTudva": {
+      "metadata": {
+        "title": "Mit jelent a Tudva | Tudva",
+        "description": "Fedezd fel a Tudva név mögötti jelentést és azt, hogyan tükrözi küldetésünket és értékeinket."
+      },
+      "banner": {
+        "headline": "Tudva jelentése"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "whatMeansTudva": "Mit jelent a Tudva"
+      },
+      "hero": {
+        "title": "Mit jelent a \"Tudva\"?"
+      },
+      "content": {
+        "paragraph1": "A \"Tudva\" egy magyar szó, amely azt jelenti, hogy \"tudatosan\" vagy \"tudással\". Tükrözi alapértékeinket: a tudást, a hozzáférhetőséget, a közösséget és az élethosszig tartó tanulást. Ezt a nevet azért választottuk, mert megtestesíti a tudatos, szándékos tanulás lényegét – azt az elképzelést, hogy az oktatást tudatossággal és céltudatossággal kell folytatni.",
+        "paragraph2": "A \"Tudva\" szó a \"tudni\" magyar igéből származik. Amikor valamit \"tudva\" teszel, teljes tudatossággal és megértéssel teszed. Ez tökéletesen megragadja filozófiánkat: a tanulás ne legyen passzív vagy véletlen, hanem aktív, tudatos választás, amely képessé teszi az egyéneket a növekedésre és a közösségeikhez való hozzájárulásra.",
+        "paragraph3": "E név kiválasztásával azt akartuk hangsúlyozni, hogy a platformunkon az oktatás szándékos és jelentőségteljes. Minden kurzus, minden lecke és minden interakció úgy van megtervezve, hogy segítsen \"tudva\" tanulni – tudással, céltudatossággal és megértéssel. Hiszünk abban, hogy amikor tudatosan tanulsz, nemcsak tudást szerzel, hanem bölcsességet is fejlesztesz annak hatékony alkalmazásához az életedben.",
+        "conclusion": "Reméljük, hogy a \"Tudva\" név inspirál majd tanulási utadon!"
+      }
+    },
+    "becomeTeacher": {
+      "metadata": {
+        "title": "Légy tanár | Tudva",
+        "description": "Oszd meg tudásodat és szenvedélyedet a világgal. Tudd meg, hogyan válhatsz önkéntes oktatóvá a Tudván."
+      },
+      "banner": {
+        "headline": "Légy tanár"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "becomeTeacher": "Légy tanár"
+      },
+      "hero": {
+        "title": "Válj Tudva oktatóvá",
+        "subtitle": "Oszd meg szakértelmét és szenvedélyedet a tanulók globális közösségével."
+      },
+      "whyTeach": {
+        "title": "Miért taníts a Tudván?",
+        "imageAlt": "Tanár diákokkal",
+        "reasons": {
+          "makeDifference": "Tégy különbséget: Járulj hozzá ahhoz, hogy a minőségi oktatás mindenki számára elérhető legyen.",
+          "sharePassion": "Oszd meg szenvedélyedet: Kapcsolódj azokhoz a diákokhoz, akik szívesen tanulják azt, amit tudsz.",
+          "flexibleSchedule": "Rugalmas időbeosztás: Hozz létre és tartsd meg a kurzusokat saját feltételeid szerint, válaszd ki a számodra megfelelő időpontokat.",
+          "communitySupport": "Közösségi támogatás: Csatlakozz szenvedélyes önkéntes oktatók hálózatához.",
+          "noFees": "Nincsenek díjak: A Tudva ingyenes platform mind a tanulók, mind az oktatók számára.",
+          "easyTools": "Könnyen használható eszközök: Platformunk biztosítja azokat az eszközöket, amelyekre szükséged van kurzusaid létrehozásához és kezeléséhez, anyagok feltöltéséhez és diákokkal való kapcsolattartáshoz."
+        }
+      },
+      "howToBecome": {
+        "title": "Hogyan válj tanárrá",
+        "steps": {
+          "step1": {
+            "text": "Hozz létre egy fiókot: Ha még nincs,",
+            "linkText": "regisztrálj egy ingyenes Tudva fiókot",
+            "textEnd": "."
+          },
+          "step2": "Jelentkezz oktatónak: Töltsd ki oktatói jelentkezési űrlapunkat [Link a jelentkezési űrlaphoz - pl. /become-teacher/apply]. Mesélj szakértelmédről, azokról a témákról, amelyeket tanítani szeretnél, és tanítási tapasztalatodról (ha van). Korábbi tanítási tapasztalat nem szükséges.",
+          "step3": "Értékelési folyamat: Csapatunk áttekinti jelentkezésedet. Keresni fogjuk a tanítás iránti egyértelmű szenvedélyt, szakértelmet a választott témában, és elkötelezettséget a Tudva küldetése iránt.",
+          "step4": "Jóváhagyás: Ha jelentkezésedet jóváhagyják, e-mailt kapsz a kezdéshez szükséges utasításokkal.",
+          "step5": "Hozd létre kurzusodat: Használd platformunk eszközeit kurzusod létrehozásához, beleértve a modulokat, ütemterveket és tananyagokat.",
+          "step6": "Kezdj el tanítani!: Kapcsolódj diákokhoz és oszd meg tudásodat!"
+        }
+      },
+      "requirements": {
+        "title": "Követelmények",
+        "intro": "Bár minden háttérrel rendelkező oktatót szívesen látunk, van néhány alapvető követelményünk:",
+        "list": {
+          "expertise": "Szakértelem: Erős megértéssel kell rendelkezned a tanítani kívánt témában.",
+          "passion": "Szenvedély: Őszinte lelkesedés tudásod másokkal való megosztása iránt.",
+          "commitment": "Elkötelezettség: Hajlandóság arra, hogy időt szentelj minőségi kurzusok létrehozásának és megtartásának.",
+          "communication": "Kommunikációs készségek: Képesség arra, hogy világosan és hatékonyan kommunikálj a tanulókkal.",
+          "technical": "Technikai jártasság: Alapvető számítógépes ismeretek és képesség online platformunk használatára."
+        }
+      }
+    },
+    "learningRoom": {
+      "metadata": {
+        "title": "Tanulószobák | Tudva",
+        "description": "Fedezd fel a Tudva tanulószobákat: együttműködő terek az online tanuláshoz."
+      },
+      "banner": {
+        "headline": "Tanulószoba"
+      },
+      "breadcrumb": {
+        "home": "Kezdőlap",
+        "learningRoom": "Tanulószoba"
+      },
+      "hero": {
+        "title": "Tudva tanulószobák",
+        "subtitle": "Tapasztald meg a közös tanulás erejét egy támogató környezetben."
+      },
+      "whatAre": {
+        "title": "Mik azok a tanulószobák?",
+        "paragraph1": "A Tudva tanulószobák fizikai terek, amelyeket intézmények és szervezetek biztosítanak, ahol a diákok összegyűlhetnek, hogy együtt vegyenek részt a Tudva online kurzusain. Dedikált környezetet kínálnak a koncentrált tanuláshoz, közösségi érzést teremtenek és hozzáférést biztosítanak olyan erőforrásokhoz, amelyek otthon esetleg nem érhetők el.",
+        "paragraph2": "A tanulószobák felszerelhetők számítógépekkel, megbízható internetkapcsolattal és fejhallgatókkal, lehetővé téve a diákoknak, hogy élő előadásokon vegyenek részt és felvett tartalmakhoz férjenek hozzá zavaró tényezők nélkül. Remek hely arra is, hogy kapcsolatba lépj más tanulókkal a környékeden.",
+        "imageAlt": "Diákok egy tanulószobában"
+      },
+      "findNearYou": {
+        "title": "Találj tanulószobát a közeledben",
+        "description": "Használd interaktív térképünket, hogy megtaláld a közeli Tudva tanulószobát.",
+        "mapPlaceholder": "Térkép/Keresés helykitöltő. Integráld ide a térkép/keresés komponensedet.",
+        "cantFind": "Nem találsz tanulószobát a közeledben? Lépj kapcsolatba velünk, hogy javasolj egy potenciális helyszínt!",
+        "suggestButton": "Helyszín javaslása",
+        "imageAlt": "Tanulószoba helyszínek térképe"
+      },
+      "forInstitutions": {
+        "title": "Intézmények számára: Tanulószoba üzemeltetése",
+        "intro": "Olyan intézmény vagy, amely érdeklődik a Tudva tanulószoba biztosítása iránt? Szeretnénk partneri kapcsolatot kialakítani veled! A tanulószoba üzemeltetése számos előnnyel jár:",
+        "benefits": {
+          "expandAccess": "Bővítsd az oktatáshoz való hozzáférést közösségedben.",
+          "provideResource": "Biztosíts értékes erőforrást azoknak a diákoknak, akiknek esetleg nincs hozzáférésük technológiához vagy csendes tanulóhelyhez.",
+          "fosterCommunity": "Teremts közösségi érzést és együttműködést a tanulók között.",
+          "enhanceReputation": "Növeld intézményednek az élethosszig tartó tanulás támogatójaként szerzett hírnevét."
+        },
+        "outro": "Ha többet szeretnél megtudni a tanulószoba üzemeltetéséről, kérjük, lépj kapcsolatba velünk.",
+        "contactButton": "Lépj kapcsolatba",
+        "imageAlt": "Tanulószobát üzemeltető intézmény"
+      }
+    }
+  },
+  "navbar": {
+    "search": {
+      "placeholder": "Keresés",
+      "button": "Keresés"
+    },
+    "auth": {
+      "joinUs": "Csatlakozz hozzánk",
+      "loading": "Betöltés..."
+    },
+    "learner": {
+      "myLearning": "Tanulásaim",
+      "favorites": "Kedvenc kurzusaim",
+      "myLiveSessions": "Élő foglalkozásaim"
+    },
+    "category": "Kategória",
+    "profile": {
+      "profileAndAccount": "Profil és fiók",
+      "favoriteCourses": "Kedvenc kurzusok",
+      "help": "Segítség",
+      "signOut": "Kijelentkezés",
+      "logoutSuccess": "Sikeres kijelentkezés",
+      "logoutError": "Kijelentkezés sikertelen"
+    }
+  },
+  "menuItems": {
+    "home": {
+      "languagesCommunication": {
+        "title": "Nyelvek & Kommunikáció",
+        "foreignLanguages": "Idegen nyelvek",
+        "nationalLanguage": "Nemzeti nyelv tanulása",
+        "rhetoric": "Retorika & Nemzetközi kommunikáció"
+      },
+      "cookingHousehold": {
+        "title": "Főzés & Háztartás",
+        "cooking": "Főzés & Sütés (beleértve a nemzetközi konyhát)",
+        "nutrition": "Táplálkozás & Fenntarthatóság",
+        "homeEconomics": "Háztartástan"
+      },
+      "creativityCraftsmanship": {
+        "title": "Kreativitás & Kézművesség",
+        "painting": "Festés, Rajzolás, Fotózás",
+        "sewing": "Varrás, Kézművesség, DIY",
+        "arts": "Művészetek & Több"
+      },
+      "digitalIT": {
+        "title": "Digitális & IT",
+        "computers": "Számítógépek & Internet",
+        "socialMedia": "Közösségi média & Adatvédelem",
+        "software": "Szoftver & Eszközök"
+      },
+      "healthExercise": {
+        "title": "Egészség & Mozgás",
+        "fitness": "Fitness, Jóga & Több",
+        "relaxation": "Relaxáció & Stresszkezelés",
+        "prevention": "Megelőzés & Jólét"
+      },
+      "natureGardening": {
+        "title": "Természet & Kertészet",
+        "gardening": "Kertészkedés & Városi kertészkedés",
+        "environment": "Környezet & Fenntarthatóság",
+        "ecoProjects": "Öko projektek"
+      },
+      "careerEducation": {
+        "title": "Karrier & Oktatás",
+        "softSkills": "Soft skillek & Időmenedzsment",
+        "careerOrientation": "Karrier tájékozódás & Képesítés",
+        "basicEducation": "Alapképzés & Írástudás"
+      }
+    },
+    "other": {
+      "allCourses": "Összes kurzus a Tudván",
+      "myCurriculum": "Tanmenetem",
+      "myDocuments": "Dokumentumaim",
+      "mySupport": "Támogatásom",
+      "firstSteps": "Első lépések",
+      "tutorials": "Útmutatók",
+      "helpCenter": "Segítség központ",
+      "helpCommunity": "Segítség közösség"
+    }
+  },
+  "footer": {
+    "tagline": {
+      "title": "Ingyenes hozzáférés minőségi oktatáshoz",
+      "description": "Együtt tesszük lehetővé az élethosszig tartó tanulást mindenki számára - ingyenesen és közösségi alapon."
+    },
+    "links": {
+      "learn": {
+        "title": "Tanulás",
+        "courses": "Kurzusok",
+        "mySchedule": "Időbeosztásom",
+        "whyUseTudva": "Miért használd a tudvát",
+        "getStarted": "Kezdj el"
+      },
+      "aboutTudva": {
+        "title": "A tudváról",
+        "ourMission": "Küldetésünk",
+        "howItWorks": "Hogyan működik",
+        "tudvaMeans": "Mit jelent a \"tudva\"?",
+        "aboutUs": "Rólunk",
+        "transparency": "Átláthatóság"
+      },
+      "community": {
+        "title": "Közösség",
+        "blog": "Blog",
+        "support": "Támogatás",
+        "becomeTeacher": "Légy tanár",
+        "learningRooms": "Tanulószobák"
+      },
+      "helpContact": {
+        "title": "Segítség & Kapcsolat",
+        "helpdesk": "Helpdesk",
+        "faq": "GYIK",
+        "contactUs": "Lépj kapcsolatba velünk",
+        "imprint": "Impresszum"
+      }
+    },
+    "copyright": "Szerzői jogok © {year} 151",
+    "company": "concepts",
+    "legal": {
+      "termsOfUse": "Felhasználási feltételek",
+      "privacyPolicy": "Adatvédelmi irányelvek",
+      "imprint": "Impresszum"
     }
   }
 }

@@ -1,6 +1,4 @@
-// FIXED: src/app/api/course/[courseId]/join-session/route.js
-// Added live session bypass logic
-
+// src/app/api/course/[courseId]/join-session/route.js - UPDATED FOR NEW MATRIX SERVER
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Course, { CourseType } from '@/models/Course';
@@ -10,17 +8,18 @@ import mongoose from 'mongoose';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-// Configure Matrix client
-const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://chat.151.hu';
+// ✅ UPDATED: New Matrix server configuration
+const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
+const MATRIX_DOMAIN = process.env.MATRIX_DOMAIN || '151.hu';
 
 /**
- * Invite user to Matrix room
+ * ✅ UPDATED: Invite user to Matrix room
  */
 async function inviteUserToRoom(roomId, userId) {
   try {
     await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/invite`,
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`, // ✅ Changed to v3
       {
         user_id: userId
       },
@@ -33,18 +32,19 @@ async function inviteUserToRoom(roomId, userId) {
     );
     return true;
   } catch (error) {
-    console.error('Error inviting user to room:', error);
+    console.error('Error inviting user to room:', error.response?.data || error.message);
     return false;
   }
 }
 
 /**
- * Send message to Matrix room
+ * ✅ UPDATED: Send message to Matrix room
  */
 async function sendMessageToRoom(roomId, message) {
   try {
-    await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+    const txnId = Date.now(); // Transaction ID
+    await axios.put(
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to PUT with txnId
       {
         msgtype: 'm.text',
         body: message
@@ -58,7 +58,7 @@ async function sendMessageToRoom(roomId, message) {
     );
     return true;
   } catch (error) {
-    console.error('Error sending message to room:', error);
+    console.error('Error sending message to room:', error.response?.data || error.message);
     return false;
   }
 }
@@ -250,7 +250,7 @@ export async function POST(request, { params }) {
     
     // Get user information for Matrix
     const user = await User.findById(auth.user.id).select('fullName email');
-    const matrixUserId = `@student_${auth.user.id}:chat.151.hu`;
+    const matrixUserId = `@student_${auth.user.id}:${MATRIX_DOMAIN}`; // ✅ Updated domain
     
     console.log('🔗 Inviting student to Matrix room:', {
       userId: auth.user.id,

@@ -1,11 +1,14 @@
+// ================================================================
 // src/app/api/matrix/room-members/route.js
+// UPDATED FOR NEW MATRIX SERVER (matrix.151.hu)
 // Get real Matrix room members (not mock data)
 
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://chat.151.hu';
+// ✅ UPDATED: New Matrix server configuration
+const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
 
 export async function POST(request) {
@@ -31,7 +34,7 @@ export async function POST(request) {
     // Get room members from Matrix
     try {
       const membersResponse = await axios.get(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/members`,
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/members`, // ✅ Changed to v3
         {
           headers: {
             'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`
@@ -56,7 +59,7 @@ export async function POST(request) {
           } else if (userId.includes('student_')) {
             userType = 'student';  
             cleanName = displayName.replace(/^student_/, '');
-          } else if (userId.includes('@nom:')) {
+          } else if (userId.includes('@proj-admin') || userId.includes('@nom:')) { // ✅ Updated system user detection
             userType = 'system';
             cleanName = 'System';
           }
@@ -76,6 +79,8 @@ export async function POST(request) {
       const instructors = members.filter(m => m.type === 'instructor');
       const students = members.filter(m => m.type === 'student');
 
+      console.log(`✅ Fetched ${members.length} members from room ${roomId}`);
+
       return NextResponse.json({
         success: true,
         data: {
@@ -89,7 +94,7 @@ export async function POST(request) {
       });
 
     } catch (matrixError) {
-      console.error('Failed to fetch Matrix room members:', matrixError);
+      console.error('❌ Failed to fetch Matrix room members:', matrixError);
       
       // If Matrix request fails, return empty but successful response
       return NextResponse.json({
@@ -107,7 +112,7 @@ export async function POST(request) {
     }
 
   } catch (error) {
-    console.error('Failed to get room members:', error);
+    console.error('❌ Failed to get room members:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to get room members'

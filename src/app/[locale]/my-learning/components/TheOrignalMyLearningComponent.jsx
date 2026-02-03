@@ -2,18 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import PageBanner from '../components/banner/PageBanner';
+import { useTranslations } from 'next-intl';
+import PageBanner from '../../components/banner/PageBanner';
 import { Col, Container, Row, Button, Card, Nav, Image, Spinner, Modal } from 'react-bootstrap';
-import { FaCalendarAlt, FaClock, FaLock, FaUser, FaCheckCircle, FaPlay, FaUsers } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaLock, FaUser, FaCheckCircle, FaPlay, FaUsers, FaCalendarTimes } from 'react-icons/fa';
 import liveIcon from '@/assets/images/live-course.png';
 import recordedIcon from '@/assets/images/recorded-course.png';
 import learningService from '@/services/learningService';
 import CountdownTimer from './components/CountdownTimer';
+import CourseMaterials from './components/CourseMaterials';
 import CourseScheduler from '../student/schedule/components/CourseScheduler';
-import DynamicIcon from '../../app/components/courses/DynamicIcons';
+import DynamicIcon from '../../components/courses/DynamicIcons';
 
 const MyLearning = () => {
     const router = useRouter();
+    const t = useTranslations('student.learning');
     const [activeTab, setActiveTab] = useState('lessons');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -137,11 +140,7 @@ const MyLearning = () => {
                 return <CourseScheduler />;
             case 'materials':
                 return (
-                    <div className="text-center py-5">
-                        <h4>Course Materials</h4>
-                        <p className="text-muted">View all your course materials and resources here.</p>
-                        <p className="text-muted">Feature coming soon...</p>
-                    </div>
+                    <CourseMaterials />
                 );
             case 'lessons':
             default:
@@ -155,7 +154,7 @@ const MyLearning = () => {
             return (
                 <div className="text-center py-5">
                     <Spinner animation="border" variant="primary" />
-                    <p className="mt-3">Loading your next learning day...</p>
+                    <p className="mt-3">{t('nextLessons.loading')}</p>
                 </div>
             );
         }
@@ -177,9 +176,9 @@ const MyLearning = () => {
                             <Card.Body className="py-3">
                                 <h3 className="text-primary mb-0 d-flex align-items-center fs-5">
                                     <FaCalendarAlt className="me-2" />
-                                    Wednesday, {learningData.nextWednesday.formattedDate}
+                                    {t('nextLessons.wednesday')}, {learningData.nextWednesday.formattedDate}
                                     {learningData.nextWednesday.daysFromNow > 0 &&
-                                        ` (${learningData.nextWednesday.daysFromNow} days from now)`}
+                                        ` (${learningData.nextWednesday.daysFromNow} ${t('nextLessons.daysFromNow')})`}
                                 </h3>
                             </Card.Body>
                         </Card>
@@ -197,16 +196,46 @@ const MyLearning = () => {
                                         const isReserved = slot.isReserved;
                                         const canJoin = isReserved && readyToJoin[slot.id];
                                         const courseType = course?.type || '';
-                                        const bgColor = course?.courseInfo?.backgroundColorHex || '#5a975a';
+                                        const bgColor = course?.courseInfo?.backgroundColorHex || '#7EAA7E';
 
                                         return (
                                             <Col xs={12} md={6} lg={4} key={slot.id} className="mb-4">
-                                                <Card className={`h-100 ${!isReserved ? 'bg-light' : ''}`}
-                                                    style={{ opacity: isReserved ? 1 : 0.7 }}>
+                                                <Card className={`h-100`}>
                                                     <Card.Header
                                                         className="text-white d-flex justify-content-between align-items-center py-2"
                                                         style={{ backgroundColor: bgColor }}
                                                     >
+                                                        <div className='d-flex align-items-center justify-content-center gap-2'>
+                                                            <div
+                                                                className="text-white lead rounded d-flex align-items-center justify-content-center"
+                                                                style={{
+                                                                    width: '35px',
+                                                                    height: '35px',
+                                                                    fontWeight: 'lighter',
+                                                                    padding: '2px',
+                                                                    backgroundColor: '#4c4c4c',
+                                                                    fontSize: '1.6rem'
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    className='rounded'
+                                                                    style={{
+                                                                        border: '2px solid white',
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
+                                                                        alignItems: 'center',
+                                                                    }}
+                                                                >
+                                                                    {slot.name.split(' ')[1]}
+                                                                </span>
+                                                            </div>
+                                                            <div className="d-flex align-items-center">
+                                                                <FaClock className="me-1" size={14} />
+                                                                <small>{slot.time}</small>
+                                                            </div>
+                                                        </div>
                                                         {slot.course?.courseInfo?.iconUrl && (
                                                             <div className="d-flex align-items-center justify-content-center">
                                                                 {/* Check if it's a custom image/URL */}
@@ -221,8 +250,8 @@ const MyLearning = () => {
                                                                             `/assets/custom-icons/${slot.course.courseInfo.iconUrl}`}
                                                                         alt="Course Icon"
                                                                         style={{
-                                                                            width: '35px',        // Direct size control
-                                                                            height: '35px',       // Direct size control
+                                                                            width: '35px',
+                                                                            height: '35px',
                                                                             objectFit: 'contain'
                                                                         }}
                                                                         onError={(e) => {
@@ -232,7 +261,7 @@ const MyLearning = () => {
                                                                             if (!parent.querySelector('.fallback-icon')) {
                                                                                 const fallbackIcon = document.createElement('i');
                                                                                 fallbackIcon.className = 'fas fa-book fallback-icon';
-                                                                                fallbackIcon.style.fontSize = '24px';
+                                                                                fallbackIcon.style.fontSize = '35px';
                                                                                 parent.appendChild(fallbackIcon);
                                                                             }
                                                                         }}
@@ -255,37 +284,23 @@ const MyLearning = () => {
                                                                         return (
                                                                             <i
                                                                                 className={iconMap[iconKey] || 'fas fa-book'}
-                                                                                style={{ fontSize: '24px' }}  // Direct size control
+                                                                                style={{ fontSize: '35px' }}
                                                                             />
                                                                         );
                                                                     })()
                                                                 )}
                                                             </div>
                                                         )}
-                                                        <div
-                                                            className="bg-white rounded-circle d-flex align-items-center justify-content-center"
-                                                            style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                fontWeight: 'bold',
-                                                                color: bgColor
-                                                            }}
-                                                        >
-                                                            {slot.name.split(' ')[1]}
-                                                        </div>
-                                                        <div className="d-flex align-items-center">
-                                                            <FaClock className="me-1" size={14} />
-                                                            <small>{slot.time}</small>
-                                                        </div>
+
                                                     </Card.Header>
 
                                                     <Card.Body className="d-flex flex-column border border-primary">
                                                         {course ? (
                                                             <>
                                                                 <div className="mb-3 flex-grow-1">
-                                                                    <h5 className="fs-6 fw-bold mb-2">{course.title}</h5>
+                                                                    <h5 className="fs-6 fw-bold mb-2">{course.courseInfo.title}</h5>
                                                                     {course.moduleTitle && (
-                                                                        <div className="text-muted small mb-2">
+                                                                        <div className="small mb-2">
                                                                             {course.moduleTitle}
                                                                         </div>
                                                                     )}
@@ -319,6 +334,26 @@ const MyLearning = () => {
                                                                         />
                                                                     </div>
 
+                                                                    {/* For Testing - Remove comment to enable always-visible join button */}
+                                                                    {/* <Button
+                                                                        variant="primary"
+                                                                        size="sm"
+                                                                        onClick={() => handleJoinCourse(course)}
+                                                                        className="d-flex align-items-center"
+                                                                    >
+                                                                        {courseType === 'live' ? (
+                                                                            <>
+                                                                                <FaUsers className="me-1" size={12} />
+                                                                                {t('nextLessons.join')}
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <FaPlay className="me-1" size={12} />
+                                                                                {t('nextLessons.watchVideo')}
+                                                                            </>
+                                                                        )}
+                                                                    </Button> */}
+
                                                                     {!course.isCompleted ? (
                                                                         canJoin ? (
                                                                             <Button
@@ -330,12 +365,12 @@ const MyLearning = () => {
                                                                                 {courseType === 'live' ? (
                                                                                     <>
                                                                                         <FaUsers className="me-1" size={12} />
-                                                                                        Join
+                                                                                        {t('nextLessons.join')}
                                                                                     </>
                                                                                 ) : (
                                                                                     <>
                                                                                         <FaPlay className="me-1" size={12} />
-                                                                                        Watch Video
+                                                                                        {t('nextLessons.watchVideo')}
                                                                                     </>
                                                                                 )}
                                                                             </Button>
@@ -349,15 +384,15 @@ const MyLearning = () => {
                                                                     ) : (
                                                                         <div className="d-flex align-items-center text-primary">
                                                                             <FaCheckCircle className="me-1" />
-                                                                            <small>Completed</small>
+                                                                            <small>{t('nextLessons.completed')}</small>
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             </>
                                                         ) : (
                                                             <div className="text-center py-4 text-muted">
-                                                                <p className="mb-2">No course scheduled</p>
-                                                                <FaLock size={24} />
+                                                                <p className="mb-2">{t('nextLessons.noCourseScheduled')}</p>
+                                                                <FaCalendarTimes size={24} />
                                                             </div>
                                                         )}
                                                     </Card.Body>
@@ -370,19 +405,19 @@ const MyLearning = () => {
                         </Card>
                     </Col>
                 </Row>
-            </div>
+            </div >
         );
     };
 
     return (
         <>
-            <PageBanner bannerHeadline="my Learning" />
+            <PageBanner bannerHeadline={t('pageTitle')} />
 
             <Container className="my-4">
                 <Row>
                     <Col xs={12}>
                         <p className="text-primary fs-5 mb-4">
-                            Via this page you have access to all your courses and learning materials
+                            {t('subtitle')}
                         </p>
                     </Col>
                 </Row>
@@ -397,7 +432,7 @@ const MyLearning = () => {
                                     className="me-2 px-4 py-2 rounded"
                                     onClick={() => setActiveTab('lessons')}
                                 >
-                                    my next Lessons
+                                    {t('tabs.nextLessons')}
                                 </Button>
                             </Nav.Item>
                             <Nav.Item>
@@ -406,7 +441,7 @@ const MyLearning = () => {
                                     className="me-2 px-4 py-2 rounded"
                                     onClick={() => setActiveTab('scheduler')}
                                 >
-                                    my Scheduler
+                                    {t('tabs.scheduler')}
                                 </Button>
                             </Nav.Item>
                             <Nav.Item>
@@ -415,7 +450,7 @@ const MyLearning = () => {
                                     className="px-4 py-2 rounded"
                                     onClick={() => setActiveTab('materials')}
                                 >
-                                    my Materials
+                                    {t('tabs.materials')}
                                 </Button>
                             </Nav.Item>
                         </Nav>
@@ -475,7 +510,7 @@ const MyLearning = () => {
                     <div className="d-flex justify-content-between w-100 align-items-center">
                         <div className="text-muted small">
                             {selectedVideo?.videoData?.duration && (
-                                <>Duration: {Math.floor(selectedVideo.videoData.duration / 60)} minutes</>
+                                <>{t('videoModal.duration')}: {Math.floor(selectedVideo.videoData.duration / 60)} {t('videoModal.minutes')}</>
                             )}
                         </div>
                         <div>
@@ -489,10 +524,10 @@ const MyLearning = () => {
                                 }}
                             >
                                 <FaCheckCircle className="me-1" />
-                                Mark as Completed
+                                {t('videoModal.markCompleted')}
                             </Button>
                             <Button variant="secondary" size="sm" onClick={handleCloseVideoModal}>
-                                Close
+                                {t('videoModal.close')}
                             </Button>
                         </div>
                     </div>

@@ -1,16 +1,15 @@
-// CLEAN VERSION: src/app/instructor/live-session/[courseId]/[slotIndex]/page.jsx
-// Real-time data, proper auth, no mock data
-
+// src/app/instructor/live-session/[courseId]/[slotIndex]/page.jsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
-import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaRecordVinyl, FaSignOutAlt } from 'react-icons/fa';
+import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaSignOutAlt, FaClock, FaCircle } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getLiveSessionData, manageLiveSession } from '@/services/courseService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
+import webrtcService from '@/services/webrtcService';
 
 const InstructorLiveSessionPage = ({ params }) => {
   const router = useRouter();
@@ -18,36 +17,75 @@ const InstructorLiveSessionPage = ({ params }) => {
   const slotIndex = sessionId;
   const { user, loading: authLoading } = useAuth();
 
-  // Session data state
+  const videoRef = useRef(null);
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isManaging, setIsManaging] = useState(false);
-
-  // Session controls state
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [roomMembers, setRoomMembers] = useState({ students: [], instructors: [], totalCount: 0 });
+  const [streamLoading, setStreamLoading] = useState(false);
 
-  // Matrix credentials for instructor
   const matrixCredentials = user ? {
-    userId: `@instructor_${user.id}:chat.151.hu`,
-    accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN || 'syt_bm9t_KyFOAOqQXtogCcGbRktX_0UliGS'
+    userId: `@instructor_${user.id}:151.hu`,
+    accessToken: process.env.NEXT_PUBLIC_MATRIX_ACCESS_TOKEN
   } : null;
 
-  // Load session data when component mounts or user changes
   useEffect(() => {
     if (!authLoading && user) {
       loadSessionData();
     }
+
+    return () => {
+      handleCleanup();
+    };
   }, [courseId, slotIndex, user, authLoading]);
 
-  // Load real session data from API
+  useEffect(() => {
+    if (sessionData?.matrixRoomId && isSessionLive()) {
+      fetchRoomMembers();
+      const interval = setInterval(fetchRoomMembers, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [sessionData?.matrixRoomId, sessionData?.sessionStatus]);
+
+  const fetchRoomMembers = async () => {
+    if (!sessionData?.matrixRoomId) return;
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/matrix/room-members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ roomId: sessionData.matrixRoomId })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setRoomMembers(result.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch room members:', error);
+    }
+  };
+
+  const handleCleanup = () => {
+    webrtcService.cleanup();
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    }
+  };
+
   const loadSessionData = async () => {
     try {
       setIsLoading(true);
       setError(null);
-
-      console.log('🔄 Loading session data for course:', courseId);
 
       const result = await getLiveSessionData(courseId);
 
@@ -56,17 +94,10 @@ const InstructorLiveSessionPage = ({ params }) => {
         const currentSlot = data.timeSlots?.[slotIndex];
 
         if (!currentSlot) {
-          setError(`Session slot ${slotIndex} not found. Please create the session first.`);
+          setError(`Session slot ${slotIndex} not found`);
           return;
         }
 
-        console.log('✅ Session data loaded:', {
-          courseTitle: data.courseTitle,
-          sessionStatus: currentSlot.sessionStatus,
-          hasMatrixRoom: !!currentSlot.matrixRoomId
-        });
-
-        // Set real session data
         setSessionData({
           sessionTitle: `Session ${parseInt(slotIndex) + 1}`,
           courseTitle: data.courseTitle,
@@ -76,17 +107,6 @@ const InstructorLiveSessionPage = ({ params }) => {
           matrixRoomId: currentSlot.matrixRoomId,
           slotData: currentSlot
         });
-
-        // Update UI state based on real session status
-        if (currentSlot.sessionStatus === 'live') {
-          setIsCameraOn(true);
-          setIsMicOn(true);
-          console.log('✅ Session is LIVE - updating UI state');
-        } else {
-          setIsCameraOn(false);
-          setIsMicOn(false);
-          console.log('ℹ️ Session not live - status:', currentSlot.sessionStatus);
-        }
 
       } else {
         setError(result.error || 'Failed to load session data');
@@ -99,46 +119,90 @@ const InstructorLiveSessionPage = ({ params }) => {
     }
   };
 
-  // Check if session is currently live
   const isSessionLive = () => {
     return sessionData?.sessionStatus === 'live';
   };
 
-  // Start live session
+  const setupWebRTC = async () => {
+    try {
+      console.log('🔄 Step 1: Getting media stream...');
+      const stream = await webrtcService.getMediaStream();
+      console.log('✅ Step 2: Got stream with', stream.getVideoTracks().length, 'video tracks');
+      
+      console.log('🔄 Step 3: Checking videoRef.current...');
+      if (videoRef.current) {
+        console.log('✅ Step 4: Video element EXISTS, attaching stream');
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        videoRef.current.playsInline = true;
+        
+        console.log('🔄 Step 5: Playing video...');
+        await videoRef.current.play();
+        console.log('✅ Step 6: Video PLAYING!');
+      } else {
+        console.error('❌ Step 4: Video element is NULL!');
+      }
+
+      console.log('🔄 Step 7: Starting recording...');
+      webrtcService.startRecording();
+      setIsRecording(true);
+
+      console.log('✅ WebRTC setup complete - YOU SHOULD SEE YOUR VIDEO NOW!');
+    } catch (error) {
+      console.error('❌ WebRTC setup failed:', error);
+      toast.error('Failed to access camera/microphone');
+    }
+  };
+
   const handleStartSession = async () => {
     try {
-      if (isSessionLive()) {
-        toast.info('Session is already live!');
+      setIsManaging(true);
+      console.log('🚀 START BUTTON: Step 1 - Starting live session');
+
+      if (isStreaming) {
+        console.log('✅ Already streaming');
+        setIsManaging(false);
         return;
       }
 
-      setIsManaging(true);
+      if (!isSessionLive()) {
+        const result = await manageLiveSession(courseId, {
+          action: 'start',
+          slotIndex: parseInt(slotIndex),
+          sessionDate: new Date().toISOString(),
+          sessionTitle: `Session ${parseInt(slotIndex) + 1}`
+        });
 
-      console.log('🚀 Starting live session:', {
-        courseId,
-        slotIndex: parseInt(slotIndex)
-      });
+        console.log('🚀 START BUTTON: Step 2 - Backend response:', result);
 
-      const result = await manageLiveSession(courseId, {
-        action: 'start',
-        slotIndex: parseInt(slotIndex),
-        sessionDate: new Date().toISOString(),
-        sessionTitle: `Session ${parseInt(slotIndex) + 1}`
-      });
+        if (!result.success) {
+          console.error('❌ Failed to start session:', result.error);
+          toast.error(result.error || 'Failed to start live session');
+          setIsManaging(false);
+          return;
+        }
 
-      if (result.success) {
         toast.success('Live session started! 🔴');
-
-        // Update local state
-        setIsCameraOn(true);
-        setIsMicOn(true);
-
-        // Reload session data to get updated status
-        await loadSessionData();
-      } else {
-        console.error('❌ Failed to start session:', result.error);
-        toast.error(result.error || 'Failed to start live session');
+        
+        console.log('🚀 START BUTTON: Step 3 - Updating session status');
+        setSessionData(prev => ({
+          ...prev,
+          sessionStatus: 'live'
+        }));
       }
+
+      console.log('🚀 START BUTTON: Step 4 - Setting streaming states');
+      setIsStreaming(true);
+      setIsCameraOn(true);
+      setIsMicOn(true);
+      
+      console.log('🚀 START BUTTON: Step 5 - Waiting 100ms for React render');
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('🚀 START BUTTON: Step 6 - Calling setupWebRTC');
+      await setupWebRTC();
+      console.log('🚀 START BUTTON: Step 7 - Done!');
+      
     } catch (err) {
       console.error('❌ Error starting session:', err);
       toast.error('Failed to start live session');
@@ -147,31 +211,61 @@ const InstructorLiveSessionPage = ({ params }) => {
     }
   };
 
-  // End live session
   const handleEndSession = async () => {
     try {
       setIsManaging(true);
+      console.log('🔴 Step 1: Ending live session...');
 
-      console.log('🔴 Ending live session:', {
-        courseId,
-        slotIndex: parseInt(slotIndex)
-      });
+      console.log('🔴 Step 2: Stopping recording...');
+      const recordingBlob = await webrtcService.stopRecording();
+      setIsRecording(false);
+      console.log('✅ Recording stopped, blob size:', recordingBlob?.size);
 
+      let recordingUrl = '';
+      if (recordingBlob) {
+        console.log('📤 Step 3: Uploading recording...');
+        toast.success('Uploading recording...');
+        
+        try {
+          const uploadResult = await webrtcService.uploadRecording(
+            recordingBlob,
+            courseId,
+            slotIndex
+          );
+
+          if (uploadResult.success) {
+            recordingUrl = uploadResult.data.url;
+            console.log('✅ Recording uploaded:', recordingUrl);
+            toast.success('Recording uploaded!');
+          }
+        } catch (uploadError) {
+          console.error('❌ Upload failed:', uploadError);
+          toast.error('Failed to upload recording');
+        }
+      }
+
+      console.log('🔴 Step 4: Calling backend to end session...');
       const result = await manageLiveSession(courseId, {
         action: 'end',
         slotIndex: parseInt(slotIndex),
-        recordingUrl: ''
+        recordingUrl
       });
 
       if (result.success) {
+        console.log('✅ Step 5: Session ended successfully');
         toast.success('Live session ended ✅');
-
-        // Update local state
+        
         setIsCameraOn(false);
         setIsMicOn(false);
-
-        // Reload session data to get updated status
-        await loadSessionData();
+        setIsStreaming(false);
+        setStreamLoading(false);
+        
+        webrtcService.stopLocalStream();
+        
+        setSessionData(prev => ({
+          ...prev,
+          sessionStatus: 'completed'
+        }));
       } else {
         console.error('❌ Failed to end session:', result.error);
         toast.error(result.error || 'Failed to end session');
@@ -180,317 +274,346 @@ const InstructorLiveSessionPage = ({ params }) => {
       console.error('❌ Error ending session:', err);
       toast.error('Failed to end session');
     } finally {
+      console.log('🔴 Step 6: Setting isManaging = false');
       setIsManaging(false);
     }
   };
 
-  // Navigate back to dashboard
   const handleBackToDashboard = () => {
     router.push('/instructor/live-sessions');
   };
 
-  // Toggle camera
   const toggleCamera = () => {
-    if (!isSessionLive()) {
-      toast.warning('Start the session first to control camera');
+    if (!isSessionLive() || !isStreaming) {
+      toast.error('Start the session first');
       return;
     }
-    setIsCameraOn(!isCameraOn);
-    toast.info(isCameraOn ? 'Camera turned off' : 'Camera turned on');
+
+    const videoTrack = webrtcService.localStream?.getVideoTracks()[0];
+    if (videoTrack) {
+      const newState = !isCameraOn;
+      videoTrack.enabled = newState;
+      setIsCameraOn(newState);
+      toast.success(newState ? 'Camera on' : 'Camera off');
+    }
   };
 
-  // Toggle microphone
   const toggleMicrophone = () => {
-    if (!isSessionLive()) {
-      toast.warning('Start the session first to control microphone');
+    if (!isSessionLive() || !isStreaming) {
+      toast.error('Start the session first');
       return;
     }
-    setIsMicOn(!isMicOn);
-    toast.info(isMicOn ? 'Microphone muted' : 'Microphone unmuted');
+
+    const audioTrack = webrtcService.localStream?.getAudioTracks()[0];
+    if (audioTrack) {
+      const newState = !isMicOn;
+      audioTrack.enabled = newState;
+      setIsMicOn(newState);
+      toast.success(newState ? 'Microphone unmuted' : 'Microphone muted');
+    }
   };
 
-  // Get session status badge
   const getSessionStatusBadge = () => {
     if (!sessionData) return <Badge bg="secondary">Loading...</Badge>;
 
     switch (sessionData.sessionStatus) {
       case 'live':
         return (
-          <Badge bg="success" className="d-flex align-items-center gap-1">
-            <div className="rounded-circle bg-white" style={{ width: '8px', height: '8px' }}></div>
-            LIVE
+          <Badge bg="danger" className="d-flex align-items-center gap-1 px-3 py-2">
+            <FaCircle size={8} className="animate-pulse" />
+            <span className="fw-bold">LIVE</span>
           </Badge>
         );
       case 'scheduled':
-        return <Badge bg="primary">Ready to Start</Badge>;
+        return <Badge bg="primary" className="px-3 py-2">Scheduled</Badge>;
       case 'completed':
-        return <Badge bg="info">Completed</Badge>;
+        return <Badge bg="success" className="px-3 py-2">Completed</Badge>;
       case 'cancelled':
-        return <Badge bg="danger">Cancelled</Badge>;
+        return <Badge bg="secondary" className="px-3 py-2">Cancelled</Badge>;
       default:
-        return <Badge bg="secondary">Unknown</Badge>;
+        return <Badge bg="secondary" className="px-3 py-2">Unknown</Badge>;
     }
   };
 
-  // Show loading while auth is loading or session data is loading
   if (authLoading || isLoading) {
     return (
-      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
-        <Card className="border-0 shadow-lg text-center p-4">
-          <Card.Body>
-            <Spinner animation="border" variant="primary" className="mb-3" />
-            <h5>{authLoading ? 'Authenticating...' : 'Loading Session...'}</h5>
-            <p className="text-muted mb-0">Please wait</p>
-          </Card.Body>
-        </Card>
-      </Container>
+      <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
+        <div className="text-center text-white">
+          <Spinner animation="border" variant="light" className="mb-3" style={{ width: '3rem', height: '3rem' }} />
+          <h4>{authLoading ? 'Authenticating...' : 'Loading Session...'}</h4>
+          <p className="text-muted">Please wait</p>
+        </div>
+      </div>
     );
   }
 
-  // Show error if auth failed or no user
   if (!user) {
     return (
-      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
-        <Alert variant="warning" className="text-center p-4">
+      <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
+        <Alert variant="warning" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
           <h5>Authentication Required</h5>
           <p>Please log in to access the instructor session.</p>
           <Button variant="primary" onClick={() => router.push('/login')}>
             Go to Login
           </Button>
         </Alert>
-      </Container>
+      </div>
     );
   }
 
-  // Show error if session data failed to load
   if (error) {
     return (
-      <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
-        <Alert variant="danger" className="text-center p-4">
+      <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
+        <Alert variant="danger" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
           <h5>Session Error</h5>
           <p>{error}</p>
           <div className="mt-3">
             <Button variant="primary" onClick={loadSessionData} className="me-2">
               Try Again
             </Button>
-            <Button variant="outline-secondary" onClick={handleBackToDashboard}>
+            <Button variant="outline-light" onClick={handleBackToDashboard}>
               Back to Dashboard
             </Button>
           </div>
         </Alert>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <div className="vh-100 bg-light">
-      {/* Header */}
-      <div className="bg-dark text-white py-3">
-        <Container fluid>
-          <Row className="align-items-center">
-            <Col>
-              <div className="d-flex align-items-center gap-3">
-                <Button
-                  variant="outline-light"
-                  size="sm"
-                  onClick={handleBackToDashboard}
-                >
-                  <FaSignOutAlt className="me-1" />
-                  Back to Dashboard
-                </Button>
-                <div>
-                  <h5 className="mb-0">{sessionData?.sessionTitle}</h5>
-                  <small className="opacity-75">{sessionData?.courseTitle}</small>
+    <div className="h-auto d-flex flex-column bg-dark">
+      {/* Professional Header */}
+      <div className="bg-gradient" style={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+      }}>
+        <Container fluid className="px-4">
+          <div className="d-flex align-items-center justify-content-between py-3">
+            <div className="d-flex align-items-center gap-3">
+              <Button
+                variant="light"
+                size="sm"
+                onClick={handleBackToDashboard}
+                className="d-flex align-items-center gap-2 px-3"
+              >
+                <FaSignOutAlt />
+                <span className="d-none d-md-inline">Exit</span>
+              </Button>
+              <div className="text-white">
+                <h5 className="mb-0 fw-bold">{sessionData?.sessionTitle}</h5>
+                <small className="opacity-75">{sessionData?.courseTitle}</small>
+              </div>
+            </div>
+            
+            <div className="d-flex align-items-center gap-3">
+              {getSessionStatusBadge()}
+              <div className="text-white d-none d-md-flex align-items-center gap-2">
+                <FaUsers />
+                <span className="fw-bold">{roomMembers.studentCount || 0}</span>
+                <span className="opacity-75 small">viewers</span>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-grow-1 overflow-hidden">
+        <Container fluid className="h-100 p-3">
+          <Row className="h-100 g-3">
+            {/* Video Section - 70% */}
+            <Col lg={8} xxl={9} className="h-100">
+              <div className="h-100 d-flex flex-column">
+                {/* Video Display */}
+                <div className="flex-grow-1 position-relative rounded-3 overflow-hidden shadow-lg" style={{
+                  background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                  minHeight: '400px'
+                }}>
+                  {isStreaming ? (
+                    <>
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        className="w-100 h-100 position-absolute top-0 start-0"
+                        style={{ objectFit: 'cover' }}
+                      />
+                      {/* Recording Indicator */}
+                      {isRecording && (
+                        <div className="position-absolute top-0 start-0 m-3">
+                          <Badge bg="danger" className="px-3 py-2 d-flex align-items-center gap-2 shadow">
+                            <FaCircle size={8} className="animate-pulse" />
+                            <span className="fw-bold">REC</span>
+                          </Badge>
+                        </div>
+                      )}
+                      {/* Stats Overlay */}
+                      <div className="position-absolute top-0 end-0 m-3">
+                        <div className="bg-dark bg-opacity-75 rounded-3 px-3 py-2 text-white">
+                          <div className="d-flex align-items-center gap-2">
+                            <FaUsers />
+                            <span className="fw-bold">{roomMembers.studentCount || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-100 h-100 position-absolute top-0 start-0 d-flex align-items-center justify-content-center text-white">
+                      <div className="text-center">
+                        <div className="mb-4">
+                          <div className="rounded-circle bg-white bg-opacity-10 mx-auto d-flex align-items-center justify-content-center"
+                            style={{ width: '120px', height: '120px' }}>
+                            <FaVideoSlash size={50} className="opacity-50" />
+                          </div>
+                        </div>
+                        <h3 className="mb-2">Camera Off</h3>
+                        <p className="text-white-50 mb-0">
+                          {isSessionLive() ? 'Click "Start Streaming" to begin' : 'Click "Go Live" to start the session'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Controls Bar */}
+                <div className="mt-3">
+                  <Card className="border-0 shadow-sm" style={{ background: 'rgba(255,255,255,0.95)' }}>
+                    <Card.Body className="p-3">
+                      <Row className="align-items-center">
+                        <Col>
+                          <div className="d-flex gap-2">
+                            <Button
+                              variant={isCameraOn ? "primary" : "outline-secondary"}
+                              onClick={toggleCamera}
+                              disabled={!isStreaming}
+                              className="d-flex align-items-center gap-2 px-3"
+                            >
+                              {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
+                              <span className="d-none d-md-inline">{isCameraOn ? 'Camera' : 'Camera'}</span>
+                            </Button>
+                            <Button
+                              variant={isMicOn ? "primary" : "outline-secondary"}
+                              onClick={toggleMicrophone}
+                              disabled={!isStreaming}
+                              className="d-flex align-items-center gap-2 px-3"
+                            >
+                              {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                              <span className="d-none d-md-inline">{isMicOn ? 'Mic' : 'Mic'}</span>
+                            </Button>
+                          </div>
+                        </Col>
+                        <Col xs="auto">
+                          {!isStreaming ? (
+                            <Button
+                              variant="success"
+                              size="lg"
+                              onClick={handleStartSession}
+                              disabled={isManaging}
+                              className="px-4 d-flex align-items-center gap-2 shadow"
+                            >
+                              <FaPlay />
+                              <span>{isManaging ? 'Starting...' : isSessionLive() ? 'Start Streaming' : 'Go Live'}</span>
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="danger"
+                              size="lg"
+                              onClick={handleEndSession}
+                              disabled={isManaging}
+                              className="px-4 d-flex align-items-center gap-2 shadow"
+                            >
+                              <FaStop />
+                              <span>{isManaging ? 'Ending...' : 'End Session'}</span>
+                            </Button>
+                          )}
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
                 </div>
               </div>
             </Col>
-            <Col xs="auto">
-              <div className="d-flex align-items-center gap-2">
-                {getSessionStatusBadge()}
-                <Button
-                  variant="outline-light"
-                  size="sm"
-                  onClick={loadSessionData}
-                  disabled={isLoading}
-                >
-                  Refresh
-                </Button>
+
+            {/* Sidebar - 30% */}
+            <Col lg={4} xxl={3} className="h-auto">
+              <div className="h-100 d-flex flex-column gap-3">
+                {/* Session Info */}
+                <Card className="border-0 shadow-sm">
+                  <Card.Body className="p-3">
+                    <div className="d-flex align-items-center mb-3">
+                      <FaClock className="text-primary me-2" />
+                      <h6 className="mb-0 fw-bold">Session Info</h6>
+                    </div>
+                    <div className="small">
+                      <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                        <span className="text-muted">Course:</span>
+                        <span className="fw-semibold text-end">{sessionData?.courseTitle}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                        <span className="text-muted">Session:</span>
+                        <span className="fw-semibold">{sessionData?.sessionTitle}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
+                        <span className="text-muted">Status:</span>
+                        {getSessionStatusBadge()}
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span className="text-muted">Students:</span>
+                        <Badge bg="primary" className="px-2">{roomMembers.studentCount || 0}</Badge>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+
+                {/* Chat Panel */}
+                <div className="flex-grow-1 position-relative" style={{ minHeight: 0 }}>
+                  {matrixCredentials && sessionData?.matrixRoomId ? (
+                    <div className="h-100">
+                      <ChatPanel
+                        roomId={sessionData.matrixRoomId}
+                        userCredentials={matrixCredentials}
+                        height="100%"
+                        className="shadow-sm border-0 h-100"
+                        showHeader={true}
+                        allowFileUpload={false}
+                      />
+                    </div>
+                  ) : (
+                    <Card className="h-100 border-0 shadow-sm">
+                      <Card.Body className="d-flex align-items-center justify-content-center">
+                        <div className="text-center text-muted">
+                          {!sessionData?.matrixRoomId ? (
+                            <>
+                              <h6>Chat Not Available</h6>
+                              <p className="mb-0 small">Matrix room not created yet</p>
+                            </>
+                          ) : (
+                            <>
+                              <Spinner className="mb-3" />
+                              <p className="mb-0">Connecting to chat...</p>
+                            </>
+                          )}
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  )}
+                </div>
               </div>
             </Col>
           </Row>
         </Container>
       </div>
 
-      {/* Main Content */}
-      <Container fluid className="p-3" style={{ height: 'calc(100vh - 80px)' }}>
-        <Row className="h-100 g-3">
-          {/* Video and Controls Section */}
-          <Col lg={8} className="h-100">
-            <Card className="border-0 shadow h-100">
-              <Card.Body className="p-0 d-flex flex-column h-100">
-                {/* Video Preview */}
-                <div className="flex-grow-1 bg-dark text-white rounded-top d-flex align-items-center justify-content-center position-relative">
-                  {isCameraOn ? (
-                    <div className="text-center">
-                      <div className="bg-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                        style={{ width: '100px', height: '100px' }}>
-                        <FaVideo size={40} />
-                      </div>
-                      <h4>Your Video Feed</h4>
-                      <p className="text-muted">Students can see you</p>
-                      {isSessionLive() && (
-                        <Badge bg="success" className="mt-2">
-                          🔴 Broadcasting Live
-                        </Badge>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <div className="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
-                        style={{ width: '100px', height: '100px' }}>
-                        <FaVideoSlash size={40} />
-                      </div>
-                      <h4>Camera Off</h4>
-                      <p className="text-muted">
-                        {isSessionLive() ? 'Turn on camera to start streaming' : 'Start the session first'}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Recording indicator */}
-                  {isSessionLive() && (
-                    <div className="position-absolute top-0 start-0 m-3">
-                      <Badge bg="danger" className="d-flex align-items-center">
-                        <FaRecordVinyl className="me-1" />
-                        Live
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-
-                {/* Controls */}
-                <div className="p-4 bg-white border-top">
-                  <Row className="align-items-center">
-                    <Col>
-                      <div className="d-flex gap-2">
-                        <Button
-                          variant={isCameraOn ? "success" : "outline-secondary"}
-                          onClick={toggleCamera}
-                          disabled={!isSessionLive()}
-                          title={isCameraOn ? "Turn off camera" : "Turn on camera"}
-                        >
-                          {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
-                        </Button>
-                        <Button
-                          variant={isMicOn ? "success" : "outline-secondary"}
-                          onClick={toggleMicrophone}
-                          disabled={!isSessionLive()}
-                          title={isMicOn ? "Mute microphone" : "Unmute microphone"}
-                        >
-                          {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
-                        </Button>
-                      </div>
-                    </Col>
-                    <Col xs="auto">
-                      {!isSessionLive() ? (
-                        <Button
-                          variant="success"
-                          size="lg"
-                          onClick={handleStartSession}
-                          disabled={isManaging}
-                        >
-                          <FaPlay className="me-2" />
-                          {isManaging ? 'Starting...' : 'Start Live Session'}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="danger"
-                          size="lg"
-                          onClick={handleEndSession}
-                          disabled={isManaging}
-                        >
-                          <FaStop className="me-2" />
-                          {isManaging ? 'Ending...' : 'End Session'}
-                        </Button>
-                      )}
-                    </Col>
-                  </Row>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          {/* Chat Section */}
-          <Col lg={4} className="h-100">
-            <div className="d-flex flex-column h-100 gap-3">
-              {/* Session Info Panel */}
-              <Card className="border-0 shadow">
-                <Card.Header className="bg-light border-0">
-                  <div className="d-flex align-items-center">
-                    <FaUsers className="me-2 text-primary" />
-                    <span className="fw-bold">Session Information</span>
-                  </div>
-                </Card.Header>
-                <Card.Body className="p-3">
-                  <div className="small">
-                    <div className="mb-2">
-                      <strong>Course:</strong> {sessionData?.courseTitle}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Session:</strong> {sessionData?.sessionTitle}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Status:</strong> {sessionData?.sessionStatus}
-                    </div>
-                    {sessionData?.sessionDate && (
-                      <div className="mb-2">
-                        <strong>Created:</strong> {new Date(sessionData.sessionDate).toLocaleString()}
-                      </div>
-                    )}
-                    {sessionData?.matrixRoomId && (
-                      <div className="mb-2">
-                        <strong>Room:</strong> {sessionData.matrixRoomId.slice(-10)}...
-                      </div>
-                    )}
-                  </div>
-                </Card.Body>
-              </Card>
-
-              {/* Real-time Matrix Chat Panel */}
-              <div className="flex-grow-1">
-                {matrixCredentials && sessionData?.matrixRoomId ? (
-                  <ChatPanel
-                    roomId={sessionData.matrixRoomId}
-                    userCredentials={matrixCredentials}
-                    height="calc(100vh - 400px)"
-                    className="shadow border-0"
-                    showHeader={true}
-                    allowFileUpload={false}
-                  />
-                ) : (
-                  <Card className="h-100 border-0 shadow">
-                    <Card.Body className="d-flex align-items-center justify-content-center">
-                      <div className="text-center text-muted">
-                        {!sessionData?.matrixRoomId ? (
-                          <>
-                            <h6>Chat Not Available</h6>
-                            <p className="mb-0">Matrix room not created yet</p>
-                          </>
-                        ) : (
-                          <>
-                            <Spinner className="mb-3" />
-                            <p>Setting up chat...</p>
-                          </>
-                        )}
-                      </div>
-                    </Card.Body>
-                  </Card>
-                )}
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Container>
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .animate-pulse {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
     </div>
   );
 };

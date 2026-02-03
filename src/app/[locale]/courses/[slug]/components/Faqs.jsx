@@ -3,16 +3,19 @@
 import { Fragment } from "react";
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem } from "react-bootstrap";
 import { FaQuestionCircle } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
 
 const Faqs = ({ faqs }) => {
+  const t = useTranslations('courses.detail.faqs');
+  
   // Use provided FAQs or fallback to empty array
   const faqList = faqs || [];
   
   if (faqList.length === 0) {
     return (
       <div className="alert alert-info">
-        <h6 className="mb-0">No FAQs available for this course yet.</h6>
+        <h6 className="mb-0">{t('noFaqs')}</h6>
       </div>
     );
   }
@@ -21,7 +24,7 @@ const Faqs = ({ faqs }) => {
     <>
       <div className="d-flex align-items-center mb-3">
         <FaQuestionCircle className="text-primary me-2" />
-        <h5 className="mb-0">Frequently Asked Questions</h5>
+        <h5 className="mb-0">{t('title')}</h5>
       </div>
       
       <Accordion defaultActiveKey="0" className="accordion-icon accordion-bg-light" id="faqAccordion">

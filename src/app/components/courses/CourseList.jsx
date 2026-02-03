@@ -1,95 +1,100 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button, Col, Container, FormControl, Row, Form } from "react-bootstrap";
 import { FaSearch, FaFilter, FaSortAmountDown, FaTimes } from "react-icons/fa";
+import { useLocale, useTranslations } from "next-intl";
 import Pagination from "./Pagination";
 import CourseCard from "./CourseCard";
 import CourseCardSkeleton from "./CourseCardSkeleton";
 import liveIcon from '@/assets/images/live-course.png';
 import recordedIcon from '@/assets/images/recorded-course.png';
 
-// Course Categories with same structure as Step1
-const courseCategories = [
-  { value: 'All', label: 'All Categories' },
-  { value: 'Languages & Communication', label: 'Languages & Communication' },
-  { value: 'Cooking & Household', label: 'Cooking & Household' },
-  { value: 'Creativity & Craftsmanship', label: 'Creativity & Craftsmanship' },
-  { value: 'Digital & IT', label: 'Digital & IT' },
-  { value: 'Health & Exercise', label: 'Health & Exercise' },
-  { value: 'Nature & Gardening', label: 'Nature & Gardening' },
-  { value: 'Career & Education', label: 'Career & Education' }
-];
-
-// Subcategories mapping
-const subcategoriesMap = {
-  'Languages & Communication': [
-    'Foreign Languages',
-    'Learning the National Language',
-    'Rhetoric & International Communication'
-  ],
-  'Cooking & Household': [
-    'Cooking & Baking (including International Cuisine)',
-    'Nutrition & Sustainability',
-    'Home Economics'
-  ],
-  'Creativity & Craftsmanship': [
-    'Painting, Drawing, Photography',
-    'Sewing, Crafting, DIY',
-    'Arts & More'
-  ],
-  'Digital & IT': [
-    'Computers & Internet',
-    'Social Media & Data Protection',
-    'Software & Tools'
-  ],
-  'Health & Exercise': [
-    'Fitness, Yoga & More',
-    'Relaxation & Stress Management',
-    'Prevention & Well-being'
-  ],
-  'Nature & Gardening': [
-    'Gardening & Urban Gardening',
-    'Environment & Sustainability',
-    'Eco Projects'
-  ],
-  'Career & Education': [
-    'Soft Skills & Time Management',
-    'Career Orientation & Qualification',
-    'Basic Education & Literacy'
-  ]
-};
-
-// Course Types with same structure as Step1
-const courseTypes = [
-  { value: 'All', label: 'All Types', icon: null },
-  { value: 'live', label: 'Live Courses', icon: liveIcon },
-  { value: 'recorded', label: 'Recorded Courses', icon: recordedIcon }
-];
-
-// Sort Options
-const sortOptions = [
-  { value: '', label: 'Most Relevant' },
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'most-viewed', label: 'Most Viewed' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' }
-];
-
-// Level Options
-const levelOptions = [
-  { value: 'All', label: 'All Levels' },
-  { value: 'beginner', label: 'Beginner' },
-  { value: 'intermediate', label: 'Intermediate' },
-  { value: 'advanced', label: 'Advanced' },
-  { value: 'all_levels', label: 'All Levels' }
-];
-
 const CourseList = () => {
+  const t = useTranslations('courses.list');
+  const tCat = useTranslations('categories');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname(); // ADD THIS
+  const locale = useLocale();
+
+  // Course Categories - using translation keys
+  const courseCategories = [
+    { value: 'All', label: tCat('all') },
+    { value: 'Languages & Communication', label: tCat('languagesCommunication.title') },
+    { value: 'Cooking & Household', label: tCat('cookingHousehold.title') },
+    { value: 'Creativity & Craftsmanship', label: tCat('creativityCraftsmanship.title') },
+    { value: 'Digital & IT', label: tCat('digitalIT.title') },
+    { value: 'Health & Exercise', label: tCat('healthExercise.title') },
+    { value: 'Nature & Gardening', label: tCat('natureGardening.title') },
+    { value: 'Career & Education', label: tCat('careerEducation.title') }
+  ];
+
+  // Subcategories mapping - using translation keys
+  const subcategoriesMap = {
+    'Languages & Communication': [
+      { value: 'Foreign Languages', label: tCat('languagesCommunication.foreignLanguages') },
+      { value: 'Learning the National Language', label: tCat('languagesCommunication.nationalLanguage') },
+      { value: 'Rhetoric & International Communication', label: tCat('languagesCommunication.rhetoric') }
+    ],
+    'Cooking & Household': [
+      { value: 'Cooking & Baking (including International Cuisine)', label: tCat('cookingHousehold.cooking') },
+      { value: 'Nutrition & Sustainability', label: tCat('cookingHousehold.nutrition') },
+      { value: 'Home Economics', label: tCat('cookingHousehold.homeEconomics') }
+    ],
+    'Creativity & Craftsmanship': [
+      { value: 'Painting, Drawing, Photography', label: tCat('creativityCraftsmanship.painting') },
+      { value: 'Sewing, Crafting, DIY', label: tCat('creativityCraftsmanship.sewing') },
+      { value: 'Arts & More', label: tCat('creativityCraftsmanship.arts') }
+    ],
+    'Digital & IT': [
+      { value: 'Computers & Internet', label: tCat('digitalIT.computers') },
+      { value: 'Social Media & Data Protection', label: tCat('digitalIT.socialMedia') },
+      { value: 'Software & Tools', label: tCat('digitalIT.software') }
+    ],
+    'Health & Exercise': [
+      { value: 'Fitness, Yoga & More', label: tCat('healthExercise.fitness') },
+      { value: 'Relaxation & Stress Management', label: tCat('healthExercise.relaxation') },
+      { value: 'Prevention & Well-being', label: tCat('healthExercise.prevention') }
+    ],
+    'Nature & Gardening': [
+      { value: 'Gardening & Urban Gardening', label: tCat('natureGardening.gardening') },
+      { value: 'Environment & Sustainability', label: tCat('natureGardening.environment') },
+      { value: 'Eco Projects', label: tCat('natureGardening.ecoProjects') }
+    ],
+    'Career & Education': [
+      { value: 'Soft Skills & Time Management', label: tCat('careerEducation.softSkills') },
+      { value: 'Career Orientation & Qualification', label: tCat('careerEducation.careerOrientation') },
+      { value: 'Basic Education & Literacy', label: tCat('careerEducation.basicEducation') }
+    ]
+  };
+
+  // Course Types
+  const courseTypes = [
+    { value: 'All', label: t('filters.courseType.all'), icon: null },
+    { value: 'live', label: t('filters.courseType.live'), icon: liveIcon },
+    { value: 'recorded', label: t('filters.courseType.recorded'), icon: recordedIcon }
+  ];
+
+  // Sort Options
+  const sortOptions = [
+    { value: '', label: t('filters.sortBy.mostRelevant') },
+    { value: 'popular', label: t('filters.sortBy.popular') },
+    { value: 'most-viewed', label: t('filters.sortBy.mostViewed') },
+    { value: 'newest', label: t('filters.sortBy.newest') },
+    { value: 'oldest', label: t('filters.sortBy.oldest') }
+  ];
+
+  // Level Options
+  const levelOptions = [
+    { value: 'All', label: t('filters.level.all') },
+    { value: 'beginner', label: t('filters.level.beginner') },
+    { value: 'intermediate', label: t('filters.level.intermediate') },
+    { value: 'advanced', label: t('filters.level.advanced') },
+    { value: 'all_levels', label: t('filters.level.allLevels') }
+  ];
 
   // Get URL params or set defaults
   const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -114,9 +119,23 @@ const CourseList = () => {
   // Get available subcategories based on selected category
   const availableSubcategories = category !== 'All' ? subcategoriesMap[category] || [] : [];
 
+  // Helper function to get translated category label
+  const getCategoryLabel = (categoryValue) => {
+    const category = courseCategories.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
+  };
+
+  // Helper function to get translated subcategory label
+  const getSubcategoryLabel = (categoryValue, subcategoryValue) => {
+    const subcats = subcategoriesMap[categoryValue];
+    if (!subcats) return subcategoryValue;
+    const subcat = subcats.find(sc => sc.value === subcategoryValue);
+    return subcat ? subcat.label : subcategoryValue;
+  };
+
   // Reset subcategory when category changes
   useEffect(() => {
-    if (category === 'All' || !subcategoriesMap[category]?.includes(subcategory)) {
+    if (category === 'All' || !subcategoriesMap[category]?.some(sc => sc.value === subcategory)) {
       setSubcategory('All');
     }
   }, [category]);
@@ -143,7 +162,6 @@ const CourseList = () => {
     setIsLoading(true);
 
     try {
-      // Map frontend sort options to backend sort parameters
       const sortMap = {
         "free": "price",
         "most-viewed": "-enrollmentCount",
@@ -152,45 +170,17 @@ const CourseList = () => {
         "oldest": "createdAt"
       };
 
-      // Create a query string directly
       const queryParams = new URLSearchParams();
-
-      // Always include page and limit
       queryParams.append('page', page.toString());
       queryParams.append('limit', '6');
-
-      // Add sort parameter (default to -createdAt if not set)
       queryParams.append('sort', sortMap[sortBy] || '-createdAt');
 
-      // Add category filter if not "All"
-      if (category && category !== "All") {
-        queryParams.append('category', category);
-      }
+      if (category && category !== "All") queryParams.append('category', category);
+      if (subcategory && subcategory !== "All") queryParams.append('subcategory', subcategory);
+      if (type && type !== "All") queryParams.append('type', type);
+      if (level && level !== "All") queryParams.append('level', level);
+      if (searchQuery.trim()) queryParams.append('search', searchQuery.trim());
 
-      // Add subcategory filter if not "All"
-      if (subcategory && subcategory !== "All") {
-        queryParams.append('subcategory', subcategory);
-      }
-
-      // Add type filter if not "All"
-      if (type && type !== "All") {
-        queryParams.append('type', type);
-      }
-
-      // Add level filter if not "All"
-      if (level && level !== "All") {
-        queryParams.append('level', level);
-      }
-
-      // Add search query if present
-      if (searchQuery.trim()) {
-        queryParams.append('search', searchQuery.trim());
-      }
-
-      // Log the query string for debugging
-      console.log("Fetching courses with query:", queryParams.toString());
-
-      // Direct API call
       const response = await fetch(`/api/courses?${queryParams.toString()}`);
       const data = await response.json();
 
@@ -199,7 +189,6 @@ const CourseList = () => {
         setTotalPages(data.data.pagination?.totalPages || 1);
         setTotalCourses(data.data.pagination?.totalDocuments || 0);
       } else {
-        console.error("Failed to fetch courses:", data.error);
         setCourses([]);
         setTotalPages(1);
         setTotalCourses(0);
@@ -227,10 +216,13 @@ const CourseList = () => {
     if (page > 1) queryParams.append("page", page.toString());
 
     const queryString = queryParams.toString();
-    const url = queryString ? `/courses?${queryString}` : "/courses";
+    
+    const url = queryString 
+      ? `${pathname}?${queryString}` 
+      : pathname;
 
     router.push(url, { scroll: false });
-  }, [searchQuery, category, subcategory, type, level, sortBy, page, router]);
+  }, [searchQuery, category, subcategory, type, level, sortBy, page, router, pathname]);
 
   // Fetch courses when filters change
   useEffect(() => {
@@ -242,23 +234,21 @@ const CourseList = () => {
   const handleSearchChange = (value) => {
     setSearch(value);
 
-    // Clear existing timeout
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
 
-    // Set new timeout
     const newTimeout = setTimeout(() => {
       setSearchQuery(value);
-      setPage(1); // Reset to first page when searching
-    }, 500); // 500ms debounce
+      setPage(1);
+    }, 500);
 
     setSearchTimeout(newTimeout);
   };
 
   // Handle instant filter changes
   const handleFilterChange = (filterType, value) => {
-    setPage(1); // Reset to first page when filters change
+    setPage(1);
 
     switch (filterType) {
       case 'category':
@@ -282,7 +272,6 @@ const CourseList = () => {
   // Handle page change
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -339,13 +328,15 @@ const CourseList = () => {
     <section className="pt-5">
       <Container>
         {/* Filters Section */}
-        <div className="card shadow-sm mb-4 position-relative" style={{ zIndex: 1000 }}>
+        <div className="card shadow-sm mb-4 position-relative">
           <div className="card-body">
             <h5 className="mb-3">
               <FaFilter className="me-2" />
-              Filter Courses
+              {t('filters.title')}
               {totalCourses > 0 && (
-                <span className="badge bg-primary ms-2">{totalCourses} courses</span>
+                <span className="badge bg-primary ms-2">
+                  {t('filters.resultsCount', { count: totalCourses })}
+                </span>
               )}
             </h5>
 
@@ -353,11 +344,11 @@ const CourseList = () => {
             <Row className="g-3 mb-3">
               <Col md={12} lg={6}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Search</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.search.label')}</Form.Label>
                   <div className="input-group">
                     <FormControl
                       type="search"
-                      placeholder="Search for courses..."
+                      placeholder={t('filters.search.placeholder')}
                       value={search}
                       onChange={(e) => handleSearchChange(e.target.value)}
                       className="form-control rounded-start"
@@ -371,7 +362,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Course Type</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.courseType.label')}</Form.Label>
                   <div className="d-flex gap-2" style={{ height: '50px' }}>
                     {courseTypes.map((courseType) => (
                       <div
@@ -388,7 +379,7 @@ const CourseList = () => {
                             className="me-1"
                           />
                         ) : (
-                          <span className="fs-5">All</span>
+                          <span className="fs-5">{courseType.label}</span>
                         )}
                       </div>
                     ))}
@@ -398,7 +389,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Level</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.level.label')}</Form.Label>
                   <Form.Select
                     value={level}
                     onChange={(e) => handleFilterChange('level', e.target.value)}
@@ -418,7 +409,7 @@ const CourseList = () => {
             <Row className="g-3">
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Category</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.category.label')}</Form.Label>
                   <Form.Select
                     value={category}
                     onChange={(e) => handleFilterChange('category', e.target.value)}
@@ -435,17 +426,17 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Subcategory</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.subcategory.label')}</Form.Label>
                   <Form.Select
                     value={subcategory}
                     onChange={(e) => handleFilterChange('subcategory', e.target.value)}
                     className="form-select"
                     disabled={category === 'All'}
                   >
-                    <option value="All">All Subcategories</option>
+                    <option value="All">{t('filters.subcategory.all')}</option>
                     {availableSubcategories.map((subcat) => (
-                      <option key={subcat} value={subcat}>
-                        {subcat}
+                      <option key={subcat.value} value={subcat.value}>
+                        {subcat.label}
                       </option>
                     ))}
                   </Form.Select>
@@ -454,7 +445,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">Sort By</Form.Label>
+                  <Form.Label className="mb-1 small">{t('filters.sortBy.label')}</Form.Label>
                   <Form.Select
                     value={sortBy}
                     onChange={(e) => handleFilterChange('sort', e.target.value)}
@@ -477,7 +468,7 @@ const CourseList = () => {
                     onClick={clearAllFilters}
                     disabled={search === "" && category === "All" && subcategory === "All" && type === "All" && level === "All" && sortBy === ""}
                   >
-                    <FaTimes className="me-2" /> Clear All
+                    <FaTimes className="me-2" /> {t('filters.clearAll')}
                   </Button>
                 </div>
               </Col>
@@ -490,8 +481,10 @@ const CourseList = () => {
           <div className="card mb-3">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="mb-0 text-muted">Active Filters:</h6>
-                <small className="text-muted">{totalCourses} results found</small>
+                <h6 className="mb-0 text-muted">{t('activeFilters.title')}</h6>
+                <small className="text-muted">
+                  {t('activeFilters.resultsFound', { count: totalCourses })}
+                </small>
               </div>
               <div className="d-flex flex-wrap gap-2">
                 {searchQuery && (
@@ -509,7 +502,7 @@ const CourseList = () => {
                 {category !== 'All' && (
                   <span className="badge bg-success d-flex align-items-center p-2">
                     <FaFilter size={10} className="me-1" />
-                    <span className="me-2">{category}</span>
+                    <span className="me-2">{getCategoryLabel(category)}</span>
                     <button
                       className="btn-close btn-close-white ms-1"
                       style={{ fontSize: '0.5rem', opacity: 0.7 }}
@@ -520,7 +513,7 @@ const CourseList = () => {
                 )}
                 {subcategory !== 'All' && (
                   <span className="badge bg-info d-flex align-items-center p-2">
-                    <span className="me-2">{subcategory}</span>
+                    <span className="me-2">{getSubcategoryLabel(category, subcategory)}</span>
                     <button
                       className="btn-close btn-close-white ms-1"
                       style={{ fontSize: '0.5rem', opacity: 0.7 }}
@@ -533,12 +526,14 @@ const CourseList = () => {
                   <span className="badge bg-warning text-dark d-flex align-items-center p-2">
                     <Image
                       src={type === 'live' ? liveIcon : recordedIcon}
-                      alt={type === 'live' ? "Live Course" : "Recorded Course"}
+                      alt={type === 'live' ? t('card.liveCourse') : t('card.recordedCourse')}
                       width={20}
                       height={20}
                       className="me-1"
                     />
-                    <span className="me-2">{type === 'live' ? 'Live' : 'Recorded'}</span>
+                    <span className="me-2">
+                      {type === 'live' ? t('filters.courseType.live') : t('filters.courseType.recorded')}
+                    </span>
                     <button
                       className="btn-close ms-1"
                       style={{ fontSize: '0.5rem', opacity: 0.7 }}
@@ -585,17 +580,17 @@ const CourseList = () => {
                 <div className="spinner-border spinner-border-sm me-2" role="status">
                   <span className="visually-hidden">Loading...</span>
                 </div>
-                Loading courses...
+                {t('results.loading')}
               </div>
             ) : courses.length > 0 ? (
-              `Showing ${courses.length} of ${totalCourses} courses`
+              t('results.showing', { count: courses.length, total: totalCourses })
             ) : (
-              'No courses found'
+              t('results.noCoursesFound')
             )}
           </h4>
           {!isLoading && courses.length > 0 && totalPages > 1 && (
             <div className="text-muted small">
-              Page {page} of {totalPages}
+              {t('results.page', { current: page, total: totalPages })}
             </div>
           )}
         </div>
@@ -603,14 +598,12 @@ const CourseList = () => {
         {/* Course list */}
         <Row className="g-4">
           {isLoading ? (
-            // Show skeleton loaders when loading
             Array(6).fill(0).map((_, idx) => (
               <Col lg={6} key={`skeleton-${idx}`}>
                 <CourseCardSkeleton />
               </Col>
             ))
           ) : courses.length > 0 ? (
-            // Show actual courses when loaded
             courses.map((course, idx) => (
               <Col lg={6} key={course.id || idx}>
                 <CourseCard
@@ -640,7 +633,7 @@ const CourseList = () => {
                       text: course.level === 'all_levels' ? 'All Levels' : course.level
                     },
                     color: course.backgroundColorHex || "#630000",
-                    format: course.type // 'live' or 'recorded'
+                    format: course.type
                   }}
                 />
               </Col>
@@ -652,12 +645,12 @@ const CourseList = () => {
                   <div className="mb-3">
                     <FaSearch size={48} className="text-muted" />
                   </div>
-                  <h4>No courses found</h4>
+                  <h4>{t('noResults.title')}</h4>
                   <p className="text-muted mb-3">
-                    We couldn't find any courses matching your current filters.
+                    {t('noResults.message')}
                   </p>
                   <Button variant="primary" onClick={clearAllFilters}>
-                    Clear All Filters
+                    {t('noResults.clearFilters')}
                   </Button>
                 </div>
               </div>
@@ -682,7 +675,6 @@ const CourseList = () => {
         .clear-button {
           height: 68% !important;
         }
-        /* Course Type Filter Styling */
         .course-type-filter {
           display: flex;
           justify-content: center;
@@ -719,7 +711,6 @@ const CourseList = () => {
           font-weight: 600;
         }
         
-        /* Enhanced Badge Styling */
         .badge {
           font-weight: 500;
           font-size: 0.8rem;
@@ -742,7 +733,6 @@ const CourseList = () => {
           transform: scale(1);
         }
         
-        /* Input Group Styling */
         .input-group-text {
           border-left: 0;
           background-color: white;
@@ -752,7 +742,6 @@ const CourseList = () => {
           border-color: rgba(100.8, 136, 100.8, 0.5);
         }
         
-        /* Loading Animation */
         @keyframes pulse {
           0% { opacity: 1; }
           50% { opacity: 0.5; }
@@ -763,7 +752,6 @@ const CourseList = () => {
           animation: pulse 1.5s ease-in-out infinite;
         }
         
-        /* Responsive Design */
         @media (max-width: 768px) {
           .course-type-filter {
             min-height: 50px;
@@ -776,13 +764,11 @@ const CourseList = () => {
           }
         }
         
-        /* Form Select Focus */
         .form-select:focus {
           border-color: rgba(100.8, 136, 100.8, 0.7);
           box-shadow: 0 0 0 0.25rem rgba(100.8, 136, 100.8, 0.25);
         }
         
-        /* Disabled State */
         .form-select:disabled {
           background-color: #f8f9fa;
           opacity: 0.6;

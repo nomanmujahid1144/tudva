@@ -8,7 +8,7 @@ import { BsX, BsEnvelopeFill } from 'react-icons/bs';
 import { FaUser, FaPhone } from 'react-icons/fa';
 import { toast } from 'sonner';
 import IconTextFormInput from '@/components/form/IconTextFormInput';
-import defaultImage from '../../../../assets/images/avatar/11.jpg';
+import defaultImage from '../../../../../assets/images/avatar/11.jpg';
 import { useAuth } from '@/context/AuthContext';
 import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton';
 import { profileSchema } from '@/validations/userSchema';

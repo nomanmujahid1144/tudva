@@ -1,4 +1,50 @@
 {
+  "home": {
+    "hero": {
+      "badge": "der einfachste Weg zu deinem Erfolg",
+      "title": {
+        "line1": "Lebenslanges",
+        "line2": "Lernen",
+        "line3": "2.0"
+      },
+      "description": "Deine soziale Lernplattform. Entdecke eine Vielzahl von Kursen, gestalte deinen eigenen Lerntag und werde Teil einer engagierten Community."
+    },
+    "searchCourses": {
+      "heading": "Tauche ein in 300 Lektionen mit 2528 einzelnen Modulen.",
+      "subheading": "Lerne alles, was du willst – es ist immer kostenlos!",
+      "placeholder": "Finde deinen Kurs (nach Kursname oder Thema)"
+    },
+    "trendingCourses": {
+      "title": "Beliebte",
+      "titleHighlight": "Kurse",
+      "subtitle": "Finde Kurse, die am besten zu deinem Beruf passen",
+      "badge": {
+        "duration": "Monat"
+      },
+      "rating": "Bewertungen",
+      "duration": "Dauer"
+    },
+    "coursesOverview": {
+      "title": "Meine Kursübersicht",
+      "nextLessons": {
+        "title": "Meine nächsten Lektionen",
+        "learningDay": "Lerntag:",
+        "schoolHour": "Schulstunde",
+        "timeRemaining": "Tage, {hours} Stunden, {minutes} Minuten",
+        "manageLink": "meine Kurse verwalten"
+      },
+      "weekPlan": {
+        "title": "Wochenplan Vorschau",
+        "learningDay": "Lerntag: {date} [Woche {week}/25]",
+        "noCourse": "kein Kurs ausgewählt",
+        "chooseTopic": "wähle das passende Thema",
+        "manageLink": "meine Kurse verwalten"
+      },
+      "moreAbout": {
+        "title": "Mehr über meine Kurse"
+      }
+    }
+  },
   "auth": {
     "signin": {
       "title": "Anmelden bei tudva",
@@ -14,7 +60,10 @@
       "noAccount": "Du hast noch kein Konto?",
       "signupLink": "Hier registrieren",
       "loginSuccess": "Anmeldung erfolgreich!",
-      "loginError": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten und versuche es erneut."
+      "loginError": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten und versuche es erneut.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort.",
+      "accountNotVerified": "Bitte bestätige deine E-Mail vor der Anmeldung.",
+      "accountInactive": "Dein Konto ist inaktiv. Bitte kontaktiere den Support."
     },
     "signup": {
       "title": "Bei tudva registrieren",
@@ -37,9 +86,13 @@
       "signingUp": "Registrierung läuft...",
       "haveAccount": "Du hast bereits ein Konto?",
       "signinLink": "Hier anmelden",
-      "signupSuccess": "Registrierung erfolgreich! Bitte überprüfe deine E-Mails, um dein Konto zu bestätigen.",
       "signupError": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
-      "emailAlreadyExists": "E-Mail bereits registriert."
+      "signupSuccess": "Registrierung erfolgreich! Bitte überprüfe deine E-Mails.",
+      "emailAlreadyExists": "E-Mail bereits registriert. Bitte melde dich an oder verwende eine andere E-Mail.",
+      "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+      "weakPassword": "Passwort ist zu schwach. Verwende mindestens 8 Zeichen.",
+      "missingFields": "Bitte fülle alle erforderlichen Felder aus.",
+      "emailSendFailed": "Fehler beim Senden der Bestätigungs-E-Mail."
     },
     "forgotPassword": {
       "title": "Passwort vergessen",
@@ -52,7 +105,8 @@
       "resetSuccess": "Anweisungen zum Zurücksetzen des Passworts wurden an deine E-Mail gesendet.",
       "resetError": "Bitte überprüfe deine E-Mail und versuche es erneut!",
       "noAccount": "Du hast noch kein Konto?",
-      "signupLink": "Hier registrieren"
+      "signupLink": "Hier registrieren",
+      "resetEmailFailed": "Fehler beim Senden der Zurücksetz-E-Mail."
     },
     "confirmEmail": {
       "title": "Bestätige deine E-Mail-Adresse",
@@ -63,7 +117,8 @@
       "verifySuccess": "E-Mail erfolgreich bestätigt! Du kannst dich jetzt anmelden.",
       "verifyError": "E-Mail-Bestätigung fehlgeschlagen. Bitte versuche es erneut.",
       "noToken": "Kein Bestätigungs-Token in der URL gefunden",
-      "tokenMissing": "Bestätigungs-Token fehlt"
+      "tokenMissing": "Bestätigungs-Token fehlt",
+      "invalidToken": "Ungültiger oder abgelaufener Bestätigungslink."
     },
     "confirmChangePassword": {
       "title": "Bestätige deine Identität, um fortzufahren",
@@ -88,7 +143,8 @@
       "resetSuccess": "Passwort erfolgreich zurückgesetzt! Du kannst dich jetzt mit deinem neuen Passwort anmelden.",
       "resetError": "Zurücksetzen des Passworts fehlgeschlagen. Bitte versuche es erneut.",
       "tokenMissing": "Bestätigungs-Token fehlt",
-      "tokenError": "Fehler: Token fehlt. Bitte verwende den Link aus der E-Mail."
+      "tokenError": "Fehler: Token fehlt. Bitte verwende den Link aus der E-Mail.",
+      "invalidToken": "Ungültiger oder abgelaufener Zurücksetz-Link."
     },
     "validation": {
       "fullNameRequired": "Bitte gib deinen vollständigen Namen ein",
@@ -116,10 +172,81 @@
     },
     "callback": {
       "redirecting": "Leite weiter...",
-      "pleaseWait": "Bitte warten"
+      "pleaseWait": "Bitte warten",
+      "loginFailed": "Anmeldungsüberprüfung fehlgeschlagen"
     }
   },
   "instructor": {
+    "profile": {
+      "title": "Dozentenprofil",
+      "myCourses": "Meine Kurse",
+      "editProfile": "Profil bearbeiten",
+      "aboutMe": "Über mich",
+      "aboutMePlaceholder": "Noch keine Informationen angegeben. Erzähle den Studierenden von dir, deiner Expertise und deiner Lehrphilosophie.",
+      "experienceExpertise": "Erfahrung & Expertise",
+      "education": "Bildung",
+      "notSpecified": "Nicht angegeben",
+      "memberSince": "Mitglied seit",
+      "teachingStats": "Lehrstatistiken",
+      "courses": "Kurse",
+      "students": "Studierende",
+      "reviews": "Bewertungen",
+      "loading": "Wird geladen..."
+    },
+    "editProfile": {
+      "title": "Profil bearbeiten",
+      "profilePicture": "Profilbild",
+      "change": "Ändern",
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "E-Mail",
+      "phoneNumber": "Telefonnummer",
+      "phoneNumberPlaceholder": "Telefonnummer",
+      "aboutMe": "Über mich",
+      "aboutMeDescription": "Kurze Beschreibung für dein Profil.",
+      "saveChanges": "Änderungen speichern",
+      "updating": "Wird aktualisiert...",
+      "notAuthenticated": "Nicht authentifiziert",
+      "notAuthenticatedMessage": "Bitte melde dich an, um auf dein Profil zuzugreifen.",
+      "signIn": "Anmelden",
+      "success": "Profil erfolgreich aktualisiert",
+      "error": "Profil konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "imageSizeError": "Bildgröße überschreitet 5 MB",
+      "imageProcessError": "Fehler beim Verarbeiten des Bildes"
+    },
+    "manageCourse": {
+      "title": "Meine Kurse",
+      "createNewCourse": "Neuen Kurs erstellen",
+      "searchPlaceholder": "Nach Kurstitel oder Beschreibung suchen",
+      "sortNewest": "Sortieren: Neueste zuerst",
+      "sortOldest": "Sortieren: Älteste zuerst",
+      "sortAZ": "Sortieren: A bis Z",
+      "sortZA": "Sortieren: Z bis A",
+      "course": "Kurs",
+      "status": "Status",
+      "actions": "Aktionen",
+      "published": "Veröffentlicht",
+      "draft": "Entwurf",
+      "viewCourse": "Kurs ansehen",
+      "editCourse": "Kurs bearbeiten",
+      "deleteCourse": "Kurs löschen",
+      "loading": "Wird geladen...",
+      "loadingCourses": "Kurse werden geladen...",
+      "noCourses": "Keine Kurse gefunden.",
+      "createFirstCourse": "Neuen Kurs erstellen",
+      "showing": "Zeige",
+      "to": "bis",
+      "of": "von",
+      "entries": "Einträgen",
+      "deleteConfirmTitle": "Kurs löschen",
+      "deleteConfirmMessage": "Möchtest du \"{title}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteConfirmButton": "Kurs löschen",
+      "cancel": "Abbrechen",
+      "deleteSuccess": "Kurs erfolgreich gelöscht",
+      "deleteError": "Kurs konnte nicht gelöscht werden",
+      "loadError": "Kurse konnten nicht geladen werden"
+    },
     "course": {
       "creation": {
         "pageTitle": "Neuen Kurs erstellen",
@@ -144,251 +271,458 @@
         "step3": "Lehrplan",
         "step4": "Zusätzliche Informationen"
       },
+      "form": {
+        "create": {
+          "subtitle": "Verwende diese Oberfläche, um einen neuen Kurs hinzuzufügen...",
+          "recoveryAlert": "Du hast ungespeicherte Kursdaten. Du kannst dort fortfahren, wo du aufgehört hast."
+        },
+        "edit": {
+          "subtitle": "Bearbeite deine Kursdetails und aktualisiere deine Inhalte...",
+          "recoveryAlert": "Du hast ungespeicherte Änderungen an diesem Kurs. Du kannst dort fortfahren, wo du aufgehört hast."
+        },
+        "stepper": {
+          "step1": "Kursdetails",
+          "step2": "Kursmedien",
+          "step3": "Lehrplan",
+          "step4": "Zusätzliche Informationen"
+        }
+      },
+      "categories": {
+        "Languages & Communication": "Sprachen & Kommunikation",
+        "Cooking & Household": "Kochen & Haushalt",
+        "Creativity & Craftsmanship": "Kreativität & Handwerk",
+        "Digital & IT": "Digital & IT",
+        "Health & Exercise": "Gesundheit & Bewegung",
+        "Nature & Gardening": "Natur & Garten",
+        "Career & Education": "Beruf & Bildung"
+      },
+      "subcategories": {
+        "Foreign Languages": "Fremdsprachen",
+        "Learning the National Language": "Lernen der Landessprache",
+        "Rhetoric & International Communication": "Rhetorik & Internationale Kommunikation",
+        "Cooking & Baking (including International Cuisine)": "Kochen & Backen (inkl. internationale Küche)",
+        "Nutrition & Sustainability": "Ernährung & Nachhaltigkeit",
+        "Home Economics": "Hauswirtschaft",
+        "Painting, Drawing, Photography": "Malen, Zeichnen, Fotografie",
+        "Sewing, Crafting, DIY": "Nähen, Basteln, DIY",
+        "Arts & More": "Kunst & Mehr",
+        "Computers & Internet": "Computer & Internet",
+        "Social Media & Data Protection": "Soziale Medien & Datenschutz",
+        "Software & Tools": "Software & Tools",
+        "Fitness, Yoga & More": "Fitness, Yoga & Mehr",
+        "Relaxation & Stress Management": "Entspannung & Stressbewältigung",
+        "Prevention & Well-being": "Prävention & Wohlbefinden",
+        "Gardening & Urban Gardening": "Garten & Urban Gardening",
+        "Environment & Sustainability": "Umwelt & Nachhaltigkeit",
+        "Eco Projects": "Öko-Projekte",
+        "Soft Skills & Time Management": "Soft Skills & Zeitmanagement",
+        "Career Orientation & Qualification": "Berufsorientierung & Qualifikation",
+        "Basic Education & Literacy": "Grundbildung & Alphabetisierung"
+      },
       "step1": {
         "title": "Kursdetails",
         "editTitle": "Kursdetails bearbeiten",
-        "courseTitle": "Kurstitel",
-        "courseTitlePlaceholder": "Kurstitel eingeben",
-        "shortDescription": "Kurzbeschreibung",
-        "shortDescriptionPlaceholder": "Kurze Übersicht über deinen Kurs (max. 150 Zeichen)",
-        "description": "Kursbeschreibung",
-        "descriptionPlaceholder": "Schreibe eine detaillierte Beschreibung deines Kurses...",
-        "category": "Kurskategorie",
-        "selectCategory": "Kategorie auswählen",
-        "subcategory": "Kurs-Unterkategorie",
-        "selectSubcategory": "Unterkategorie auswählen",
-        "level": "Kursniveau",
-        "selectLevel": "Kursniveau auswählen",
-        "beginner": "Anfänger",
-        "intermediate": "Fortgeschritten",
-        "advanced": "Experte",
-        "allLevels": "Alle Niveaus",
-        "language": "Sprache",
-        "selectLanguage": "Sprache auswählen",
-        "english": "Englisch",
-        "german": "Deutsch",
-        "french": "Französisch",
-        "hindi": "Hindi",
-        "courseType": "Kurstyp",
-        "selectCourseType": "Kurstyp auswählen",
-        "recordedCourse": "Aufgezeichneter Kurs",
-        "liveCourse": "Live-Kurs",
-        "promoVideoUrl": "Promo-Video-URL (optional)",
-        "promoVideoPlaceholder": "YouTube- oder Vimeo-URL eingeben",
-        "promoVideoHelp": "Ein kurzes Video zur Vorstellung deines Kurses kann die Einschreibungen erheblich steigern",
-        "courseTime": "Kursdauer",
-        "enterCourseTime": "Kursdauer eingeben",
-        "totalLecture": "Gesamtlektionen",
-        "enterTotalLecture": "Gesamtanzahl der Lektionen eingeben",
-        "coursePrice": "Kurspreis",
-        "enterCoursePrice": "Kurspreis eingeben",
-        "discountPrice": "Rabattpreis",
-        "enterDiscount": "Rabatt eingeben",
-        "enableDiscount": "Diesen Rabatt aktivieren",
-        "featured": "Hervorgehobener Kurs",
-        "checkFeatured": "Dies für einen hervorgehobenen Kurs ankreuzen",
-        "addDescription": "Beschreibung hinzufügen",
-        "next": "Weiter",
-        "saving": "Speichern...",
-        "updating": "Aktualisieren..."
+        "editingLabel": "Bearbeitung:",
+        "loadingMessage": "Kursdetails werden geladen...",
+        "loadingSubtext": "Bitte warten Sie, während wir Ihre Kursinformationen abrufen.",
+        "courseTitle": {
+          "label": "Kurstitel",
+          "placeholder": "Kurstitel eingeben",
+          "counter": "Zeichen"
+        },
+        "shortDescription": {
+          "label": "Kurzbeschreibung",
+          "placeholder": "Kurzer Überblick über Ihren Kurs (max. 150 Zeichen)",
+          "counter": "Zeichen"
+        },
+        "category": {
+          "label": "Kurskategorie",
+          "placeholder": "Kategorie auswählen"
+        },
+        "subcategory": {
+          "label": "Kursunterkategorie",
+          "placeholder": "Unterkategorie auswählen"
+        },
+        "level": {
+          "label": "Kursniveau",
+          "beginner": "Anfänger",
+          "intermediate": "Fortgeschrittene",
+          "advanced": "Experten",
+          "allLevels": "Alle Niveaus"
+        },
+        "type": {
+          "label": "Kurstyp",
+          "recorded": "Aufgezeichneter Kurs",
+          "live": "Live-Kurs"
+        },
+        "promoVideo": {
+          "label": "URL des Werbevideos",
+          "placeholder": "Geben Sie die URL Ihres Werbevideos ein (YouTube, Vimeo usw.)",
+          "helperText": "Ein kurzes Video zur Vorstellung Ihres Kurses kann die Anmeldungen deutlich erhöhen"
+        },
+        "description": {
+          "label": "Kursbeschreibung",
+          "placeholder": "Schreiben Sie eine ausführliche Beschreibung Ihres Kurses..."
+        },
+        "buttons": {
+          "next": "Weiter",
+          "saving": "Speichern...",
+          "updating": "Aktualisieren..."
+        }
       },
       "step2": {
         "title": "Kursmedien",
         "subTitle": "Richte die Kombination aus Farbe und Symbol für deinen Kurs ein",
         "editTitle": "Kursmedien bearbeiten",
-        "backgroundColorTitle": "Hintergrundfarbe",
-        "backgroundColorSubtitle": "Wähle eine Hintergrundfarbe für deine Kurskarte",
+        "backgroundColorLabel": "Hintergrundfarbe",
+        "backgroundColorRequired": "*",
         "howItLooks": "Wie sollte es aussehen?",
-        "iconTitle": "Ein Symbol auswählen",
-        "iconSubtitle": "Wähle ein Symbol für deinen Kurs",
-        "iconSearchPlaceHolder": "Symbole suchen...",
-        "loadingIcons": "Lade Symbole...",
-        "noIconFound": "Keine passenden Symbole gefunden",
-        "thumbnailTitle": "Kurs-Vorschaubild",
-        "thumbnailSubtitle": "Lade ein hochwertiges Bild hoch (empfohlen: 1200x675px)",
-        "uploadThumbnail": "Vorschaubild hochladen",
-        "changeThumbnail": "Vorschaubild ändern",
-        "errorLoadingCourse": "Fehler beim Laden der Kursmedien",
-        "unableToLoadCourseMedia": "Kursmediendaten konnten nicht geladen werden:",
+        "selectIconPreview": "Wähle ein Symbol",
+        "iconTitle": "Wähle ein Symbol für deinen Kurs",
+        "iconSearchPlaceholder": "Symbole suchen...",
+        "loadingIcons": "Symbole werden geladen...",
+        "noIconsFound": "Keine Symbole gefunden für",
+        "loadingCourseMedia": "Kursmedien werden geladen...",
+        "loadingSubtext": "Bitte warten, während wir deine Kursinformationen abrufen.",
+        "errorLoadingTitle": "Fehler beim Laden der Kursmedien",
+        "errorLoadingMessage": "Kursmedien konnten nicht geladen werden:",
         "backToCourseManagement": "Zurück zur Kursverwaltung",
-        "previous": "Zurück",
-        "next": "Weiter",
-        "saving": "Speichern...",
-        "updating": "Aktualisieren..."
+        "buttons": {
+          "previous": "Zurück",
+          "next": "Weiter",
+          "saving": "Speichern...",
+          "updating": "Aktualisieren..."
+        }
       },
       "step3": {
-        "loadingCourseCurriculum": "Keine passenden Symbole gefunden",
-        "waitLoadingCourseCurriculum": "Bitte warte, während wir deine Kursinformationen abrufen.",
-        "errorLoadingCourseCurriculum": "Fehler beim Laden des Kurslehrplans",
-        "unableLoadingCourseCurriculum": "Kurslehrplandaten konnten nicht geladen werden:",
-        "backToCourseManagement": "Zurück zur Kursverwaltung",
-        "defineCourseCount": "Definiere die Anzahl der Lektionen in deinem Kurs",
-        "defineCourseCountDescription": "Beachte, dass Live-Kurse eine Anzahl haben müssen, bei der immer die gleiche Anzahl von Lektionen pro Tag stattfindet (z.B. 3 Tage mit 2 Lektionen = 6 Lektionen)",
-        "lessons": "Lektionen",
         "title": "Kurslehrplan",
         "editTitle": "Kurslehrplan bearbeiten",
-        "liveCourseCurriculum": "Live-Kurs-Einrichtung",
-        "recordedCourseCurriculum": "Lehrplan für aufgezeichneten Kurs",
-        "addModule": "Modul hinzufügen",
-        "addFirstModule": "Erstes Modul hinzufügen",
-        "noModulesYet": "Noch keine Module hinzugefügt",
-        "startBuilding": "Beginne mit dem Aufbau deines Kurses, indem du ein Modul hinzufügst",
-        "buildCurriculumTitle": "Erstelle deinen Lehrplan:",
-        "buildCurriculumDescription": "Füge Module hinzu und lade Videos hoch, um deine Kursinhalte zu erstellen. Jedes Modul kann mehrere Videos enthalten. Markiere Videos als \"Vorschau\", damit nicht eingeschriebene Benutzer sie ansehen können. Du kannst auch mehrere Kursmaterialien (PDFs, Dokumente) zu jedem Video hinzufügen.",
-        "video": "Video",
-        "videos": "Videos",
-        "editModule": "Modul bearbeiten",
-        "deleteModule": "Modul löschen",
-        "addVideo": "Video hinzufügen",
-        "editVideo": "Video bearbeiten",
-        "deleteVideo": "Video löschen",
-        "preview": "Vorschau",
-        "duration": "Dauer",
-        "uploading": "Wird hochgeladen",
-        "uploaded": "Hochgeladen",
-        "processing": "Wird verarbeitet",
-        "completed": "Abgeschlossen",
-        "failed": "Fehlgeschlagen",
-        "noVideos": "Noch keine Videos hinzugefügt",
-        "addFirstVideo": "Füge dein erstes Video zu diesem Modul hinzu",
-        "continueToNext": "Weiter zum nächsten Schritt",
-        "previous": "Zurück",
-        "saving": "Speichern...",
-        "updating": "Aktualisieren...",
-        "module": {
-          "title": "Modul-Titel",
-          "titlePlaceholder": "z.B. Einführung in JavaScript",
-          "description": "Modul-Beschreibung",
-          "descriptionPlaceholder": "Kurze Beschreibung dieses Moduls",
-          "descriptionHelp": "Eine gute Beschreibung hilft den Studierenden zu verstehen, was sie in diesem Modul lernen werden.",
+        "editingLabel": "Bearbeitung:",
+        "loadingCurriculum": "Kurslehrplan wird geladen...",
+        "loadingSubtext": "Bitte warten, während wir deine Kursinformationen abrufen.",
+        "errorLoadingTitle": "Fehler beim Laden des Kurslehrplans",
+        "errorLoadingMessage": "Kurslehrplandaten konnten nicht geladen werden:",
+        "backToCourseManagement": "Zurück zur Kursverwaltung",
+        "liveCourse": {
+          "defineTitle": "Definiere die Anzahl der Lektionen in deinem Kurs",
+          "defineDescription": "Beachte, dass Live-Kurse eine Anzahl haben müssen, bei der immer die gleiche Anzahl von Lektionen pro Tag stattfindet (z.B. 3 Tage mit 2 Lektionen = 6 Lektionen)",
+          "lessons": "Lektionen",
+          "noPrerecordedTitle": "Keine vordefinierte Lehrplan in Live-Kursen",
+          "noPrerecordedDescription": "Live-Kurse haben keine vorab aufgezeichneten Kurse. Du wirst deinen Sitzungsplan im letzten Schritt einrichten.",
+          "uploadingLessons": "Hochladen deiner Lektionen",
+          "courseMaterialsTitle": "Kursmaterialien",
+          "courseMaterialsSetup": "Kursmaterialien-Einrichtung:",
+          "lessonsHaveContent": "von",
+          "lessonsHaveContentSuffix": "Lektionen haben Inhalte",
+          "totalFiles": "Dateien insgesamt",
+          "editMaterials": "Materialien bearbeiten",
+          "addCourseFiles": "Kursdateien hinzufügen",
+          "noMaterials": "Keine Materialien",
+          "filesAttached": "Datei(en) angehängt",
+          "addMaterials": "Materialien hinzufügen",
+          "materialsForLesson": "Materialien für Lektion",
+          "filesReady": "Datei(en) bereit",
+          "noMaterialsYet": "Noch keine Materialien hinzugefügt"
+        },
+        "recorded": {
           "addModule": "Modul hinzufügen",
-          "updateModule": "Modul aktualisieren",
-          "editModule": "Modul bearbeiten",
-          "addNewModule": "Neues Modul hinzufügen"
+          "buildCurriculumTitle": "Erstelle deinen Lehrplan:",
+          "buildCurriculumDescription": "Füge Module hinzu und lade Videos hoch, um deine Kursinhalte zu erstellen. Jedes Modul kann mehrere Videos enthalten. Markiere Videos als \"Vorschau\", damit nicht eingeschriebene Benutzer sie ansehen können. Du kannst auch mehrere Kursmaterialien (PDFs, Dokumente) zu jedem Video hinzufügen.",
+          "noModulesTitle": "Noch keine Module hinzugefügt",
+          "noModulesDescription": "Beginne mit dem Aufbau deines Kurses, indem du ein Modul hinzufügst",
+          "addFirstModule": "Erstes Modul hinzufügen",
+          "moduleDescription": "Modulbeschreibung",
+          "noDescriptionProvided": "Keine Beschreibung angegeben",
+          "editModule": "Bearbeiten",
+          "deleteModule": "Löschen",
+          "noVideos": "Noch keine Videos zu diesem Modul hinzugefügt",
+          "addVideo": "Video hinzufügen",
+          "videos": "Video(s)"
+        },
+        "module": {
+          "addTitle": "Neues Modul hinzufügen",
+          "editTitle": "Modul bearbeiten",
+          "titleLabel": "Modultitel",
+          "titlePlaceholder": "z.B. Einführung in JavaScript",
+          "titleRequired": "Modultitel ist erforderlich",
+          "descriptionLabel": "Modulbeschreibung",
+          "descriptionPlaceholder": "Kurze Beschreibung dieses Moduls",
+          "descriptionHelp": "Eine gute Beschreibung hilft Studenten zu verstehen, was sie in diesem Modul lernen werden.",
+          "addButton": "Modul hinzufügen",
+          "updateButton": "Modul aktualisieren",
+          "addedSuccess": "Modul erfolgreich hinzugefügt",
+          "updatedSuccess": "Modul erfolgreich aktualisiert",
+          "deletedSuccess": "Modul erfolgreich gelöscht",
+          "confirmDeleteTitle": "Modul löschen",
+          "confirmDeleteMessage": "Möchtest du das Modul \"{name}\" wirklich löschen? {count, plural, =0 {} =1 {Dies wird auch 1 Video löschen.} other {Dies wird auch # Videos löschen.}} Diese Aktion kann nicht rückgängig gemacht werden."
         },
         "video": {
-          "title": "Video-Titel",
+          "addTitle": "Neues Video hinzufügen",
+          "editTitle": "Video bearbeiten",
+          "titleLabel": "Videotitel",
           "titlePlaceholder": "z.B. Einführung in Variablen",
-          "description": "Video-Beschreibung",
+          "titleRequired": "Videotitel ist erforderlich",
+          "descriptionLabel": "Videobeschreibung",
           "descriptionPlaceholder": "Kurze Beschreibung dieses Videos",
-          "videoFile": "Videodatei",
-          "replaceVideo": "Videodatei ersetzen (optional)",
-          "chooseVideo": "Videodatei auswählen",
-          "maxFileSize": "Maximale Dateigröße: 2GB. Unterstützte Formate: MP4, WebM, MOV",
-          "thumbnail": "Video-Vorschaubild (optional)",
-          "chooseThumbnail": "Vorschaubild auswählen",
-          "recommendedSize": "Empfohlen: 1280x720px",
-          "allowPreview": "Vorschau erlauben",
-          "allowPreviewHelp": "Erlaube Benutzern, dieses Video anzusehen, ohne sich in den Kurs einzuschreiben",
-          "courseMaterials": "Kursmaterialien (optional)",
-          "addMaterials": "Materialien hinzufügen",
-          "uploadMaterials": "Materialien hochladen",
-          "materialsHelp": "Lade PDFs, Dokumente oder andere Dateien hoch, die Studierende herunterladen können",
-          "removeFile": "Datei entfernen",
-          "addVideo": "Video hinzufügen",
-          "updateVideo": "Video aktualisieren",
+          "fileLabel": "Videodatei",
+          "fileReplaceLabel": "Videodatei ersetzen (optional)",
+          "fileRequired": "Videodatei ist erforderlich",
+          "fileHelp": "Maximale Dateigröße: 500MB. Unterstützte Formate: MP4, WebM, MOV, AVI, QuickTime",
+          "materialsLabel": "Kursmaterialien (Optional)",
+          "materialsHelp": "Mehrere Materialien hochladen (PDF, DOC, PPT, Bilder usw.) - Max. 50MB pro Datei",
+          "selectedMaterials": "Ausgewählte Materialien",
+          "previewCheckbox": "Dieses Video als kostenlose Vorschau verfügbar machen",
+          "previewHelp": "Vorschauvideos sind für nicht eingeschriebene Studenten sichtbar und können helfen, die Einschreibungen zu erhöhen.",
+          "addButton": "Video hinzufügen",
+          "updateButton": "Video aktualisieren",
+          "addedSuccess": "Video erfolgreich hinzugefügt",
+          "updatedSuccess": "Video erfolgreich aktualisiert",
+          "deletedSuccess": "Video erfolgreich gelöscht",
+          "confirmDeleteTitle": "Video löschen",
+          "confirmDeleteMessage": "Möchtest du das Video \"{name}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+          "playVideo": "Video abspielen",
           "editVideo": "Video bearbeiten",
-          "addNewVideo": "Neues Video hinzufügen",
-          "uploadProgress": "Upload-Fortschritt",
-          "uploadPhase": "Upload-Phase",
-          "uploadingChunk": "Lade Teil hoch",
-          "of": "von",
-          "uploadSpeed": "Upload-Geschwindigkeit",
-          "timeRemaining": "Verbleibende Zeit",
-          "initializing": "Initialisiere Upload...",
-          "uploadingVideo": "Lade Video hoch...",
-          "finalizing": "Schließe Upload ab...",
-          "processingVideo": "Verarbeite Video...",
-          "canceling": "Breche Upload ab...",
-          "cancelUpload": "Upload abbrechen"
+          "deleteVideo": "Video löschen"
         },
-        "liveCourse": {
-          "setupTitle": "Live-Kurs-Einrichtung",
-          "plannedLessons": "Geplante Lektionen",
-          "plannedLessonsPlaceholder": "Anzahl der geplanten Lektionen eingeben",
-          "plannedLessonsHelp": "Gesamtzahl der Live-Sitzungen, die du planst durchzuführen",
-          "maxEnrollment": "Maximale Teilnehmerzahl",
-          "maxEnrollmentPlaceholder": "Maximale Anzahl Studierender eingeben",
-          "maxEnrollmentHelp": "Maximale Anzahl von Studierenden, die sich einschreiben können",
-          "courseMaterials": "Kursmaterialien",
-          "addMaterials": "Kursmaterialien hinzufügen",
-          "manageMaterials": "Materialien verwalten",
-          "materialsCount": "Material(ien)",
-          "materialsHelp": "Lade Materialien hoch, die während des Kurses mit den Studierenden geteilt werden",
-          "scheduleNote": "Den Zeitplan für deine Sitzungen richtest du im letzten Schritt ein."
+        "upload": {
+          "preparing": "Vorbereiten...",
+          "uploadingMaterials": "Materialien hochladen...",
+          "uploadingVideo": "Video hochladen...",
+          "uploadingToCloud": "Zur Cloud hochladen...",
+          "processing": "Verarbeiten...",
+          "preparingVideo": "Video für Upload vorbereiten...",
+          "uploadingMaterialsCount": "{count} Kursmaterial(ien) hochladen...",
+          "uploadingChunks": "{info} hochladen...",
+          "combiningChunks": "Videoteile kombinieren...",
+          "uploadingToStorage": "Zur Cloud-Speicher hochladen...",
+          "finalizingUpload": "Upload abschließen...",
+          "uploadCompleted": "Upload abgeschlossen!",
+          "processingVideo": "Video verarbeiten...",
+          "loadingVideo": "Video laden...",
+          "videoLoadError": "Video konnte nicht geladen werden",
+          "tryAgainLater": "Bitte versuche es später erneut",
+          "uploadFailed": "Upload fehlgeschlagen:",
+          "uploadFailedTitle": "Upload fehlgeschlagen - Bitte erneut versuchen",
+          "uploadedSuccessfully": "Erfolgreich hochgeladen",
+          "speedLabel": "Geschwindigkeit:",
+          "etaLabel": "ETA:",
+          "combiningMessage": "Videoteile kombinieren...",
+          "realtimeUpload": "Echtzeit-Upload zum Cloud-Speicher...",
+          "finalizingMessage": "Upload abschließen...",
+          "uploadingMaterialFiles": "{count} Materialdatei(en) hochladen...",
+          "failed": "Fehlgeschlagen"
         },
-        "delete": {
-          "confirmTitle": "Löschen bestätigen",
-          "deleteModule": "Modul löschen",
-          "deleteVideo": "Video löschen",
-          "moduleMessage": "Bist du sicher, dass du das Modul löschen möchtest?",
-          "moduleMessageWithVideos": "Dies löscht auch",
-          "videoMessage": "Bist du sicher, dass du das Video löschen möchtest?",
-          "cannotUndo": "Diese Aktion kann nicht rückgängig gemacht werden.",
-          "cancel": "Abbrechen",
-          "delete": "Löschen"
+        "materials": {
+          "panelTitle": "Kursmaterialien hinzufügen ({count} Lektionen)",
+          "infoMessage": "Füge mehrere Materialien für jede Lektion hinzu. Du kannst mehrere Dateien pro Lektion hochladen.",
+          "allLessonsSaved": "Alle {count} Lektionen werden gespeichert",
+          "includingEmpty": "(einschließlich leerer)",
+          "uploadMultiple": "Mehrere Dateien hochladen",
+          "uploadHelp": "Mehrere Dateien auswählen: PDF, DOC, DOCX, PPT, PPTX, TXT, JPG, PNG (Max. 50MB pro Datei)",
+          "uploadedMaterials": "Hochgeladene Materialien",
+          "uploadingMessage": "Materialien hochladen...",
+          "uploadedSuccess": "Material(ien) erfolgreich hochgeladen",
+          "noMaterialsAdded": "Noch keine Materialien hinzugefügt",
+          "saveButton": "Kursmaterialien speichern (Alle {count} Lektionen)",
+          "uploadingButton": "Materialien hochladen...",
+          "lessonLabel": "Lektion",
+          "filesLabel": "Datei(en)",
+          "viewFile": "Datei anzeigen",
+          "downloadFile": "Herunterladen",
+          "removeFile": "Entfernen",
+          "materialsSaved": "Kursmaterialien für alle {count} Lektionen gespeichert ({total} Dateien insgesamt)",
+          "uploadSuccess": "{count} Datei(en) erfolgreich für Lektion {lesson} hochgeladen",
+          "uploadError": "Materialien für Lektion {lesson} konnten nicht hochgeladen werden:",
+          "removedSuccess": "Material erfolgreich entfernt"
+        },
+        "filePreview": {
+          "viewFile": "Datei anzeigen",
+          "download": "Herunterladen",
+          "remove": "Entfernen",
+          "uploading": "hochgeladen"
+        },
+        "videoStatus": {
+          "processing": "Video verarbeiten...",
+          "uploading": "Teil {current}/{total} hochladen...",
+          "combining": "Videoteile kombinieren... {progress}%",
+          "uploadingCloud": "Zur Cloud hochladen... {progress}%",
+          "transferring": "Zur Cloud-Speicher übertragen... {progress}%",
+          "finalizing": "Upload abschließen... {progress}%",
+          "completed": "Verarbeitung erfolgreich abgeschlossen!",
+          "failed": "Upload fehlgeschlagen - Bitte erneut versuchen",
+          "waitingStart": "Warten auf Upload-Start",
+          "combiningMessage": "Kombinieren...",
+          "uploadingMessage": "Hochladen...",
+          "transferringMessage": "Übertragen...",
+          "finalizingMessage": "Abschließen...",
+          "processingMessage": "Verarbeiten..."
+        },
+        "buttons": {
+          "previous": "Zurück",
+          "next": "Speichern & Fortfahren",
+          "continueNext": "Weiter zum nächsten Schritt",
+          "saving": "Speichern...",
+          "updating": "Aktualisieren...",
+          "delete": "Löschen",
+          "cancel": "Abbrechen"
         }
       },
       "step4": {
         "title": "Zusätzliche Informationen",
         "editTitle": "Zusätzliche Informationen bearbeiten",
-        "faqs": "FAQs (Häufig gestellte Fragen)",
-        "addFaq": "FAQ hinzufügen",
-        "noFaqsYet": "Noch keine FAQs hinzugefügt",
-        "addFirstFaq": "Füge deine erste FAQ hinzu, um Studierenden zu helfen, deinen Kurs besser zu verstehen",
-        "editFaq": "FAQ bearbeiten",
-        "deleteFaq": "FAQ löschen",
-        "question": "Frage",
-        "questionPlaceholder": "z.B. Was werde ich in diesem Kurs lernen?",
-        "answer": "Antwort",
-        "answerPlaceholder": "z.B. Nach der Einschreibung hast du lebenslangen Zugriff auf die Kursmaterialien.",
-        "addFaqButton": "FAQ hinzufügen",
-        "updateFaqButton": "FAQ aktualisieren",
-        "tags": "Schlagwörter",
-        "addTags": "Schlagwörter hinzufügen",
-        "tagsPlaceholder": "Schlagwörter eingeben",
-        "tagsHelp": "Maximal 14 Schlüsselwörter. Schlüsselwörter sollten alle in Kleinbuchstaben sein. z.B. javascript, react, marketing",
-        "reviewerMessage": "Nachricht an einen Gutachter",
-        "reviewerMessagePlaceholder": "Schreibe eine Nachricht",
-        "rightsCheckbox": "Alle Bilder, Töne oder andere Inhalte, die nicht meine eigene Arbeit sind, wurden für die Verwendung in der Dateivorschau oder im Hauptkurs ordnungsgemäß lizenziert. Abgesehen von diesen Elementen ist diese Arbeit vollständig meine eigene und ich habe die vollen Rechte, sie hier zu verkaufen.",
-        "liveScheduling": {
-          "title": "Live-Kurs-Planung",
-          "setupSchedule": "Zeitplan einrichten",
-          "editSchedule": "Zeitplan bearbeiten",
-          "noScheduleYet": "Noch kein Zeitplan eingerichtet",
-          "addSchedulePrompt": "Konfiguriere den Zeitplan deines Live-Kurses, damit die Studierenden wissen, wann die Sitzungen stattfinden",
-          "startDate": "Startdatum",
-          "selectStartDate": "Startdatum auswählen",
-          "selectDay": "Tag auswählen",
-          "selectTimeSlots": "Zeitfenster auswählen",
-          "timeSlotsHelp": "Wähle die Zeitfenster, in denen du Live-Sitzungen durchführen wirst",
-          "scheduleSummary": "Zeitplan-Übersicht",
-          "selectedDay": "Ausgewählter Tag:",
-          "selectedSlots": "Ausgewählte Zeitfenster:",
-          "weeksRequired": "Benötigte Wochen:",
-          "cannotCalculate": "Kann nicht berechnet werden",
-          "totalPlannedLessons": "Gesamt geplante Lektionen:",
+        "editingLabel": "Bearbeitung:",
+        "loadingInfo": "Kursinformationen werden geladen...",
+        "loadingSubtext": "Bitte warten, während wir deine Kursinformationen abrufen.",
+        "errorLoadingTitle": "Fehler beim Laden der Kursinformationen",
+        "errorLoadingMessage": "Kursinformationen konnten nicht geladen werden:",
+        "backToCourseManagement": "Zurück zur Kursverwaltung",
+        "schedule": {
+          "buttonEdit": "Zeitplan bearbeiten",
+          "buttonSet": "Zeitplan festlegen",
+          "cardTitle": "Live-Kurs Zeitplan",
+          "scheduleDetails": "Zeitplandetails",
+          "enrollmentDetails": "Anmeldedetails",
+          "day": "Tag:",
+          "timeSlots": "Zeitfenster:",
+          "startDate": "Startdatum:",
+          "endDate": "Enddatum:",
+          "plannedLessons": "Geplante Lektionen:",
           "maxEnrollment": "Maximale Teilnehmerzahl:",
+          "lessonsPerDay": "Lektionen pro Tag:",
+          "totalCourseDays": "Gesamte Kurstage:",
+          "notSet": "Nicht festgelegt",
+          "noSlotsSelected": "Keine Zeitfenster ausgewählt",
+          "notCalculated": "Nicht berechnet",
+          "cannotCalculate": "Kann nicht berechnet werden",
+          "editScheduleButton": "Zeitplan bearbeiten"
+        },
+        "faq": {
+          "title": "Häufig gestellte Fragen",
+          "addButton": "FAQ hinzufügen",
+          "noFaqsTitle": "Noch keine FAQs hinzugefügt",
+          "noFaqsDescription": "Hilf potenziellen Studenten, indem du häufig gestellte Fragen hinzufügst",
+          "addFirstButton": "Erste FAQ hinzufügen",
+          "panelAddTitle": "Neue FAQ hinzufügen",
+          "panelEditTitle": "FAQ bearbeiten",
+          "questionLabel": "Frage",
+          "questionPlaceholder": "z.B. Wie lange habe ich Zugriff auf den Kurs?",
+          "questionRequired": "Bitte gib eine Frage ein.",
+          "answerLabel": "Antwort",
+          "answerPlaceholder": "z.B. Nach der Anmeldung hast du lebenslangen Zugriff auf die Kursmaterialien.",
+          "answerRequired": "Bitte gib eine Antwort ein.",
+          "addButtonSubmit": "FAQ hinzufügen",
+          "updateButton": "FAQ aktualisieren",
+          "addedSuccess": "FAQ erfolgreich hinzugefügt",
+          "updatedSuccess": "FAQ erfolgreich aktualisiert",
+          "deletedSuccess": "FAQ erfolgreich gelöscht"
+        },
+        "tags": {
+          "title": "Tags",
+          "selectLabel": "Wähle Tags aus, um Studenten zu helfen, deinen Kurs zu finden",
+          "selectPlaceholder": "Tags auswählen",
+          "searchPlaceholder": "Tags suchen...",
+          "noTagsMatch": "Keine Tags entsprechen deiner Suche",
+          "requestNewTag": "Neuen Tag anfordern",
+          "requestNewTagMessage": "Tag-Anfragefunktion wird bald verfügbar sein!",
+          "noTagsSelected": "Noch keine Tags ausgewählt",
+          "maxTagsInfo": "Maximal 14 Tags. Wähle Tags aus, die deinen Kursinhalt am besten beschreiben.",
+          "tagExists": "Dieses Tag existiert bereits",
+          "maxTagsReached": "Maximum von 14 Tags erreicht",
+          "tagAddedSuccess": "Tag erfolgreich hinzugefügt"
+        },
+        "rights": {
+          "confirmationLabel": "Ich bestätige, dass alle Bilder, Sounds oder anderen Assets, die nicht meine eigene Arbeit sind, ordnungsgemäß für die Verwendung in diesem Kurs lizenziert wurden. Abgesehen von diesen Elementen ist diese Arbeit vollständig mein Eigentum und ich habe alle Rechte, sie hier zu verkaufen.",
+          "confirmationRequired": "Bitte bestätige, dass du die Rechte hast, diesen Inhalt zu verkaufen"
+        },
+        "schedulePanel": {
+          "title": "Live-Kurs Zeitplan",
+          "infoMessage": "Lege deinen Live-Kurs Zeitplan fest:",
+          "infoDescription": "Wähle einen Wochentag, Zeitfenster aus und gib die Gesamtzahl der geplanten Lektionen an. Das System berechnet das Enddatum basierend auf deinen Auswahlen.",
+          "plannedLessonsAlert": "Geplante Lektionen:",
+          "plannedLessonsCount": "Lektionen",
+          "plannedLessonsNote": "Dieser Wert wurde im Lehrplan-Schritt festgelegt und bestimmt die Gesamtzahl der Sitzungen.",
+          "lessonWarning": "Die Anzahl der geplanten Lektionen ({planned}) muss durch die Anzahl der Zeitfenster pro Tag ({slots}) teilbar sein. Bitte passe deine Zeitfenster an, um gleiche Lektionen pro Tag sicherzustellen.",
+          "selectWeekdayLabel": "Wochentag auswählen",
+          "selectWeekdayHelp": "Wähle den Wochentag für deine Live-Sitzungen.",
+          "startDateLabel": "Startdatum",
+          "startDatePlaceholder": "Wähle einen {weekday}",
+          "startDatePlaceholderDefault": "Wähle zuerst einen Wochentag",
+          "startDateRequired": "Bitte wähle ein Startdatum.",
+          "startDateHelp": "Nur {weekday}e können ausgewählt werden.",
+          "startDateHelpDefault": "Wähle zuerst einen Wochentag, um die Datumsauswahl zu aktivieren.",
+          "selectTimeSlotsLabel": "Zeitfenster auswählen",
+          "selectTimeSlotsHelp": "Wähle Zeitfenster sorgfältig aus. Die Anzahl der Lektionen ({planned}) muss durch die Anzahl der Zeitfenster pro Tag teilbar sein, um gleiche Lektionen jeden Tag sicherzustellen.",
+          "selectWeekdayFirst": "Bitte wähle zuerst einen Wochentag, um die Zeitfensterauswahl zu aktivieren.",
+          "maxEnrollmentLabel": "Maximale Teilnehmerzahl",
+          "maxEnrollmentPlaceholder": "z.B. 25",
+          "maxEnrollmentRequired": "Bitte gib die maximale Anzahl von Studenten ein.",
+          "maxEnrollmentHelp": "Maximale Anzahl von Studenten, die sich anmelden können.",
+          "summaryTitle": "Kurszeitplan Zusammenfassung",
+          "summaryDayOfWeek": "Wochentag:",
+          "summaryTimeSlots": "Zeitfenster:",
+          "summaryStartDate": "Startdatum:",
+          "summaryLessonsPerDay": "Lektionen pro Tag:",
+          "summaryTotalDays": "Gesamte Kurstage:",
+          "summaryTotalLessons": "Gesamt geplante Lektionen:",
+          "summaryMaxEnrollment": "Maximale Teilnehmerzahl:",
+          "summaryEndDate": "Geschätztes Enddatum:",
+          "notSelected": "Nicht ausgewählt",
           "notSpecified": "Nicht angegeben",
-          "estimatedEndDate": "Voraussichtliches Enddatum:",
-          "notCalculated": "Noch nicht berechnet",
-          "saveSchedule": "Zeitplan speichern",
-          "lessonWarning": "Bitte stelle sicher, dass der Zeitplan alle geplanten Lektionen aufnehmen kann"
+          "notCalculatedYet": "Noch nicht berechnet",
+          "saveButton": "Zeitplan speichern",
+          "scheduleSavedSuccess": "Kurszeitplan erfolgreich gespeichert",
+          "selectWeekdayError": "Bitte wähle einen Wochentag für deine Sitzungen",
+          "selectSlotError": "Bitte wähle mindestens ein Zeitfenster",
+          "selectDateError": "Bitte wähle ein Startdatum",
+          "lessonsDivisibleError": "Die Anzahl der geplanten Lektionen ({planned}) muss durch die Anzahl der Zeitfenster pro Tag ({slots}) teilbar sein"
         },
-        "actions": {
+        "weekdays": {
+          "monday": "Montag",
+          "tuesday": "Dienstag",
+          "wednesday": "Mittwoch",
+          "thursday": "Donnerstag",
+          "friday": "Freitag",
+          "saturday": "Samstag",
+          "sunday": "Sonntag"
+        },
+        "buttons": {
           "previous": "Zurück",
-          "saveDraft": "Entwurf speichern",
-          "previewCourse": "Kursvorschau",
-          "submitCourse": "Kurs einreichen",
+          "saveAsDraft": "Als Entwurf speichern",
+          "updateAsDraft": "Als Entwurf aktualisieren",
           "publishCourse": "Kurs veröffentlichen",
-          "submissionNote": "Sobald du auf \"Kurs einreichen\" klickst, wird dein Kurs hochgeladen und zur Überprüfung als ausstehend markiert.",
-          "publishNote": "Sobald du auf \"Kurs veröffentlichen\" klickst, wird dein Kurs live und für Studierende verfügbar sein."
+          "updateAndPublish": "Aktualisieren & Veröffentlichen",
+          "publishing": "Veröffentlichen...",
+          "updating": "Aktualisieren..."
         },
-        "publishConfirm": {
-          "title": "Kurs veröffentlichen?",
-          "message": "Bist du sicher, dass du diesen Kurs veröffentlichen möchtest? Nach der Veröffentlichung können sich Studierende einschreiben.",
-          "cancel": "Abbrechen",
-          "publish": "Ja, veröffentlichen"
+        "validation": {
+          "addOneFaq": "Bitte füge mindestens eine FAQ hinzu",
+          "addOneTag": "Bitte füge mindestens ein Tag hinzu",
+          "confirmRights": "Bitte bestätige, dass du die Rechte hast, diesen Inhalt zu verkaufen",
+          "setSchedule": "Bitte richte deinen Live-Kurs Zeitplan ein",
+          "selectStartDate": "Bitte wähle ein Startdatum für deinen Live-Kurs",
+          "selectTimeSlot": "Bitte wähle mindestens ein Zeitfenster für deinen Live-Kurs",
+          "specifyMaxEnrollment": "Bitte gib die maximale Teilnehmerzahl für deinen Live-Kurs an"
+        },
+        "publish": {
+          "confirmTitle": "Kurs veröffentlichen",
+          "confirmMessage": "Bist du bereit, deinen Kurs zu veröffentlichen? Nach der Veröffentlichung wird er überprüft, bevor er für Studenten verfügbar wird.",
+          "confirmUpdateTitle": "Kurs aktualisieren",
+          "confirmUpdateMessage": "Bist du bereit, deinen Kurs zu aktualisieren? Deine Änderungen werden gespeichert und sofort angewendet.",
+          "confirmButton": "Veröffentlichen",
+          "updateButton": "Aktualisieren",
+          "cancelButton": "Noch nicht",
+          "infoMessage": "Sobald du deinen Kurs veröffentlichst, wird er von unserem Team überprüft, bevor er für Studenten verfügbar wird.",
+          "infoMessageEdit": "Deine Änderungen werden gespeichert und der Kurs wird aktualisiert."
+        }
+      },
+      "banner": {
+        "create": {
+          "title": "Neuen Kurs erstellen",
+          "description": "Verwende diese Oberfläche, um einen neuen Kurs hinzuzufügen. Fülle alle erforderlichen Informationen aus, um deinen Kurs zu veröffentlichen."
+        },
+        "edit": {
+          "title": "Bearbeite deinen Kurs",
+          "description": "Aktualisiere deine Kursdetails und Inhalte. Stelle sicher, dass alle Informationen korrekt sind, bevor du die Änderungen speicherst."
         }
       },
       "validation": {
@@ -439,6 +773,905 @@
         "materialAdded": "Material erfolgreich hinzugefügt!",
         "materialDeleted": "Material erfolgreich gelöscht!"
       }
+    },
+    "menu": {
+      "myProfile": "Mein Profil",
+      "profile": "Profil",
+      "myCourses": "Meine Kurse",
+      "signOut": "Abmelden"
+    }
+  },
+  "student": {
+    "menu": {
+      "myProfile": "Mein Profil",
+      "profile": "Profil",
+      "myCourses": "Meine Kurse",
+      "mySchedule": "Mein Zeitplan",
+      "favorites": "Lieblingskurse",
+      "signOut": "Abmelden"
+    },
+    "profile": {
+      "title": "Studierendenprofil",
+      "myCourses": "Meine Kurse",
+      "editProfile": "Profil bearbeiten",
+      "aboutMe": "Über mich",
+      "aboutMePlaceholder": "Noch keine Informationen angegeben. Erzähle etwas über dich, deine Interessen und deine Lernziele.",
+      "educationInterests": "Bildung & Interessen",
+      "education": "Bildung",
+      "notSpecified": "Nicht angegeben",
+      "memberSince": "Mitglied seit",
+      "learningStats": "Lernstatistiken",
+      "enrolledCourses": "Eingeschriebene Kurse",
+      "completedCourses": "Abgeschlossene Kurse",
+      "certificatesEarned": "Erworbene Zertifikate",
+      "achievements": "Erfolge"
+    },
+    "learning": {
+      "countdown": {
+        "ready": "Bereit",
+        "startsIn": "Beginnt in:",
+        "days": "T",
+        "hours": "Std",
+        "minutes": "Min",
+        "seconds": "Sek"
+      },
+      "materials": {
+        "title": "Kursmaterialien",
+        "subtitle": "Greifen Sie auf alle Ihre Kursmaterialien und Ressourcen zu",
+        "searchPlaceholder": "Materialien suchen...",
+        "loading": "Kursmaterialien werden geladen...",
+        "noMaterials": "Keine Materialien verfügbar",
+        "noMatchingMaterials": "Keine Materialien gefunden, die Ihrer Suche entsprechen",
+        "tryAdjusting": "Versuchen Sie, Ihre Suchbegriffe anzupassen",
+        "fileName": "Dateiname",
+        "course": "Kurs",
+        "module": "Modul",
+        "lesson": "Lektion",
+        "size": "Größe",
+        "viewFile": "Datei anzeigen",
+        "download": "Herunterladen",
+        "showing": "Anzeigen",
+        "of": "von",
+        "materials": "Materialien",
+        "matching": "passend"
+      },
+      "pageTitle": "mein Lernen",
+      "subtitle": "Über diese Seite haben Sie Zugriff auf alle Ihre Kurse und Lernmaterialien",
+      "tabs": {
+        "nextLessons": "meine nächsten Lektionen",
+        "scheduler": "mein Terminplaner",
+        "materials": "meine Materialien"
+      },
+      "nextLessons": {
+        "loading": "Ihr nächster Lerntag wird geladen...",
+        "wednesday": "Mittwoch",
+        "daysFromNow": "Tage ab jetzt",
+        "today": "Heute (Testmodus)",
+        "noCourseScheduled": "Kein Kurs geplant",
+        "completed": "Abgeschlossen",
+        "join": "Beitreten",
+        "watchVideo": "Video ansehen"
+      },
+      "videoModal": {
+        "duration": "Dauer",
+        "minutes": "Minuten",
+        "markCompleted": "Als abgeschlossen markieren",
+        "close": "Schließen"
+      },
+      "testMode": {
+        "active": "TESTMODUS AKTIV",
+        "description": "Countdown-Timer auf 5, 10, 15 Sekunden eingestellt",
+        "disable": "Testmodus deaktivieren"
+      }
+    }
+  },
+  "courses": {
+    "detail": {
+      "error": {
+        "title": "Fehler beim Laden des Kurses",
+        "notFound": "Kurs nicht gefunden",
+        "tryAgain": "Erneut versuchen"
+      },
+      "pageIntro": {
+        "enrolled": "Eingeschrieben",
+        "noDescription": "Keine Beschreibung verfügbar",
+        "liveCourse": "Live-Kurs",
+        "recordedCourse": "Aufgezeichneter Kurs"
+      },
+      "details": {
+        "tabs": {
+          "overview": "Übersicht",
+          "curriculum": "Lehrplan",
+          "instructor": "Kursleiter",
+          "reviews": "Bewertungen",
+          "faqs": "FAQs"
+        },
+        "pricing": {
+          "participate": "Teilnehmen",
+          "copyLink": "Link kopieren",
+          "linkCopied": "Kopiert!",
+          "copySuccess": "Kurs-URL in die Zwischenablage kopiert!",
+          "copyError": "Fehler beim Kopieren der Kurs-URL. Bitte versuchen Sie es erneut.",
+          "loginRequired": "Bitte melden Sie sich zuerst an, um an diesem Kurs teilzunehmen"
+        },
+        "courseOverview": {
+          "title": "Kursübersicht",
+          "lectures": "Lektionen",
+          "duration": "Dauer",
+          "level": "Niveau",
+          "language": "Sprache"
+        },
+        "tags": {
+          "title": "Tags"
+        }
+      },
+      "relatedCourses": {
+        "title": "Ähnliche Kurse, die Ihnen gefallen könnten"
+      },
+      "overview": {
+        "title": "Kursbeschreibung",
+        "noDescription": "Für diesen Kurs ist keine Beschreibung verfügbar."
+      },
+      "faqs": {
+        "title": "Häufig gestellte Fragen",
+        "noFaqs": "Für diesen Kurs sind noch keine FAQs verfügbar."
+      },
+      "instructor": {
+        "title": "Über den Kursleiter",
+        "noInfo": "Für diesen Kurs sind keine Kursleiter-Informationen verfügbar.",
+        "courses": "Kurse",
+        "students": "Studenten",
+        "rating": "Bewertung",
+        "reviews": "Bewertungen",
+        "viewAllCourses": "Alle Kurse anzeigen von"
+      },
+      "curriculum": {
+        "title": "Kursinhalt",
+        "sections": "Abschnitte",
+        "lectures": "Lektionen",
+        "lecture": "Lektion",
+        "totalLength": "Gesamtdauer",
+        "noCurriculum": "Der Lehrplan wird entwickelt. Bitte schauen Sie später noch einmal vorbei.",
+        "courseSchedule": "Kursplan",
+        "schoolDay": "Schultag",
+        "startDate": "Startdatum",
+        "endDate": "Enddatum",
+        "lessonsLabel": "Lektionen (täglich|gesamt)",
+        "slots": "Zeitfenster",
+        "unknownTime": "Unbekannte Zeit",
+        "importantNote": "Wichtiger Hinweis:",
+        "liveSessionInfo": "Alle Live-Sitzungen werden über unser virtuelles Klassenzimmer durchgeführt. Sie erhalten nach der Einschreibung Zugangsdaten. Stellen Sie sicher, dass Sie 5 Minuten vor der geplanten Zeit beitreten."
+      },
+      "reviews": {
+        "title": "Studentenbewertungen",
+        "basedOn": "Basierend auf",
+        "review": "Bewertung",
+        "reviews": "Bewertungen",
+        "writeReview": "Eine Bewertung schreiben",
+        "alreadyReviewed": "Sie haben diesen Kurs bereits bewertet. Sie können Ihre Bewertung unten bearbeiten oder löschen.",
+        "signInToReview": "Bitte melden Sie sich an, um eine Bewertung für diesen Kurs zu schreiben.",
+        "sortBy": "Sortieren nach:",
+        "sortOptions": {
+          "newest": "Neueste zuerst",
+          "oldest": "Älteste zuerst",
+          "helpful": "Am hilfreichsten",
+          "ratingHigh": "Höchste Bewertung",
+          "ratingLow": "Niedrigste Bewertung"
+        },
+        "noReviews": "Noch keine Bewertungen. Seien Sie der Erste, der diesen Kurs bewertet!",
+        "form": {
+          "rating": "Bewertung",
+          "yourReview": "Ihre Bewertung",
+          "placeholder": "Teilen Sie Ihre Erfahrung mit diesem Kurs...",
+          "submitButton": "Bewertung abgeben",
+          "updateButton": "Bewertung aktualisieren",
+          "cancelButton": "Abbrechen",
+          "submitSuccess": "Bewertung erfolgreich abgegeben!",
+          "updateSuccess": "Bewertung erfolgreich aktualisiert!",
+          "submitError": "Fehler beim Absenden der Bewertung",
+          "deleteSuccess": "Bewertung erfolgreich gelöscht",
+          "deleteError": "Fehler beim Löschen der Bewertung",
+          "voteError": "Fehler beim Aufzeichnen der Stimme"
+        },
+        "item": {
+          "verifiedPurchase": "Verifizierter Kauf",
+          "wasHelpful": "War das hilfreich?",
+          "instructor": "Kursleiter",
+          "edit": "Bewertung bearbeiten",
+          "delete": "Bewertung löschen",
+          "deleteConfirm": "Sind Sie sicher, dass Sie diese Bewertung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+        },
+        "pagination": {
+          "previous": "Zurück",
+          "next": "Weiter"
+        },
+        "loading": "Bewertungen werden geladen..."
+      }
+    },
+    "list": {
+      "filters": {
+        "title": "Kurse filtern",
+        "resultsCount": "{count} Kurse",
+        "search": {
+          "label": "Suchen",
+          "placeholder": "Kurse suchen..."
+        },
+        "courseType": {
+          "label": "Kurstyp",
+          "all": "Alle",
+          "live": "Live",
+          "recorded": "Aufgezeichnet"
+        },
+        "level": {
+          "label": "Niveau",
+          "all": "Alle Niveaus",
+          "beginner": "Anfänger",
+          "intermediate": "Fortgeschritten",
+          "advanced": "Experte",
+          "allLevels": "Alle Niveaus"
+        },
+        "category": {
+          "label": "Kategorie",
+          "all": "Alle Kategorien"
+        },
+        "subcategory": {
+          "label": "Unterkategorie",
+          "all": "Alle Unterkategorien"
+        },
+        "sortBy": {
+          "label": "Sortieren nach",
+          "mostRelevant": "Am relevantesten",
+          "popular": "Am beliebtesten",
+          "mostViewed": "Meist angesehen",
+          "newest": "Neueste zuerst",
+          "oldest": "Älteste zuerst"
+        },
+        "clearAll": "Alle löschen"
+      },
+      "activeFilters": {
+        "title": "Aktive Filter:",
+        "resultsFound": "{count} Ergebnisse gefunden"
+      },
+      "results": {
+        "loading": "Kurse werden geladen...",
+        "showing": "Zeige {count} von {total} Kursen",
+        "noCoursesFound": "Keine Kurse gefunden",
+        "page": "Seite {current} von {total}"
+      },
+      "noResults": {
+        "title": "Keine Kurse gefunden",
+        "message": "Wir konnten keine Kurse finden, die Ihren aktuellen Filtern entsprechen.",
+        "clearFilters": "Alle Filter löschen"
+      },
+      "card": {
+        "unknownInstructor": "Unbekannter Kursleiter",
+        "liveCourse": "Live-Kurs",
+        "recordedCourse": "Aufgezeichneter Kurs"
+      }
+    },
+    "pagination": {
+      "previous": "Zurück",
+      "next": "Weiter",
+      "page": "Seite {number}"
+    }
+  },
+  "scheduler": {
+    "title": "Kursplan",
+    "schoolDay": {
+      "label": "Schultag",
+      "wednesday": "Mittwoch",
+      "note": "Derzeit sind alle Kurse mittwochs geplant"
+    },
+    "timeSlots": "Zeitfenster",
+    "availableCourses": "Verfügbare Kurse",
+    "search": {
+      "placeholder": "Kurse suchen...",
+      "button": "Suchen"
+    },
+    "filters": {
+      "all": "Alle",
+      "live": "Live",
+      "recorded": "Aufgezeichnet"
+    },
+    "course": {
+      "level": "Niveau",
+      "progress": "Fortschritt",
+      "startDate": "Startdatum",
+      "timeSlots": "Zeitfenster",
+      "addAllSessions": "Alle Sitzungen hinzufügen",
+      "availableLessons": "Verfügbare Lektionen:",
+      "alreadyScheduled": "Bereits eingeplant",
+      "scheduled": "Eingeplant",
+      "add": "Hinzufügen"
+    },
+    "slot": {
+      "occupied": "Dieses Zeitfenster ist bereits belegt",
+      "cannotMixLive": "Kann nicht mit Live-Kurs kombiniert werden"
+    },
+    "actions": {
+      "removeLecture": "Vorlesung entfernen",
+      "addCourse": "Kurs hinzufügen",
+      "updating": "Plan wird aktualisiert...",
+      "adding": "Kurs wird zum Plan hinzugefügt...",
+      "removing": "Wird aus dem Plan entfernt..."
+    },
+    "messages": {
+      "scheduleLoaded": "Plan erfolgreich geladen",
+      "courseAdded": "Kurs zum Plan hinzugefügt",
+      "courseRescheduled": "Kurs neu geplant",
+      "courseRemoved": "Element aus dem Plan entfernt",
+      "orderUpdated": "Kursreihenfolge aktualisiert",
+      "loadError": "Fehler beim Laden Ihres Plans",
+      "addError": "Fehler beim Hinzufügen des Kurses zum Plan",
+      "rescheduleError": "Fehler beim Neuterminieren des Kurses",
+      "removeError": "Fehler beim Entfernen des Elements",
+      "orderError": "Fehler beim Aktualisieren der Lektionsreihenfolge",
+      "tryAgain": "Bitte versuchen Sie es erneut.",
+      "noCourses": "Keine Kurse gefunden. Versuchen Sie eine andere Suche.",
+      "noLessons": "Keine verfügbaren Lektionen für diesen Kurs.",
+      "loadingSchedule": "Kursplaner wird geladen...",
+      "loadingCourses": "Kurse werden geladen..."
+    },
+    "modal": {
+      "removeTitle": "Vorlesung entfernen",
+      "removeMessage": "Sind Sie sicher, dass Sie diese Vorlesung entfernen möchten?",
+      "confirmYes": "Ja",
+      "confirmNo": "Nein"
+    },
+    "footer": {
+      "importantNote": "Wichtiger Hinweis:",
+      "virtualClassroom": "Alle Live-Sitzungen werden über unser virtuelles Klassenzimmer durchgeführt. Sie erhalten die Zugangsdaten nach der Anmeldung. Stellen Sie sicher, dass Sie 5 Minuten vor der geplanten Zeit beitreten."
+    },
+    "timeSlotNames": {
+      "slot1": "SLOT 1",
+      "slot2": "SLOT 2",
+      "slot3": "SLOT 3",
+      "slot4": "SLOT 4",
+      "slot5": "SLOT 5",
+      "slot6": "SLOT 6"
+    },
+    "badges": {
+      "live": "Live",
+      "recorded": "Aufgezeichnet"
+    }
+  },
+  "categories": {
+    "all": "Alle Kategorien",
+    "languagesCommunication": {
+      "title": "Sprachen & Kommunikation",
+      "foreignLanguages": "Fremdsprachen",
+      "nationalLanguage": "Landessprache lernen",
+      "rhetoric": "Rhetorik & Internationale Kommunikation"
+    },
+    "cookingHousehold": {
+      "title": "Kochen & Haushalt",
+      "cooking": "Kochen & Backen (inkl. Internationale Küche)",
+      "nutrition": "Ernährung & Nachhaltigkeit",
+      "homeEconomics": "Hauswirtschaft"
+    },
+    "creativityCraftsmanship": {
+      "title": "Kreativität & Handwerk",
+      "painting": "Malen, Zeichnen, Fotografie",
+      "sewing": "Nähen, Basteln, DIY",
+      "arts": "Kunst & Mehr"
+    },
+    "digitalIT": {
+      "title": "Digital & IT",
+      "computers": "Computer & Internet",
+      "socialMedia": "Soziale Medien & Datenschutz",
+      "software": "Software & Tools"
+    },
+    "healthExercise": {
+      "title": "Gesundheit & Bewegung",
+      "fitness": "Fitness, Yoga & Mehr",
+      "relaxation": "Entspannung & Stressmanagement",
+      "prevention": "Prävention & Wohlbefinden"
+    },
+    "natureGardening": {
+      "title": "Natur & Gärtnern",
+      "gardening": "Gärtnern & Urban Gardening",
+      "environment": "Umwelt & Nachhaltigkeit",
+      "ecoProjects": "Öko-Projekte"
+    },
+    "careerEducation": {
+      "title": "Karriere & Bildung",
+      "softSkills": "Soft Skills & Zeitmanagement",
+      "careerOrientation": "Berufsorientierung & Qualifikation",
+      "basicEducation": "Grundbildung & Alphabetisierung"
+    }
+  },
+  "pages": {
+    "courses": {
+      "metadata": {
+        "title": "Alle Kurse - Tudva",
+        "description": "Entdecken Sie unsere umfassende Kurssammlung in verschiedenen Kategorien wie Sprachen, Kochen, Kreativität, Digitale Fähigkeiten, Gesundheit, Natur und Karriereentwicklung.",
+        "keywords": "Online-Kurse, Live-Kurse, aufgezeichnete Kurse, Lernen, Bildung, Kompetenzentwicklung"
+      },
+      "banner": {
+        "headline": "Entdecke dein nächstes Lernabenteuer",
+        "subtext": "Erkunde unsere umfassende Kurssammlung, die dir hilft, persönlich und beruflich zu wachsen"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "courses": "Kurse"
+      }
+    },
+    "whyTudva": {
+      "metadata": {
+        "title": "Warum Tudva"
+      },
+      "banner": {
+        "headline": "Warum Tudva"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "whyTudva": "Warum Tudva"
+      },
+      "hero": {
+        "title": "Warum Tudva wählen?",
+        "subtitle": "Entdecke die Vorteile des Lernens mit Tudva, einer Plattform für lebenslanges Lernen."
+      },
+      "features": {
+        "flexible": {
+          "title": "Flexibles Lernen",
+          "description": "Konfiguriere deinen eigenen wöchentlichen Lernplan. Wähle zwischen Live- und aufgezeichneten Kursen, die zu deinem Leben passen.",
+          "alt": "Flexibles Lernen"
+        },
+        "community": {
+          "title": "Gemeinschaftsbasiert",
+          "description": "Lerne zusammen mit einer lebendigen Gemeinschaft von Studenten und ehrenamtlichen Kursleitern. Teile Wissen und wachse gemeinsam.",
+          "alt": "Gemeinschaftsbasiert"
+        },
+        "free": {
+          "title": "Kostenloser Zugang",
+          "description": "Hochwertige Bildung sollte für jeden zugänglich sein. Tudva ist völlig kostenlos.",
+          "alt": "Kostenloser Zugang"
+        }
+      },
+      "howItWorks": {
+        "title": "Wie Tudva funktioniert",
+        "intro": "Tudva basiert auf dem Prinzip des flexiblen, gemeinschaftsgetriebenen Lernens. Hier ist eine kurze Übersicht:",
+        "steps": {
+          "schedule": {
+            "title": "Erstelle deinen Zeitplan:",
+            "description": "Studenten können ihren idealen Lerntag konfigurieren, indem sie aus verschiedenen Kursen wählen."
+          },
+          "courses": {
+            "title": "Live- und aufgezeichnete Kurse:",
+            "description": "Wähle zwischen interaktiven Live-Sitzungen oder flexiblen aufgezeichneten Inhalten."
+          },
+          "trainingRooms": {
+            "title": "Schulungsräume:",
+            "description": "Institutionen bieten Räume für Studenten, um online gemeinsam teilzunehmen."
+          },
+          "instructors": {
+            "title": "Ehrenamtliche Kursleiter:",
+            "description": "Kurse werden von leidenschaftlichen Freiwilligen erstellt und geleitet."
+          },
+          "folder": {
+            "title": "Persönlicher Lernordner:",
+            "description": "Greife auf Kursmaterialien und Aufzeichnungen in deinem persönlichen Lernordner zu."
+          },
+          "interaction": {
+            "title": "Gemeinschaftsinteraktion:",
+            "description": "Verbinde dich mit anderen Lernenden und Kursleitern und trage zu einer unterstützenden Lernumgebung bei."
+          }
+        },
+        "cta": {
+          "text": "Bereit anzufangen?",
+          "exploreCourses": "Erkunde unsere Kurse",
+          "or": "oder",
+          "createAccount": "erstelle ein Konto",
+          "today": "heute!"
+        }
+      }
+    },
+    "getStarted": {
+      "metadata": {
+        "title": "Erste Schritte | Tudva",
+        "description": "Erfahre, wie du mit Tudva beginnst und deine Lernreise startest."
+      },
+      "banner": {
+        "headline": "Erste Schritte"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "getStarted": "Erste Schritte"
+      },
+      "hero": {
+        "title": "Willkommen bei Tudva!",
+        "subtitle": "Bereit zum Lernen? Diese Anleitung führt dich durch die Grundlagen der Nutzung der Tudva-Plattform."
+      },
+      "steps": {
+        "step1": {
+          "title": "Schritt 1: Erstelle dein kostenloses Konto",
+          "description": "Um auf Tudvas Kurse zuzugreifen, benötigst du ein kostenloses Konto. Klicke auf die Registrieren-Schaltfläche in der oberen rechten Ecke der Seite (oder besuche",
+          "registerLink": "/auth/sign-up",
+          "description2": "). Du musst deine E-Mail-Adresse, deinen Namen angeben und ein sicheres Passwort wählen. Vergiss nicht, deine E-Mail-Adresse nach der Registrierung zu bestätigen!"
+        },
+        "step2": {
+          "title": "Schritt 2: Durchsuche den Kurskatalog",
+          "description": "Sobald du eingeloggt bist, kannst du unsere breite Palette an Kursen erkunden. Gehe zur",
+          "coursesLink": "Kurse",
+          "description2": "Seite, um alle verfügbaren Kurse zu sehen. Du kannst nach Thema, Format (live oder aufgezeichnet) und dem Wochentag filtern, an dem der Kurs angeboten wird."
+        },
+        "step3": {
+          "title": "Schritt 3: Konfiguriere deinen Lerntag",
+          "description": "Tudva ermöglicht es dir, einen personalisierten wöchentlichen Lernplan zu erstellen. Derzeit bieten wir Kurse an einem bestimmten Wochentag an (z.B. Mittwoch). Du kannst bis zu 6 Lektionen wählen, um deinen Lerntag zu füllen.",
+          "list": {
+            "item1": "Gehe zur",
+            "myScheduleLink": "Mein Zeitplan",
+            "item1b": "Seite (dieser Link muss möglicherweise angepasst werden).",
+            "item2": "Du siehst eine Liste der verfügbaren Zeitfenster für den vorgesehenen Lerntag.",
+            "item3": "Durchsuche die verfügbaren Kurse und klicke auf \"Buchen\", um einen Kurs zu einem bestimmten Zeitfenster hinzuzufügen.",
+            "item4": "Das System verhindert automatisch, dass du sich überschneidende Kurse buchst.",
+            "item5": "Sobald du deinen Zeitplan gefüllt hast, bist du bereit zum Lernen!"
+          }
+        },
+        "step4": {
+          "title": "Schritt 4: Besuche Live-Kurse (oder schaue Aufzeichnungen)",
+          "description": "Bei Live-Kursen nimmst du zur geplanten Zeit an der Sitzung teil. Du kannst über den Live-Chat mit dem Kursleiter und anderen Lernenden interagieren. Wenn du eine Live-Sitzung verpasst oder einen aufgezeichneten Kurs gewählt hast, findest du die Aufzeichnung in deinem persönlichen Lernordner."
+        },
+        "step5": {
+          "title": "Schritt 5: Zugriff auf Lernmaterialien",
+          "description": "Kursleiter können Kursmaterialien (PDFs, Audiodateien usw.) in ihre Kurse hochladen. Du findest diese Materialien in deinem persönlichen Lernordner. Nur die neuesten Versionen der Materialien werden angezeigt, aber ältere Versionen werden zur Referenz archiviert."
+        },
+        "step6": {
+          "title": "Schritt 6: Tritt der Community bei (Optional)",
+          "description": "Verbinde dich mit anderen Lernenden und Kursleitern in unseren Community-Foren (Link zu den Foren, falls vorhanden). Teile deine Erfahrungen, stelle Fragen und lerne von anderen."
+        },
+        "step7": {
+          "title": "Schritt 7: (Optional) Erwäge, Kursleiter zu werden.",
+          "description": "Teile dein Wissen mit anderen."
+        }
+      },
+      "help": {
+        "title": "Brauchst du Hilfe?",
+        "description": "Schau dir unsere",
+        "faqLink": "FAQ",
+        "or": "Seite an oder",
+        "contactLink": "kontaktiere uns",
+        "description2": "wenn du Fragen hast."
+      },
+      "cta": {
+        "button": "Erstelle dein Konto"
+      }
+    },
+    "ourMission": {
+      "metadata": {
+        "title": "Unsere Mission | Tudva",
+        "description": "Erfahre mehr über Tudvas Mission, kostenlose, gemeinschaftsbasierte und flexible Bildung bereitzustellen."
+      },
+      "banner": {
+        "headline": "Unsere Mission"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "ourMission": "Unsere Mission"
+      },
+      "whatDrivesUs": {
+        "title": "Was uns antreibt",
+        "lead": "Bei Tudva glauben wir, dass Lernen ein lebenslanges Streben sein sollte, unbeschränkt durch Kosten, Standort oder Hintergrund. Wir bauen eine Plattform, auf der Wissen frei geteilt wird, Gemeinschaften gedeihen und Einzelpersonen befähigt werden, ihr volles Potenzial zu erreichen.",
+        "vision": "Wir stellen uns eine Welt vor, in der jeder, überall, Zugang zur Bildung hat, die er benötigt, um sein Leben zu verbessern und zur Gesellschaft beizutragen.",
+        "imageAlt": "Menschen lernen zusammen"
+      },
+      "coreValues": {
+        "title": "Unsere Kernwerte",
+        "accessibility": {
+          "title": "Zugänglichkeit",
+          "description": "Bildung ist ein Recht, kein Privileg.",
+          "imageAlt": "Zugänglichkeit"
+        },
+        "community": {
+          "title": "Gemeinschaft",
+          "description": "Lernen ist besser zusammen.",
+          "imageAlt": "Gemeinschaft"
+        },
+        "quality": {
+          "title": "Qualität",
+          "description": "Hohe Standards für Inhalte und Erfahrung.",
+          "imageAlt": "Qualität"
+        }
+      }
+    },
+    "howItWorks": {
+      "metadata": {
+        "title": "Wie es funktioniert | Tudva",
+        "description": "Lebenslanges Lernen für alle ermöglichen, kostenlos und gemeinschaftsbasiert."
+      },
+      "banner": {
+        "headline": "Wie es funktioniert"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "howItWorks": "Wie es funktioniert"
+      },
+      "whatDrivesUs": {
+        "title": "Was uns antreibt",
+        "lead": "Bei Tudva glauben wir, dass Lernen ein lebenslanges Streben sein sollte, unbeschränkt durch Kosten, Standort oder Hintergrund. Wir bauen eine Plattform, auf der Wissen frei geteilt wird, Gemeinschaften gedeihen und Einzelpersonen befähigt werden, ihr volles Potenzial zu erreichen.",
+        "vision": "Wir stellen uns eine Welt vor, in der jeder, überall, Zugang zur Bildung hat, die er benötigt, um sein Leben zu verbessern und zur Gesellschaft beizutragen.",
+        "imageAlt": "Menschen lernen zusammen"
+      },
+      "ourValues": {
+        "title": "Unsere Werte",
+        "features": {
+          "flexibleScheduling": {
+            "title": "Flexible Zeitplanung",
+            "description": "Erstelle einen personalisierten Lernplan, der zu deinem Leben passt.",
+            "imageAlt": "Flexible Zeitplanung Symbol"
+          },
+          "liveRecorded": {
+            "title": "Live- & aufgezeichnete Kurse",
+            "description": "Wähle zwischen interaktiven Live-Sitzungen oder schaue aufgezeichnete Kurse in deinem eigenen Tempo.",
+            "imageAlt": "Live- & aufgezeichnete Kurse Symbol"
+          },
+          "communitySupport": {
+            "title": "Gemeinschaftsunterstützung",
+            "description": "Verbinde dich mit Mitschülern und Kursleitern in einer unterstützenden Umgebung.",
+            "imageAlt": "Gemeinschaftsunterstützung Symbol"
+          },
+          "freeAccess": {
+            "title": "Kostenloser Zugang",
+            "description": "Alle Kurse sind völlig kostenlos.",
+            "imageAlt": "Kostenloser Zugang Symbol"
+          },
+          "diverseSubjects": {
+            "title": "Vielfältige Themen",
+            "description": "Erkunde eine breite Palette von Themen, von Sprachen bis zu digitalen Fähigkeiten.",
+            "imageAlt": "Vielfältige Themen Symbol"
+          },
+          "personalFolder": {
+            "title": "Persönlicher Lernordner",
+            "description": "Greife einfach auf Kursmaterialien und Aufzeichnungen zu.",
+            "imageAlt": "Persönlicher Lernordner Symbol"
+          }
+        }
+      }
+    },
+    "whatMeansTudva": {
+      "metadata": {
+        "title": "Was bedeutet Tudva | Tudva",
+        "description": "Entdecke die Bedeutung hinter dem Namen Tudva und wie er unsere Mission und Werte widerspiegelt."
+      },
+      "banner": {
+        "headline": "Tudva bedeutet"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "whatMeansTudva": "Was Tudva bedeutet"
+      },
+      "hero": {
+        "title": "Was bedeutet \"Tudva\"?"
+      },
+      "content": {
+        "paragraph1": "\"Tudva\" ist ein ungarisches Wort, das \"wissentlich\" oder \"mit Wissen\" bedeutet. Es spiegelt unsere Kernwerte von Wissen, Zugänglichkeit, Gemeinschaft und lebenslangem Lernen wider. Wir haben diesen Namen gewählt, weil er die Essenz des bewussten, absichtlichen Lernens verkörpert – die Idee, dass Bildung mit Bewusstsein und Zielstrebigkeit verfolgt werden sollte.",
+        "paragraph2": "Das Wort \"Tudva\" stammt vom ungarischen Verb \"tudni\", was \"wissen\" bedeutet. Wenn man etwas \"tudva\" tut, tut man es mit vollem Bewusstsein und Verständnis. Dies erfasst perfekt unsere Philosophie: Lernen sollte nicht passiv oder zufällig sein, sondern eine aktive, informierte Wahl, die Einzelpersonen befähigt, zu wachsen und zu ihren Gemeinschaften beizutragen.",
+        "paragraph3": "Mit der Wahl dieses Namens wollten wir betonen, dass Bildung auf unserer Plattform absichtlich und bedeutungsvoll ist. Jeder Kurs, jede Lektion und jede Interaktion ist darauf ausgelegt, dir zu helfen, \"tudva\" zu lernen – mit Wissen, Zielstrebigkeit und Verständnis. Wir glauben, dass wenn du bewusst lernst, du nicht nur Wissen erlangst, sondern auch die Weisheit entwickelst, es effektiv in deinem Leben anzuwenden.",
+        "conclusion": "Wir hoffen, dass der Name \"Tudva\" dich auf deiner Lernreise inspirieren wird!"
+      }
+    },
+    "becomeTeacher": {
+      "metadata": {
+        "title": "Werde Lehrer | Tudva",
+        "description": "Teile dein Wissen und deine Leidenschaft mit der Welt. Erfahre, wie du ehrenamtlicher Kursleiter auf Tudva wirst."
+      },
+      "banner": {
+        "headline": "Werde Lehrer"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "becomeTeacher": "Werde Lehrer"
+      },
+      "hero": {
+        "title": "Werde ein Tudva-Kursleiter",
+        "subtitle": "Teile deine Expertise und Leidenschaft mit einer globalen Gemeinschaft von Lernenden."
+      },
+      "whyTeach": {
+        "title": "Warum auf Tudva unterrichten?",
+        "imageAlt": "Lehrer mit Schülern",
+        "reasons": {
+          "makeDifference": "Mach einen Unterschied: Trage dazu bei, hochwertige Bildung für alle zugänglich zu machen.",
+          "sharePassion": "Teile deine Leidenschaft: Verbinde dich mit Studenten, die begierig darauf sind zu lernen, was du weißt.",
+          "flexibleSchedule": "Flexibler Zeitplan: Erstelle und liefere Kurse zu deinen eigenen Bedingungen und wähle Zeiten, die für dich funktionieren.",
+          "communitySupport": "Gemeinschaftsunterstützung: Tritt einem Netzwerk leidenschaftlicher ehrenamtlicher Kursleiter bei.",
+          "noFees": "Keine Gebühren: Tudva ist eine kostenlose Plattform, sowohl für Lernende als auch für Kursleiter.",
+          "easyTools": "Benutzerfreundliche Tools: Unsere Plattform bietet die Tools, die du benötigst, um deine Kurse zu erstellen und zu verwalten, Materialien hochzuladen und mit Studenten zu interagieren."
+        }
+      },
+      "howToBecome": {
+        "title": "Wie man Lehrer wird",
+        "steps": {
+          "step1": {
+            "text": "Konto erstellen: Wenn du noch keines hast,",
+            "linkText": "registriere dich für ein kostenloses Tudva-Konto",
+            "textEnd": "."
+          },
+          "step2": "Bewirb dich zum Unterrichten: Fülle unser Kursleiter-Bewerbungsformular aus [Link zum Bewerbungsformular - z.B. /become-teacher/apply]. Erzähle uns von deiner Expertise, den Themen, die du unterrichten möchtest, und deiner Lehrerfahrung (falls vorhanden). Vorherige Lehrerfahrung ist nicht erforderlich.",
+          "step3": "Überprüfungsprozess: Unser Team wird deine Bewerbung überprüfen. Wir suchen nach einer klaren Leidenschaft fürs Unterrichten, Expertise in deinem gewählten Fach und einem Engagement für Tudvas Mission.",
+          "step4": "Genehmigung erhalten: Wenn deine Bewerbung genehmigt wird, erhältst du eine E-Mail mit Anweisungen, wie du beginnen kannst.",
+          "step5": "Erstelle deinen Kurs: Nutze die Tools unserer Plattform, um deinen Kurs zu erstellen, einschließlich Module, Zeitpläne und Lernmaterialien.",
+          "step6": "Beginne zu unterrichten!: Verbinde dich mit Studenten und teile dein Wissen!"
+        }
+      },
+      "requirements": {
+        "title": "Anforderungen",
+        "intro": "Obwohl wir Kursleiter aller Hintergründe willkommen heißen, haben wir einige grundlegende Anforderungen:",
+        "list": {
+          "expertise": "Expertise: Du solltest ein starkes Verständnis des Fachs haben, das du unterrichten möchtest.",
+          "passion": "Leidenschaft: Eine echte Begeisterung dafür, dein Wissen mit anderen zu teilen.",
+          "commitment": "Engagement: Die Bereitschaft, die Zeit zu investieren, die für die Erstellung und Durchführung hochwertiger Kurse erforderlich ist.",
+          "communication": "Kommunikationsfähigkeiten: Die Fähigkeit, klar und effektiv mit Lernenden zu kommunizieren.",
+          "technical": "Technische Kompetenz: Grundlegende Computerkenntnisse und die Fähigkeit, unsere Online-Plattform zu nutzen."
+        }
+      }
+    },
+    "learningRoom": {
+      "metadata": {
+        "title": "Lernräume | Tudva",
+        "description": "Entdecke Tudva-Lernräume: kollaborative Räume für Online-Lernen."
+      },
+      "banner": {
+        "headline": "Lernraum"
+      },
+      "breadcrumb": {
+        "home": "Startseite",
+        "learningRoom": "Lernraum"
+      },
+      "hero": {
+        "title": "Tudva-Lernräume",
+        "subtitle": "Erlebe die Kraft des kollaborativen Lernens in einer unterstützenden Umgebung."
+      },
+      "whatAre": {
+        "title": "Was sind Lernräume?",
+        "paragraph1": "Tudva-Lernräume sind physische Räume, die von Institutionen und Organisationen bereitgestellt werden, in denen sich Studenten versammeln können, um gemeinsam an Tudvas Online-Kursen teilzunehmen. Sie bieten eine dedizierte Umgebung für konzentriertes Lernen, fördern ein Gemeinschaftsgefühl und bieten Zugang zu Ressourcen, die zu Hause möglicherweise nicht verfügbar sind.",
+        "paragraph2": "Lernräume können mit Computern, zuverlässigem Internetzugang und Kopfhörern ausgestattet sein, sodass Studenten an Live-Sitzungen teilnehmen und auf aufgezeichnete Inhalte ohne Ablenkungen zugreifen können. Sie sind auch ein großartiger Ort, um sich mit anderen Lernenden in deiner Gegend zu vernetzen.",
+        "imageAlt": "Studenten in einem Lernraum"
+      },
+      "findNearYou": {
+        "title": "Finde einen Lernraum in deiner Nähe",
+        "description": "Nutze unsere interaktive Karte, um einen Tudva-Lernraum in deiner Nähe zu finden.",
+        "mapPlaceholder": "Karten-/Suchplatzhalter. Integriere hier deine Karten-/Suchkomponente.",
+        "cantFind": "Kannst du keinen Lernraum in deiner Nähe finden? Kontaktiere uns, um einen potenziellen Standort vorzuschlagen!",
+        "suggestButton": "Standort vorschlagen",
+        "imageAlt": "Karte der Lernraumstandorte"
+      },
+      "forInstitutions": {
+        "title": "Für Institutionen: Einen Lernraum hosten",
+        "intro": "Bist du eine Institution, die daran interessiert ist, einen Tudva-Lernraum bereitzustellen? Wir würden uns freuen, mit dir zusammenzuarbeiten! Das Hosting eines Lernraums bietet mehrere Vorteile:",
+        "benefits": {
+          "expandAccess": "Erweitere den Zugang zu Bildung in deiner Gemeinde.",
+          "provideResource": "Biete eine wertvolle Ressource für Studenten, die möglicherweise keinen Zugang zu Technologie oder einem ruhigen Lernraum haben.",
+          "fosterCommunity": "Fördere ein Gemeinschaftsgefühl und Zusammenarbeit unter Lernenden.",
+          "enhanceReputation": "Verbessere den Ruf deiner Institution als Unterstützer des lebenslangen Lernens."
+        },
+        "outro": "Um mehr über das Hosting eines Lernraums zu erfahren, kontaktiere uns bitte.",
+        "contactButton": "Kontaktiere uns",
+        "imageAlt": "Institution, die einen Lernraum hostet"
+      }
+    }
+  },
+  "navbar": {
+    "search": {
+      "placeholder": "Suchen",
+      "button": "Suchen"
+    },
+    "auth": {
+      "joinUs": "Mitmachen",
+      "loading": "Wird geladen..."
+    },
+    "learner": {
+      "myLearning": "Mein Lernen",
+      "favorites": "Meine Lieblingskurse",
+      "myLiveSessions": "Meine Live-Sitzungen"
+    },
+    "category": "Kategorie",
+    "profile": {
+      "profileAndAccount": "Profil und Konto",
+      "favoriteCourses": "Lieblingskurse",
+      "help": "Hilfe",
+      "signOut": "Abmelden",
+      "logoutSuccess": "Erfolgreich abgemeldet",
+      "logoutError": "Abmeldung fehlgeschlagen"
+    }
+  },
+  "menuItems": {
+    "home": {
+      "languagesCommunication": {
+        "title": "Sprachen & Kommunikation",
+        "foreignLanguages": "Fremdsprachen",
+        "nationalLanguage": "Lernen der Landessprache",
+        "rhetoric": "Rhetorik & Internationale Kommunikation"
+      },
+      "cookingHousehold": {
+        "title": "Kochen & Haushalt",
+        "cooking": "Kochen & Backen (inkl. internationale Küche)",
+        "nutrition": "Ernährung & Nachhaltigkeit",
+        "homeEconomics": "Hauswirtschaft"
+      },
+      "creativityCraftsmanship": {
+        "title": "Kreativität & Handwerk",
+        "painting": "Malen, Zeichnen, Fotografie",
+        "sewing": "Nähen, Basteln, DIY",
+        "arts": "Kunst & Mehr"
+      },
+      "digitalIT": {
+        "title": "Digital & IT",
+        "computers": "Computer & Internet",
+        "socialMedia": "Social Media & Datenschutz",
+        "software": "Software & Tools"
+      },
+      "healthExercise": {
+        "title": "Gesundheit & Bewegung",
+        "fitness": "Fitness, Yoga & Mehr",
+        "relaxation": "Entspannung & Stressbewältigung",
+        "prevention": "Prävention & Wohlbefinden"
+      },
+      "natureGardening": {
+        "title": "Natur & Garten",
+        "gardening": "Gärtnern & Urban Gardening",
+        "environment": "Umwelt & Nachhaltigkeit",
+        "ecoProjects": "Öko-Projekte"
+      },
+      "careerEducation": {
+        "title": "Beruf & Bildung",
+        "softSkills": "Soft Skills & Zeitmanagement",
+        "careerOrientation": "Berufsorientierung & Qualifikation",
+        "basicEducation": "Grundbildung & Alphabetisierung"
+      }
+    },
+    "other": {
+      "allCourses": "Alle Kurse auf Tudva",
+      "myCurriculum": "Mein Lehrplan",
+      "myDocuments": "Meine Dokumente",
+      "mySupport": "Meine Unterstützung",
+      "firstSteps": "Erste Schritte",
+      "tutorials": "Anleitungen",
+      "helpCenter": "Hilfezentrum",
+      "helpCommunity": "Hilfe-Community"
+    }
+  },
+  "footer": {
+    "tagline": {
+      "title": "Kostenloser Zugang zu hochwertiger Bildung",
+      "description": "Gemeinsam ermöglichen wir lebenslanges Lernen für alle - kostenlos und gemeinschaftsbasiert."
+    },
+    "links": {
+      "learn": {
+        "title": "Lernen",
+        "courses": "Kurse",
+        "mySchedule": "Mein Zeitplan",
+        "whyUseTudva": "Warum tudva nutzen",
+        "getStarted": "Loslegen"
+      },
+      "aboutTudva": {
+        "title": "Über tudva",
+        "ourMission": "Unsere Mission",
+        "howItWorks": "Wie es funktioniert",
+        "tudvaMeans": "Was bedeutet \"tudva\"?",
+        "aboutUs": "Über uns",
+        "transparency": "Transparenz"
+      },
+      "community": {
+        "title": "Gemeinschaft",
+        "blog": "Blog",
+        "support": "Unterstützung",
+        "becomeTeacher": "Werde Lehrer",
+        "learningRooms": "Lernräume"
+      },
+      "helpContact": {
+        "title": "Hilfe & Kontakt",
+        "helpdesk": "Helpdesk",
+        "faq": "FAQ",
+        "contactUs": "Kontaktiere uns",
+        "imprint": "Impressum"
+      }
+    },
+    "copyright": "Urheberrechte © {year} 151",
+    "company": "concepts",
+    "legal": {
+      "termsOfUse": "Nutzungsbedingungen",
+      "privacyPolicy": "Datenschutzrichtlinie",
+      "imprint": "Impressum"
     }
   }
 }

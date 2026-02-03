@@ -1,9 +1,13 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, InputGroup, Dropdown, Spinner, Alert } from 'react-bootstrap';
 import { FaSearch, FaEllipsisV, FaEye, FaDownload, FaFileAlt, FaFilePdf, FaFileImage, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileVideo, FaFileAudio, FaFileArchive } from 'react-icons/fa';
+import { useTranslations } from 'next-intl';
 import learningService from '@/services/learningService';
 
 const CourseMaterials = () => {
+    const t = useTranslations('student.learning.materials');
     const [materials, setMaterials] = useState([]);
     const [filteredMaterials, setFilteredMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -121,7 +125,7 @@ const CourseMaterials = () => {
         return (
             <div className="text-center py-5">
                 <Spinner animation="border" variant="primary" />
-                <p className="mt-3">Loading course materials...</p>
+                <p className="mt-3">{t('loading')}</p>
             </div>
         );
     }
@@ -138,14 +142,14 @@ const CourseMaterials = () => {
         <Container fluid className="py-4">
             <Row className="mb-4">
                 <Col md={8}>
-                    <h4 className="text-primary mb-0">Course Materials</h4>
-                    <p className="text-muted">Access all your course materials and resources</p>
+                    <h4 className="text-primary mb-0">{t('title')}</h4>
+                    <p className="text-muted">{t('subtitle')}</p>
                 </Col>
                 <Col md={4}>
                     <InputGroup>
                         <Form.Control
                             type="text"
-                            placeholder="Search materials..."
+                            placeholder={t('searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -160,10 +164,10 @@ const CourseMaterials = () => {
                 <div className="text-center py-5">
                     <FaFileAlt size={48} className="text-muted mb-3" />
                     <h5 className="text-muted">
-                        {searchTerm ? 'No materials found matching your search' : 'No materials available'}
+                        {searchTerm ? t('noMatchingMaterials') : t('noMaterials')}
                     </h5>
                     {searchTerm && (
-                        <p className="text-muted">Try adjusting your search terms</p>
+                        <p className="text-muted">{t('tryAdjusting')}</p>
                     )}
                 </div>
             ) : (
@@ -183,16 +187,16 @@ const CourseMaterials = () => {
                                             <h6 className="mb-1 fw-bold">{material.name}</h6>
                                             <div className="d-flex flex-wrap align-items-center">
                                                 <small className="text-muted me-3">
-                                                    <strong>Course:</strong> {material.courseTitle}
+                                                    <strong>{t('course')}:</strong> {material.courseTitle}
                                                 </small>
                                                 <small className="text-muted me-3">
-                                                    <strong>Module:</strong> {material.moduleTitle}
+                                                    <strong>{t('module')}:</strong> {material.moduleTitle}
                                                 </small>
                                                 <small className="text-muted me-3">
-                                                    <strong>Lesson:</strong> {material.lessonTitle}
+                                                    <strong>{t('lesson')}:</strong> {material.lessonTitle}
                                                 </small>
                                                 <small className="text-muted">
-                                                    <strong>Size:</strong> {formatFileSize(material.size)}
+                                                    <strong>{t('size')}:</strong> {formatFileSize(material.size)}
                                                 </small>
                                             </div>
                                         </div>
@@ -214,14 +218,14 @@ const CourseMaterials = () => {
                                                     className="d-flex align-items-center"
                                                 >
                                                     <FaEye className="me-2" />
-                                                    View File
+                                                    {t('viewFile')}
                                                 </Dropdown.Item>
                                                 <Dropdown.Item 
                                                     onClick={() => handleDownloadFile(material)}
                                                     className="d-flex align-items-center"
                                                 >
                                                     <FaDownload className="me-2" />
-                                                    Download
+                                                    {t('download')}
                                                 </Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
@@ -239,8 +243,8 @@ const CourseMaterials = () => {
                     <Col xs={12}>
                         <div className="bg-light rounded p-3">
                             <small className="text-muted">
-                                Showing {filteredMaterials.length} of {materials.length} materials
-                                {searchTerm && ` matching "${searchTerm}"`}
+                                {t('showing')} {filteredMaterials.length} {t('of')} {materials.length} {t('materials')}
+                                {searchTerm && ` ${t('matching')} "${searchTerm}"`}
                             </small>
                         </div>
                     </Col>

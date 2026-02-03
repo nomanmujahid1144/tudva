@@ -16,15 +16,18 @@ import {
   FaUserGraduate,
   FaYoutubeSquare
 } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 // Default instructor image as fallback
 import defaultInstructorImage from '@/assets/images/instructor/01.jpg';
 
 const Instructor = ({ instructor }) => {
+  const t = useTranslations('courses.detail.instructor');
+  
   if (!instructor) {
     return (
       <div className="alert alert-info">
-        <p className="mb-0">No instructor information available for this course.</p>
+        <p className="mb-0">{t('noInfo')}</p>
       </div>
     );
   }
@@ -89,7 +92,7 @@ const Instructor = ({ instructor }) => {
                   <div className="m-3">
                     <Badge bg="primary" className="px-3 py-2">
                       <FaGraduationCap className="me-1" />
-                      {stats.courses}+ Courses
+                      {stats.courses}+ {t('courses')}
                     </Badge>
                   </div>
                 </div>
@@ -142,28 +145,28 @@ const Instructor = ({ instructor }) => {
                   <FaUserGraduate className="text-orange me-2 fs-5" />
                   <div>
                     <h6 className="mb-0 fw-bold">{stats.students.toLocaleString()}</h6>
-                    <small className="text-muted">Students</small>
+                    <small className="text-muted">{t('students')}</small>
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-light rounded-3 d-flex align-items-center">
                   <FaStar className="text-warning me-2 fs-5" />
                   <div>
                     <h6 className="mb-0 fw-bold">{stats.rating}</h6>
-                    <small className="text-muted">Rating</small>
+                    <small className="text-muted">{t('rating')}</small>
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-light rounded-3 d-flex align-items-center">
                   <FaPlay className="text-danger me-2 fs-5" />
                   <div>
                     <h6 className="mb-0 fw-bold">{stats.courses}</h6>
-                    <small className="text-muted">Courses</small>
+                    <small className="text-muted">{t('courses')}</small>
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-light rounded-3 d-flex align-items-center">
                   <FaCommentDots className="text-info me-2 fs-5" />
                   <div>
                     <h6 className="mb-0 fw-bold">{stats.reviews}</h6>
-                    <small className="text-muted">Reviews</small>
+                    <small className="text-muted">{t('reviews')}</small>
                   </div>
                 </div>
               </div>
@@ -190,7 +193,7 @@ const Instructor = ({ instructor }) => {
 
       {/* About the instructor */}
       <div className="bg-light p-4 rounded-4 mb-4">
-        <h4 className="mb-3">About the Instructor</h4>
+        <h4 className="mb-3">{t('title')}</h4>
         <div className="instructor-bio">
           {typeof aboutMe === 'string' && aboutMe.includes('<') ? (
             <div dangerouslySetInnerHTML={{ __html: aboutMe }} />
@@ -205,7 +208,7 @@ const Instructor = ({ instructor }) => {
         <div className="text-center mt-4">
           <a href={`/instructor/${id}`} className="btn btn-outline-primary">
             <FaGraduationCap className="me-2" />
-            View All Courses by {fullName}
+            {t('viewAllCourses')} {fullName}
           </a>
         </div>
       )}

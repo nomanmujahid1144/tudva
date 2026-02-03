@@ -1,8 +1,11 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Button, Col, FormControl, ProgressBar, Row, Modal, Form, Alert, Spinner } from "react-bootstrap";
 import { FaRegStar, FaRegThumbsDown, FaRegThumbsUp, FaStar, FaStarHalfAlt, FaEdit, FaTrash, FaReply } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import reviewService from "@/services/reviewService";
 
 const StarRating = ({ rating, onRatingChange, readonly = false, size = 16 }) => {
@@ -52,6 +55,7 @@ const StarRating = ({ rating, onRatingChange, readonly = false, size = 16 }) => 
 };
 
 const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCancel }) => {
+  const t = useTranslations('courses.detail.reviews.form');
   const [rating, setRating] = useState(editingReview?.rating || 0);
   const [comment, setComment] = useState(editingReview?.comment || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,20 +87,20 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
       }
 
       if (response.success) {
-        toast.success(editingReview ? 'Review updated successfully!' : 'Review submitted successfully!');
+        toast.success(editingReview ? t('updateSuccess') : t('submitSuccess'));
         setRating(0);
         setComment('');
         setErrors({});
         onReviewSubmitted(response.data);
         if (onCancel) onCancel();
       } else {
-        toast.error(response.error || 'Failed to submit review');
+        toast.error(response.error || t('submitError'));
         setErrors({ submit: response.error });
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      toast.error('Failed to submit review. Please try again.');
-      setErrors({ submit: 'Failed to submit review. Please try again.' });
+      toast.error(t('submitError'));
+      setErrors({ submit: t('submitError') });
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +115,7 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
       )}
 
       <div className="mb-3">
-        <label className="form-label">Rating *</label>
+        <label className="form-label">{t('rating')} *</label>
         <div>
           <StarRating rating={rating} onRatingChange={setRating} size={20} />
           {rating > 0 && <span className="ms-2 text-muted">({rating}/5)</span>}
@@ -120,12 +124,12 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
       </div>
 
       <div className="mb-3">
-        <label htmlFor="reviewComment" className="form-label">Your Review *</label>
+        <label htmlFor="reviewComment" className="form-label">{t('yourReview')} *</label>
         <textarea
           id="reviewComment"
           className={`form-control ${errors.comment ? 'is-invalid' : ''}`}
           rows={4}
-          placeholder="Share your experience with this course..."
+          placeholder={t('placeholder')}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           maxLength={1000}
@@ -145,7 +149,7 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
           disabled={isSubmitting}
         >
           {isSubmitting && <Spinner size="sm" className="me-2" />}
-          {editingReview ? 'Update Review' : 'Submit Review'}
+          {editingReview ? t('updateButton') : t('submitButton')}
         </Button>
 
         {onCancel && (
@@ -155,7 +159,7 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Cancel
+            {t('cancelButton')}
           </Button>
         )}
       </div>
@@ -164,6 +168,10 @@ const ReviewForm = ({ courseId, onReviewSubmitted, editingReview = null, onCance
 };
 
 const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDeleted }) => {
+  const t = useTranslations('courses.detail.reviews');
+  const tItem = useTranslations('courses.detail.reviews.item');
+  const tForm = useTranslations('courses.detail.reviews.form');
+  
   const [userVote, setUserVote] = useState(null);
   const [helpfulVotes, setHelpfulVotes] = useState(review.helpfulVotes);
   const [unhelpfulVotes, setUnhelpfulVotes] = useState(review.unhelpfulVotes);
@@ -207,11 +215,11 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
         setHelpfulVotes(response.data.helpfulVotes);
         setUnhelpfulVotes(response.data.unhelpfulVotes);
       } else {
-        toast.error(response.error || 'Failed to record vote');
+        toast.error(response.error || tForm('voteError'));
       }
     } catch (error) {
       console.error('Error voting:', error);
-      toast.error('Failed to record vote');
+      toast.error(tForm('voteError'));
     } finally {
       setIsVoting(false);
     }
@@ -222,15 +230,15 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
       const response = await reviewService.deleteReview(courseId, review.id);
 
       if (response.success) {
-        toast.success('Review deleted successfully');
+        toast.success(tForm('deleteSuccess'));
         onReviewDeleted(review.id);
         setShowDeleteModal(false);
       } else {
-        toast.error(response.error || 'Failed to delete review');
+        toast.error(response.error || tForm('deleteError'));
       }
     } catch (error) {
       console.error('Error deleting review:', error);
-      toast.error('Failed to delete review');
+      toast.error(tForm('deleteError'));
     }
   };
 
@@ -253,7 +261,6 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
               {(review.user.name || 'User').charAt(0).toUpperCase()}
             </div>
           )}
-
         </div>
 
         <div className="flex-grow-1">
@@ -266,7 +273,7 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
                   {reviewService.ReviewUtils.formatTimeSince(review.createdAt)}
                 </span>
                 {review.isVerifiedPurchase && (
-                  <span className="badge bg-success ms-2 small">Verified Purchase</span>
+                  <span className="badge bg-success ms-2 small">{tItem('verifiedPurchase')}</span>
                 )}
               </div>
             </div>
@@ -295,7 +302,7 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
 
           {canVote && (
             <div className="d-flex align-items-center gap-2">
-              <small className="text-muted me-2">Was this helpful?</small>
+              <small className="text-muted me-2">{tItem('wasHelpful')}</small>
               <div className="btn-group" role="group">
                 <button
                   type="button"
@@ -333,7 +340,7 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
                 <div>
                   <div className="d-flex align-items-center mb-1">
                     <h6 className="mb-0 me-2">{review.instructorReply.instructor.name}</h6>
-                    <span className="badge bg-primary small">Instructor</span>
+                    <span className="badge bg-primary small">{tItem('instructor')}</span>
                     <span className="ms-2 small text-muted">
                       {reviewService.ReviewUtils.formatTimeSince(review.instructorReply.repliedAt)}
                     </span>
@@ -349,7 +356,7 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
       {/* Edit Review Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Edit Review</Modal.Title>
+          <Modal.Title>{tItem('edit')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <ReviewForm
@@ -367,17 +374,17 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Review</Modal.Title>
+          <Modal.Title>{tItem('delete')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Are you sure you want to delete this review? This action cannot be undone.</p>
+          <p>{tItem('deleteConfirm')}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
+            {tForm('cancelButton')}
           </Button>
           <Button variant="danger" onClick={handleDelete}>
-            Delete Review
+            {tItem('delete')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -387,6 +394,10 @@ const ReviewItem = ({ review, courseId, currentUser, onReviewUpdated, onReviewDe
 
 const Reviews = ({ courseId }) => {
   const { user, isAuthenticated } = useAuth();
+  const t = useTranslations('courses.detail.reviews');
+  const tSort = useTranslations('courses.detail.reviews.sortOptions');
+  const tPagination = useTranslations('courses.detail.reviews.pagination');
+  
   const [reviews, setReviews] = useState([]);
   const [ratingStats, setRatingStats] = useState({
     averageRating: 0,
@@ -427,11 +438,11 @@ const Reviews = ({ courseId }) => {
         setRatingStats(response.data.ratingStats);
         setTotalPages(response.data.pagination.totalPages);
       } else {
-        toast.error('Failed to load reviews');
+        toast.error(t('form.submitError'));
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
-      toast.error('Failed to load reviews');
+      toast.error(t('form.submitError'));
     } finally {
       setLoading(false);
     }
@@ -516,7 +527,7 @@ const Reviews = ({ courseId }) => {
     return (
       <div className="text-center py-5">
         <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading reviews...</span>
+          <span className="visually-hidden">{t('loading')}</span>
         </Spinner>
       </div>
     );
@@ -526,7 +537,7 @@ const Reviews = ({ courseId }) => {
     <div>
       {/* Rating Overview */}
       <Row className="mb-4">
-        <h5 className="mb-4">Student Reviews</h5>
+        <h5 className="mb-4">{t('title')}</h5>
         <Col md={4} className="mb-3 mb-md-0">
           <div className="text-center">
             <h2 className="mb-0">{ratingStats.averageRating}</h2>
@@ -534,7 +545,7 @@ const Reviews = ({ courseId }) => {
               <StarRating rating={ratingStats.averageRating} readonly size={16} />
             </div>
             <p className="mb-0 small text-muted">
-              Based on {ratingStats.totalReviews} review{ratingStats.totalReviews !== 1 ? 's' : ''}
+              {t('basedOn')} {ratingStats.totalReviews} {ratingStats.totalReviews !== 1 ? t('reviews') : t('review')}
             </p>
           </div>
         </Col>
@@ -546,7 +557,7 @@ const Reviews = ({ courseId }) => {
       {/* Write Review Section */}
       {canWriteReview && (
         <div className="mb-4 p-4 bg-light rounded">
-          <h6 className="mb-3">Write a Review</h6>
+          <h6 className="mb-3">{t('writeReview')}</h6>
           <ReviewForm
             courseId={courseId}
             onReviewSubmitted={handleReviewSubmitted}
@@ -556,13 +567,13 @@ const Reviews = ({ courseId }) => {
 
       {hasUserReviewed && isLearner && (
         <Alert variant="info" className="mb-4">
-          You have already reviewed this course. You can edit or delete your review below.
+          {t('alreadyReviewed')}
         </Alert>
       )}
 
       {!isAuthenticated && (
         <Alert variant="warning" className="mb-4">
-          Please <strong>sign in</strong> to write a review for this course.
+          {t('signInToReview')}
         </Alert>
       )}
 
@@ -570,10 +581,10 @@ const Reviews = ({ courseId }) => {
       {ratingStats.totalReviews > 0 && (
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h6 className="mb-0">
-            {ratingStats.totalReviews} Review{ratingStats.totalReviews !== 1 ? 's' : ''}
+            {ratingStats.totalReviews} {ratingStats.totalReviews !== 1 ? t('reviews') : t('review')}
           </h6>
           <div className="d-flex align-items-center">
-            <label className="me-2 small">Sort by:</label>
+            <label className="me-2 small">{t('sortBy')}</label>
             <select
               className="form-select form-select-sm"
               style={{ width: 'auto' }}
@@ -583,11 +594,11 @@ const Reviews = ({ courseId }) => {
                 setCurrentPage(1);
               }}
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="helpful">Most Helpful</option>
-              <option value="rating_high">Highest Rating</option>
-              <option value="rating_low">Lowest Rating</option>
+              <option value="newest">{tSort('newest')}</option>
+              <option value="oldest">{tSort('oldest')}</option>
+              <option value="helpful">{tSort('helpful')}</option>
+              <option value="rating_high">{tSort('ratingHigh')}</option>
+              <option value="rating_low">{tSort('ratingLow')}</option>
             </select>
           </div>
         </div>
@@ -618,7 +629,7 @@ const Reviews = ({ courseId }) => {
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
                     >
-                      Previous
+                      {tPagination('previous')}
                     </button>
                   </li>
 
@@ -639,7 +650,7 @@ const Reviews = ({ courseId }) => {
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages}
                     >
-                      Next
+                      {tPagination('next')}
                     </button>
                   </li>
                 </ul>
@@ -649,7 +660,7 @@ const Reviews = ({ courseId }) => {
         </div>
       ) : (
         <div className="text-center py-5">
-          <p className="text-muted">No reviews yet. Be the first to review this course!</p>
+          <p className="text-muted">{t('noReviews')}</p>
         </div>
       )}
     </div>

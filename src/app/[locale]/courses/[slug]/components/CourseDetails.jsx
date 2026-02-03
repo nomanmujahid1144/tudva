@@ -26,23 +26,24 @@ import {
   FaCopy,
   FaGlobe,
   FaShareAlt,
-  FaSignal,
-  FaUser
+  FaSignal
 } from "react-icons/fa";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 import Overview from "./Overview";
 import Curriculum from "./Curriculum";
 import Instructor from "./Instructor";
 import Faqs from "./Faqs";
-import Reviews from "./Reviews"; // Import the enhanced Reviews component
+import Reviews from "./Reviews";
 import { capitalizeFirstLetter, formatCourseLevel } from "@/utils/textFormatting";
 import { formatDuration, calculateCourseDuration } from "@/utils/durationUtils";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 
 const PricingCard = ({ course }) => {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const t = useTranslations('courses.detail.details.pricing');
   const [copySuccess, setCopySuccess] = useState(false);
 
   if (!course) return null;
@@ -54,7 +55,7 @@ const PricingCard = ({ course }) => {
       router.push('/student/schedule');
     } else {
       // User is not logged in, show toast and redirect to login
-      toast.error("Please login first to participate in this course");
+      toast.error(t('loginRequired'));
 
       // Redirect to login page after a short delay
       setTimeout(() => {
@@ -88,7 +89,7 @@ const PricingCard = ({ course }) => {
       setCopySuccess(true);
 
       // Show success toast
-      toast.success("Course URL copied to clipboard!");
+      toast.success(t('copySuccess'));
 
       // Reset copy success state after 2 seconds
       setTimeout(() => setCopySuccess(false), 2000);
@@ -97,7 +98,7 @@ const PricingCard = ({ course }) => {
       console.error('Failed to copy link:', error);
 
       // Show error toast
-      toast.error("Failed to copy course URL. Please try again.");
+      toast.error(t('copyError'));
     }
   };
 
@@ -139,7 +140,7 @@ const PricingCard = ({ course }) => {
               <li>
                 <DropdownItem onClick={handleCopyLink}>
                   <FaCopy className={`me-2 ${copySuccess ? 'text-success' : ''}`} />
-                  {copySuccess ? 'Copied!' : 'Copy link'}
+                  {copySuccess ? t('linkCopied') : t('copyLink')}
                 </DropdownItem>
               </li>
             </DropdownMenu>
@@ -150,7 +151,7 @@ const PricingCard = ({ course }) => {
               onClick={handleParticipate}
               variant="primary"
             >
-              Participate
+              {t('participate')}
             </Button>
           ) : null}
         </div>
@@ -160,6 +161,8 @@ const PricingCard = ({ course }) => {
 };
 
 const CourseIncludesCard = ({ course }) => {
+  const t = useTranslations('courses.detail.details.courseOverview');
+  
   if (!course) return null;
 
   // Calculate lecture count and duration based on course type
@@ -189,29 +192,29 @@ const CourseIncludesCard = ({ course }) => {
 
   return (
     <Card className="card-body shadow p-4 mb-4">
-      <h4 className="mb-3">Course Overview</h4>
+      <h4 className="mb-3">{t('title')}</h4>
       <ul className="list-group list-group-borderless">
         <li className="list-group-item d-flex justify-content-between align-items-center">
           <span className="h5 fw-light mb-0">
-            <FaBookOpen className="fa-fw text-primary me-1" />Lectures
+            <FaBookOpen className="fa-fw text-primary me-1" />{t('lectures')}
           </span>
           <span>{lectureCount}</span>
         </li>
         <li className="list-group-item d-flex justify-content-between align-items-center">
           <span className="h5 fw-light mb-0">
-            <FaClock className="fa-fw text-primary me-1" />Duration
+            <FaClock className="fa-fw text-primary me-1" />{t('duration')}
           </span>
           <span>{courseDuration}</span>
         </li>
         <li className="list-group-item d-flex justify-content-between align-items-center">
           <span className="h5 fw-light mb-0">
-            <FaSignal className="fa-fw text-primary me-1" />Level
+            <FaSignal className="fa-fw text-primary me-1" />{t('level')}
           </span>
           <span>{formatCourseLevel(course?.level)}</span>
         </li>
         <li className="list-group-item d-flex justify-content-between align-items-center">
           <span className="h5 fw-light mb-0">
-            <FaGlobe className="fa-fw text-primary me-1" />Language
+            <FaGlobe className="fa-fw text-primary me-1" />{t('language')}
           </span>
           <span>{capitalizeFirstLetter(course?.language)}</span>
         </li>
@@ -221,13 +224,14 @@ const CourseIncludesCard = ({ course }) => {
 };
 
 const PopularTags = ({ course }) => {
+  const t = useTranslations('courses.detail.details.tags');
   const courseTags = course?.tags || [];
 
   if (courseTags.length === 0) return null;
 
   return (
     <Card className="card-body shadow p-4">
-      <h4 className="mb-3">Tags</h4>
+      <h4 className="mb-3">{t('title')}</h4>
       <ul className="list-inline mb-0">
         {courseTags.map((tag, idx) => (
           <li className="list-inline-item" key={idx}>
@@ -243,20 +247,19 @@ const PopularTags = ({ course }) => {
 
 const CourseDetails = ({ course }) => {
   const { isAuthenticated, user } = useAuth();
+  const t = useTranslations('courses.detail.details.tabs');
   const isLearner = user?.role === 'learner';
-  const showReviews = isAuthenticated && isLearner;
 
   const [activeTab, setActiveTab] = useState('overview');
 
   if (!course) return null;
 
   const tabs = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'curriculum', label: 'Curriculum' },
-    { key: 'instructor', label: 'Instructor' },
-    // ...(showReviews ? [{ key: 'reviews', label: 'Reviews' }] : []),
-    { key: 'reviews', label: 'Reviews' },
-    { key: 'faqs', label: 'FAQs' }
+    { key: 'overview', label: t('overview') },
+    { key: 'curriculum', label: t('curriculum') },
+    { key: 'instructor', label: t('instructor') },
+    { key: 'reviews', label: t('reviews') },
+    { key: 'faqs', label: t('faqs') }
   ];
 
   return (

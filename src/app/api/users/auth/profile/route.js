@@ -11,7 +11,7 @@ export async function GET(request) {
     
     // Get token from Authorization header first
     let token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    
+
     // If no token in header, check cookies
     if (!token) {
       const cookieStore = cookies();

@@ -1,4 +1,4 @@
-// src/app/api/course/[courseId]/live-session/route.js - ENHANCED VERSION
+// src/app/api/course/[courseId]/live-session/route.js - COMPLETE UPDATED VERSION
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Course, { CourseType } from '@/models/Course';
@@ -6,31 +6,32 @@ import mongoose from 'mongoose';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-// Configure Matrix client
-const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://chat.151.hu';
+// ✅ UPDATED: New Matrix server configuration
+const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
+const MATRIX_DOMAIN = process.env.MATRIX_DOMAIN || '151.hu';
+const MATRIX_USER_ID = process.env.MATRIX_USER_ID || '@proj-admin3:151.hu';
 
 /**
- * Create a Matrix room for a live session
+ * ✅ UPDATED: Create a Matrix room for a live session with new server
  */
 async function createMatrixRoom(courseName, sessionDate, instructorId) {
   try {
     console.log('🔄 Creating Matrix room for:', courseName);
+    console.log('📡 Using Matrix server:', MATRIX_HOME_SERVER);
 
-    // Step 1: Create the room with the API user as creator (auto-joins)
+    // Step 1: Create the room with correct format
     const createResponse = await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/createRoom`,
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/createRoom`, // ✅ Changed to v3
       {
         name: `${courseName} - Live Session`,
         topic: `Live session for ${courseName} on ${sessionDate}`,
-        preset: 'private_chat',
+        preset: 'private_chat', // ✅ Using private_chat as per dev3.md
         visibility: 'private',
-        // CRITICAL FIX: Set API user as creator with admin rights
-        creator: '@nom:chat.151.hu',
-        power_levels: {
+        power_level_content_override: {
           users: {
-            [`@instructor_${instructorId}:chat.151.hu`]: 100, // Instructor admin
-            [`@nom:chat.151.hu`]: 100, // API user admin (CRITICAL)
+            [`@instructor_${instructorId}:${MATRIX_DOMAIN}`]: 100, // Instructor admin
+            [MATRIX_USER_ID]: 100, // API user admin
           },
           users_default: 0,
           events_default: 0,
@@ -64,47 +65,11 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
     const roomId = createResponse.data.room_id;
     console.log('✅ Matrix room created:', roomId);
 
-    // Step 2: FORCE join the API user to ensure access (CRITICAL FIX)
-    let joinAttempts = 0;
-    const maxJoinAttempts = 3;
-
-    while (joinAttempts < maxJoinAttempts) {
-      try {
-        console.log(`🔄 Join attempt ${joinAttempts + 1}/${maxJoinAttempts} for API user...`);
-
-        const joinResponse = await axios.post(
-          `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
-          {},
-          {
-            headers: {
-              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        console.log('✅ API user successfully joined room');
-        break; // Success, exit loop
-
-      } catch (joinError) {
-        joinAttempts++;
-        console.error(`❌ Join attempt ${joinAttempts} failed:`, joinError.response?.data);
-
-        if (joinAttempts >= maxJoinAttempts) {
-          throw new Error(`API user failed to join room after ${maxJoinAttempts} attempts: ${joinError.response?.data?.errcode}`);
-        }
-
-        // Wait 1 second before retry
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-
-    // Step 3: Verify API user can send messages by sending test message
+    // Step 2: Send welcome message
     try {
-      console.log('🔄 Verifying API user can send messages...');
-
-      await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+      const txnId = Date.now(); // Transaction ID
+      await axios.put(
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
         {
           msgtype: 'm.text',
           body: `🎓 Live session room created for "${courseName}". Session will begin when instructor starts it.`
@@ -117,21 +82,20 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
         }
       );
 
-      console.log('✅ API user can send messages - room is fully functional');
+      console.log('✅ Welcome message sent successfully');
 
     } catch (msgError) {
-      console.error('❌ CRITICAL: API user cannot send messages:', msgError.response?.data);
-      throw new Error(`API user cannot send messages: ${msgError.response?.data?.errcode}`);
+      console.log('ℹ️ Welcome message failed (room still created):', msgError.response?.data?.errcode);
     }
 
-    // Step 4: Set up room for instructor (invite them)
+    // Step 3: Invite instructor to room
     try {
       console.log('🔄 Inviting instructor to room...');
 
       await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/invite`,
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`,
         {
-          user_id: `@instructor_${instructorId}:chat.151.hu`
+          user_id: `@instructor_${instructorId}:${MATRIX_DOMAIN}`
         },
         {
           headers: {
@@ -145,29 +109,29 @@ async function createMatrixRoom(courseName, sessionDate, instructorId) {
 
     } catch (inviteError) {
       console.log('ℹ️ Instructor invite failed (they can join later):', inviteError.response?.data?.errcode);
-      // Don't fail room creation for this
     }
 
     return {
       success: true,
       roomId,
-      message: 'Room created and API user verified'
+      message: 'Room created successfully',
+      matrixUrl: `${MATRIX_HOME_SERVER}/#/room/${roomId}`
     };
 
   } catch (error) {
-    console.error('❌ CRITICAL Matrix room creation error:', error.response?.data || error.message);
-    throw new Error(`Matrix room creation failed: ${error.response?.data?.errcode || error.message}`);
+    console.error('❌ Matrix room creation error:', error.response?.data || error.message);
+    throw new Error(`Matrix room creation failed: ${error.response?.data?.error || error.message}`);
   }
 }
 
 /**
- * ALSO ADD: Fixed function to ensure user joins room before sending messages
+ * ✅ KEPT: Ensure user joins room before sending messages (from your original)
  */
 async function ensureUserInRoom(roomId, userId) {
   try {
     // Try to join the room first
     await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/join`,
       {},
       {
         headers: {
@@ -187,12 +151,14 @@ async function ensureUserInRoom(roomId, userId) {
 }
 
 /**
- * Send message to Matrix room
+ * ✅ UPDATED: Send message to Matrix room
  */
 async function sendMessageToRoom(roomId, message, msgType = 'm.text') {
   try {
-    await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
+    const txnId = Date.now(); // Transaction ID
+
+    await axios.put(
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
       {
         msgtype: msgType,
         body: message
@@ -204,51 +170,52 @@ async function sendMessageToRoom(roomId, message, msgType = 'm.text') {
         }
       }
     );
+
     console.log('✅ Matrix message sent successfully');
     return true;
   } catch (error) {
-    console.log('ℹ️ Matrix message failed (session continues normally):', error.response?.data?.errcode);
-    // console.error('❌ Error sending message to room:', error.response?.data || error.message);
+    console.log('ℹ️ Matrix message failed (session continues):', error.response?.data?.errcode);
 
     // If it's a 403 (user not in room), try to join the room first
-    // if (error.response?.status === 403) {
-    //   try {
-    //     console.log('🔄 Attempting to join room first...');
-    //     await axios.post(
-    //       `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/join`,
-    //       {},
-    //       {
-    //         headers: {
-    //           'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-    //           'Content-Type': 'application/json'
-    //         }
-    //       }
-    //     );
+    if (error.response?.status === 403) {
+      try {
+        console.log('🔄 Attempting to join room first...');
+        await axios.post(
+          `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/join`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
 
-    //     console.log('✅ Successfully joined room, retrying message...');
+        console.log('✅ Successfully joined room, retrying message...');
 
-    //     // Retry sending the message
-    //     await axios.post(
-    //       `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${roomId}/send/m.room.message`,
-    //       {
-    //         msgtype: msgType,
-    //         body: message
-    //       },
-    //       {
-    //         headers: {
-    //           'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-    //           'Content-Type': 'application/json'
-    //         }
-    //       }
-    //     );
+        // Retry sending the message with new transaction ID
+        const retryTxnId = Date.now();
+        await axios.put(
+          `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${retryTxnId}`,
+          {
+            msgtype: msgType,
+            body: message
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
 
-    //     console.log('✅ Message sent successfully after joining room');
-    //     return true;
-    //   } catch (joinError) {
-    //     console.error('❌ Failed to join room and send message:', joinError.response?.data || joinError.message);
-    //     return false;
-    //   }
-    // }
+        console.log('✅ Message sent successfully after joining room');
+        return true;
+      } catch (joinError) {
+        console.error('❌ Failed to join room and send message:', joinError.response?.data || joinError.message);
+        return false;
+      }
+    }
 
     return false;
   }
@@ -311,7 +278,6 @@ export async function POST(request, { params }) {
       case 'create-session':
         // Create Matrix room for the session
         try {
-          const matrixUserId = `@instructor_${auth.user.id}:chat.151.hu`;
           const roomResult = await createMatrixRoom(
             course.title,
             sessionDate || new Date().toLocaleDateString(),
@@ -349,6 +315,7 @@ export async function POST(request, { params }) {
             message: 'Live session created successfully',
             data: {
               roomId: roomResult.roomId,
+              matrixUrl: roomResult.matrixUrl,
               slotIndex: 0, // Always return 0 since we're updating the first slot
               sessionStatus: 'scheduled',
               sessionDate: timeSlot.sessionDate,
@@ -359,7 +326,8 @@ export async function POST(request, { params }) {
           console.error('Matrix error:', matrixError);
           return NextResponse.json({
             success: false,
-            error: 'Failed to create live session room'
+            error: 'Failed to create live session room',
+            details: matrixError.message
           }, { status: 500 });
         }
 
@@ -438,8 +406,9 @@ export async function POST(request, { params }) {
 
           // Send session start announcement
           try {
-            await axios.post(
-              `${MATRIX_HOME_SERVER}/_matrix/client/r0/rooms/${startTimeSlot.matrixRoomId}/send/m.room.message`,
+            const startTxnId = Date.now();
+            await axios.put(
+              `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${startTimeSlot.matrixRoomId}/send/m.room.message/${startTxnId}`,
               {
                 msgtype: 'm.text',
                 body: `🔴 LIVE: "${course.title}" session has started! Welcome everyone. Feel free to ask questions in the chat.`
@@ -478,6 +447,7 @@ export async function POST(request, { params }) {
             details: error.message
           }, { status: 500 });
         }
+
       case 'end':
         // End the session
         if (slotIndex === undefined || !course.liveCourseMeta.timeSlots[slotIndex]) {
@@ -564,7 +534,7 @@ export async function POST(request, { params }) {
   }
 }
 
-// GET - Get live session data (unchanged from previous version)
+// GET - Get live session data
 export async function GET(request, { params }) {
   try {
     await connectDB();

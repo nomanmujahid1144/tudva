@@ -110,78 +110,50 @@ export const CATEGORY_MENU_ITEMS = [{
 export const INSTRUCTOR_MENU_ITEMS = [
   {
     key: 'profile',
-    label: 'Profile',
+    labelKey: 'instructor.menu.profile', // ✅ Use translation key
     icon: BsPencilSquare,
     url: '/instructor/profile',
     parentKey: 'instructor'
   },
   {
     key: 'courses',
-    label: 'My Courses',
+    labelKey: 'instructor.menu.myCourses', // ✅ Use translation key
     icon: BsBasket,
     url: '/instructor/manage-course',
     parentKey: 'instructor'
-  },
-  // {
-  //   key: 'reviews',
-  //   label: 'Reviews',
-  //   icon: BsStar,
-  //   url: '/instructor/review',
-  //   parentKey: 'instructor'
-  // },
-  // {
-  //   key: 'setting',
-  //   label: 'Setting',
-  //   icon: BsGear,
-  //   url: '/instructor/setting',
-  //   parentKey: 'instructor'
-  // }, 
-  {
-    key: 'delete',
-    label: 'Delete Profile',
-    icon: BsTrash,
-    url: '/instructor/delete-account',
-    parentKey: 'instructor'
-  }];
+  }
+  // ✅ Removed Delete Profile
+];
 export const STUDENT_MENU_ITEMS = [
   {
     key: 'profile',
-    label: 'Profile',
+    labelKey: 'student.menu.profile', // ✅ Use translation key
     icon: BsPencilSquare,
     url: '/student/profile',
     parentKey: 'student'
   },
+  // {
+  //   key: 'courses',
+  //   labelKey: 'student.menu.myCourses', // ✅ Use translation key
+  //   icon: BsBasket,
+  //   url: '/student/my-courses',
+  //   parentKey: 'student'
+  // },
   {
-    key: 'courses',
-    label: 'My Courses',
-    icon: BsBasket,
-    url: '/student/course-list',
-    parentKey: 'student'
-  }, {
     key: 'schedule',
-    label: 'My Schedule',
+    labelKey: 'student.menu.mySchedule', // ✅ Use translation key
     icon: FaCalendarAlt,
     url: '/student/schedule',
     parentKey: 'student'
-  }, {
+  },
+  {
     key: 'favorites',
-    label: 'Favorite Courses',
+    labelKey: 'student.menu.favorites', // ✅ Use translation key
     icon: BsHeart,
-    url: '/favorites',
-    parentKey: 'student'
-  }, {
-    key: 'setting',
-    label: 'Setting',
-    icon: BsGear,
-    url: '/student/setting',
-    parentKey: 'student'
-  }, {
-    key: 'delete',
-    label: 'Delete Profile',
-    icon: BsTrash,
-    url: '/student/delete-account',
+    url: '/student/favorites',
     parentKey: 'student'
   }
+  // ✅ Removed: course-list, setting, delete-account
 ];
 export const APP_MENU_ITEMS = [{
   key: 'demos',

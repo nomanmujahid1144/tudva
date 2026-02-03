@@ -420,8 +420,8 @@ button {
 /* Course Schedular */
 
 .border-dashed {
- border: dashed 4px black;
- border-radius: 4px;     
+  border: dashed 4px black;
+  border-radius: 4px;
 }
 
 
@@ -516,7 +516,9 @@ button {
 }
 
 @keyframes progress-bar-stripes {
-  0% { background-position-x: 1rem; }
+  0% {
+    background-position-x: 1rem;
+  }
 }
 
 .status-badge.processing {
@@ -542,8 +544,15 @@ button {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .video-player-modal .modal-body {
@@ -610,6 +619,24 @@ button {
 
 
 /* Step-4 */
-.card, .overflow-hidden {
-    will-change: auto;
+.card,
+.overflow-hidden {
+  will-change: auto;
+}
+
+
+
+
+/* Language Translator */
+.fi {
+  border-radius: 50% !important;
+  object-fit: cover;
+}
+
+.dropdown-toggle::after {
+  margin-left: 0.5rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

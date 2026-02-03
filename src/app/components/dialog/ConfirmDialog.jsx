@@ -1,3 +1,4 @@
+// src/components/dialog/ConfirmDialog.jsx
 'use client';
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
@@ -7,18 +8,17 @@ const ConfirmDialog = ({
   show, 
   onHide, 
   onConfirm, 
-  title = 'Confirm Action', 
-  message = 'Are you sure you want to proceed?',
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  variant = 'danger' // danger, warning, info
+  title,
+  message,
+  confirmText,
+  cancelText,
+  variant = 'danger'
 }) => {
   const handleConfirm = () => {
     onConfirm();
     onHide();
   };
 
-  // Determine icon color based on variant
   const getIconColor = () => {
     switch(variant) {
       case 'danger': return '#dc3545';

@@ -7,6 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { FaEdit, FaGraduationCap, FaCalendarAlt, FaUser, FaBook, FaCertificate, FaMapMarkerAlt } from 'react-icons/fa';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 
 const StudentProfilePage = () => {
   return (
@@ -18,6 +20,8 @@ const StudentProfilePage = () => {
 
 const StudentProfileContent = () => {
   const { user, loading } = useAuth();
+  const { locale } = useParams();
+  const t = useTranslations('student.profile');
 
   if (loading) {
     return <LoadingSpinner />;
@@ -25,9 +29,9 @@ const StudentProfileContent = () => {
 
   // Format date for better display
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('notSpecified');
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString(locale === 'de' ? 'de-DE' : locale === 'hu' ? 'hu-HU' : 'en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
@@ -46,7 +50,7 @@ const StudentProfileContent = () => {
                   <img 
                     src={user.profilePicture} 
                     alt={user.fullName || user.name} 
-                    className="rounded-circle  img-fluid" 
+                    className="rounded-circle img-fluid" 
                     style={{ width: '180px', height: '180px', objectFit: 'cover', border: '4px solid #f8f9fa' }}
                   />
                 ) : (
@@ -62,14 +66,16 @@ const StudentProfileContent = () => {
               <h3 className="mb-1">{user?.fullName || user?.name || 'Student'}</h3>
               <p className="text-muted mb-3">{user?.email}</p>
               
-              <Badge className="mb-3 px-3 py-2">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Learner'}</Badge>
+              <Badge className="mb-3 px-3 py-2">
+                {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || 'Learner'}
+              </Badge>
               
               <div className="d-grid gap-2 mt-4">
-                <Link href="/student/my-courses" className="btn btn-outline-primary">
-                  My Courses
+                <Link href={`/${locale}/student/my-courses`} className="btn btn-outline-primary">
+                  {t('myCourses')}
                 </Link>
-                <Link href="/student/edit-profile" className="btn btn-outline-secondary">
-                  Edit Profile
+                <Link href={`/${locale}/student/edit-profile`} className="btn btn-outline-secondary">
+                  {t('editProfile')}
                 </Link>
               </div>
             </Card.Body>
@@ -80,16 +86,16 @@ const StudentProfileContent = () => {
         <Col lg={8}>
           <Card className="bg-transparent border rounded-3 mb-4">
             <Card.Header className="bg-white py-3 border-0">
-              <h5 className="mb-0">About Me</h5>
+              <h5 className="mb-0">{t('aboutMe')}</h5>
             </Card.Header>
             <Card.Body className="p-4">
-              <p className="mb-0">{user?.aboutMe || 'No information provided yet. Share something about yourself, your interests, and your learning goals.'}</p>
+              <p className="mb-0">{user?.aboutMe || t('aboutMePlaceholder')}</p>
             </Card.Body>
           </Card>
           
           <Card className="bg-transparent border rounded-3 mb-4">
             <Card.Header className="bg-white py-3 border-0">
-              <h5 className="mb-0">Education & Interests</h5>
+              <h5 className="mb-0">{t('educationInterests')}</h5>
             </Card.Header>
             <Card.Body className="p-4">
               <Row className="g-4">
@@ -99,7 +105,7 @@ const StudentProfileContent = () => {
                       <FaGraduationCap className="text-primary" size={18} />
                     </div>
                     <div>
-                      <h6 className="mb-1">Education</h6>
+                      <h6 className="mb-1">{t('education')}</h6>
                       {user?.education && user.education.length > 0 ? (
                         user.education.map((edu, index) => (
                           <p key={index} className="text-muted mb-0">
@@ -107,7 +113,7 @@ const StudentProfileContent = () => {
                           </p>
                         ))
                       ) : (
-                        <p className="text-muted mb-0">Not specified</p>
+                        <p className="text-muted mb-0">{t('notSpecified')}</p>
                       )}
                     </div>
                   </div>
@@ -118,7 +124,7 @@ const StudentProfileContent = () => {
                       <FaCalendarAlt className="text-primary" size={18} />
                     </div>
                     <div>
-                      <h6 className="mb-1">Member Since</h6>
+                      <h6 className="mb-1">{t('memberSince')}</h6>
                       <p className="text-muted mb-0">{formatDate(user?.createdAt)}</p>
                     </div>
                   </div>
@@ -129,26 +135,26 @@ const StudentProfileContent = () => {
           
           <Card className="bg-transparent border rounded-3">
             <Card.Header className="bg-white py-3 border-0">
-              <h5 className="mb-0">Learning Stats</h5>
+              <h5 className="mb-0">{t('learningStats')}</h5>
             </Card.Header>
             <Card.Body className="p-4">
               <Row className="text-center g-3">
                 <Col md={4}>
                   <div className="border rounded p-3">
                     <h2 className="mb-1 text-primary">{user?.enrolledCourses?.length || 0}</h2>
-                    <p className="text-muted mb-0">Enrolled Courses</p>
+                    <p className="text-muted mb-0">{t('enrolledCourses')}</p>
                   </div>
                 </Col>
                 <Col md={4}>
                   <div className="border rounded p-3">
                     <h2 className="mb-1 text-primary">{user?.completedCourses?.length || 0}</h2>
-                    <p className="text-muted mb-0">Completed Courses</p>
+                    <p className="text-muted mb-0">{t('completedCourses')}</p>
                   </div>
                 </Col>
                 <Col md={4}>
                   <div className="border rounded p-3">
                     <h2 className="mb-1 text-primary">{user?.certificatesEarned?.length || 0}</h2>
-                    <p className="text-muted mb-0">Certificates Earned</p>
+                    <p className="text-muted mb-0">{t('certificatesEarned')}</p>
                   </div>
                 </Col>
               </Row>
@@ -156,7 +162,7 @@ const StudentProfileContent = () => {
               {/* Achievement Badges - Optional Section */}
               {user?.achievements && user.achievements.length > 0 && (
                 <div className="mt-4">
-                  <h6 className="mb-3">Achievements</h6>
+                  <h6 className="mb-3">{t('achievements')}</h6>
                   <div className="d-flex flex-wrap gap-2">
                     {user.achievements.map((achievement, index) => (
                       <Badge 

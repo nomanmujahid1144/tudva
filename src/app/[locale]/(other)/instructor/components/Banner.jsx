@@ -2,12 +2,17 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { Col, Container, Row } from 'react-bootstrap';
+import { useTranslations } from 'next-intl';
 
 const Banner = () => {
   const pathname = usePathname();
+  const t = useTranslations('instructor.course.banner');
   
   // Determine if we're in edit mode
   const isEditMode = pathname.includes('/edit-course');
+  
+  // Select appropriate translation keys based on mode
+  const mode = isEditMode ? 'edit' : 'create';
   
   return (
     <section 
@@ -21,18 +26,10 @@ const Banner = () => {
         <Row>
           <Col xs={12} className="text-center">
             <h1 className="text-white">
-              {isEditMode ? 'Edit Your Course' : 'Create New Course'}
+              {t(`${mode}.title`)}
             </h1>
             <p className="text-white mb-0">
-              {isEditMode ? (
-                <>
-                  Update your course details and content. Make sure all information is accurate before saving changes.
-                </>
-              ) : (
-                <>
-                  Read our <a href="#" className="text-white"><u>&quot;Before you create a course&quot;</u></a> article before submitting!
-                </>
-              )}
+              {t(`${mode}.description`)}
             </p>
           </Col>
         </Row>
