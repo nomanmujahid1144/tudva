@@ -60,6 +60,7 @@
     "sass": "^1.77.6",
     "simplebar-core": "^1.2.6",
     "simplebar-react": "^3.2.6",
+    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
     "tiny-slider": "^2.9.3",

@@ -1,23 +1,17 @@
-// ================================================================
-// FIXED: src/app/api/matrix/send-message/route.js
-// UPDATED FOR NEW MATRIX SERVER (matrix.151.hu) + Room Join Fix
+// src/app/api/matrix/send-message/route.js
+// FINAL: Uses actual user names (John Doe, Sarah Smith, etc.)
 
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
 import axios from 'axios';
 
-// ✅ UPDATED: New Matrix server configuration
 const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
 
-/**
- * ✅ CRITICAL FIX: Ensure API user is in room before sending message
- */
 async function ensureApiUserInRoom(roomId) {
   try {
-    // Try to join the room (idempotent operation)
     await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/join`, // ✅ Changed to v3
+      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/join`,
       {},
       {
         headers: {
@@ -36,7 +30,6 @@ async function ensureApiUserInRoom(roomId) {
 
 export async function POST(request) {
   try {
-    // Authenticate request
     const auth = await authenticateRequest(request);
     if (!auth.success) {
       return NextResponse.json({
@@ -45,7 +38,7 @@ export async function POST(request) {
       }, { status: 401 });
     }
 
-    const { roomId, content, msgType = 'm.text' } = await request.json();
+    const { roomId, content, msgType = 'm.text', userId } = await request.json();
 
     if (!content || !content.trim()) {
       return NextResponse.json({
@@ -61,27 +54,35 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // CRITICAL FIX: Ensure API user is in room before sending
-    console.log('🔄 Ensuring API user is in room before sending message...');
-    const joinSuccess = await ensureApiUserInRoom(roomId);
+    // ✅ CRITICAL: Use ACTUAL user's full name from auth
+    let senderRole = 'student'; // Default
     
-    if (!joinSuccess) {
-      console.error('❌ Failed to join room, attempting message send anyway...');
+    console.log(auth, 'auth')
+
+    let senderName = auth.user.fullName || auth.user.email?.split('@')[0] || 'User';
+    
+    // Determine role from userId or auth.user.role
+    if (userId && userId.includes('@instructor_')) {
+      senderRole = 'instructor';
+    } else if (auth.user.role === 'instructor') {
+      senderRole = 'instructor';
     }
 
-    // Send message using service account with user attribution
-    const messageBody = `${auth.user.fullName || 'User'}: ${content.trim()}`;
-    
+    console.log('📨 Sending message from:', senderName, `(${senderRole})`);
+
+    await ensureApiUserInRoom(roomId);
+
     try {
-      const txnId = Date.now(); // ✅ Transaction ID for v3
-      const response = await axios.put( // ✅ Changed from POST to PUT
-        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to v3 with txnId
+      const txnId = Date.now();
+      const response = await axios.put(
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
         {
           msgtype: msgType,
-          body: messageBody,
-          // Add custom fields to identify the real sender
+          body: content.trim(), // ✅ Just the message
+          // ✅ Metadata with REAL name
           'tudva.sender_id': auth.user.id,
-          'tudva.sender_name': auth.user.fullName || 'User'
+          'tudva.sender_name': senderName, // ✅ "John Doe" or "Sarah Smith"
+          'tudva.sender_role': senderRole   // ✅ "instructor" or "student"
         },
         {
           headers: {
@@ -91,39 +92,37 @@ export async function POST(request) {
         }
       );
 
-      console.log('✅ Message sent successfully');
+      console.log('✅ Message sent:', senderName, '->', content.substring(0, 30));
 
       return NextResponse.json({
         success: true,
         data: {
           eventId: response.data.event_id,
-          content: messageBody
+          content: content.trim(),
+          senderName,
+          senderRole
         }
       });
 
     } catch (sendError) {
       console.error('❌ Failed to send message:', sendError.response?.data);
       
-      // If it's a permission error, try one more time after joining
       if (sendError.response?.status === 403) {
-        console.log('🔄 Permission denied, trying to rejoin room and retry...');
+        console.log('🔄 Permission denied, retrying...');
         
-        // Force rejoin
         await ensureApiUserInRoom(roomId);
-        
-        // Wait a moment
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Retry message send
         try {
-          const txnId = Date.now(); // ✅ New transaction ID for retry
-          const retryResponse = await axios.put( // ✅ Changed from POST to PUT
-            `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to v3
+          const txnId = Date.now();
+          const retryResponse = await axios.put(
+            `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
             {
               msgtype: msgType,
-              body: messageBody,
+              body: content.trim(),
               'tudva.sender_id': auth.user.id,
-              'tudva.sender_name': auth.user.fullName || 'User'
+              'tudva.sender_name': senderName,
+              'tudva.sender_role': senderRole
             },
             {
               headers: {
@@ -133,18 +132,20 @@ export async function POST(request) {
             }
           );
 
-          console.log('✅ Message sent successfully on retry');
+          console.log('✅ Message sent on retry');
 
           return NextResponse.json({
             success: true,
             data: {
               eventId: retryResponse.data.event_id,
-              content: messageBody
+              content: content.trim(),
+              senderName,
+              senderRole
             }
           });
 
         } catch (retryError) {
-          console.error('❌ Retry also failed:', retryError.response?.data);
+          console.error('❌ Retry failed:', retryError.response?.data);
           throw retryError;
         }
       } else {
@@ -153,7 +154,7 @@ export async function POST(request) {
     }
 
   } catch (error) {
-    console.error('❌ Failed to send Matrix message:', error);
+    console.error('❌ Matrix send message error:', error);
     return NextResponse.json({
       success: false,
       error: 'Failed to send message',

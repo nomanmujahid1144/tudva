@@ -1,4 +1,6 @@
 // src/app/instructor/live-session/[courseId]/[slotIndex]/page.jsx
+// ✅ COMPLETE WITH WEBRTC BROADCASTING
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -10,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getLiveSessionData, manageLiveSession } from '@/services/courseService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
 import webrtcService from '@/services/webrtcService';
+import webrtcBroadcastService from '@/services/webrtcBroadcastService'; // ✅ NEW IMPORT
 
 const InstructorLiveSessionPage = ({ params }) => {
   const router = useRouter();
@@ -26,6 +29,7 @@ const InstructorLiveSessionPage = ({ params }) => {
   const [isMicOn, setIsMicOn] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isBroadcasting, setIsBroadcasting] = useState(false); // ✅ NEW STATE
   const [roomMembers, setRoomMembers] = useState({ students: [], instructors: [], totalCount: 0 });
   const [streamLoading, setStreamLoading] = useState(false);
 
@@ -76,6 +80,12 @@ const InstructorLiveSessionPage = ({ params }) => {
   };
 
   const handleCleanup = () => {
+    // ✅ NEW: Stop broadcasting on cleanup
+    if (isBroadcasting) {
+      console.log('🧹 Cleaning up: Stopping broadcast');
+      webrtcBroadcastService.stopBroadcast();
+    }
+    
     webrtcService.cleanup();
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -98,7 +108,15 @@ const InstructorLiveSessionPage = ({ params }) => {
           return;
         }
 
+        console.log('📊 DEBUG - Session slot data:', {
+          slotIndex,
+          slotId: currentSlot._id,
+          matrixRoomId: currentSlot.matrixRoomId,
+          currentSlot
+        });
+
         setSessionData({
+          sessionId: currentSlot._id || slotIndex, // ✅ Store actual session ID
           sessionTitle: `Session ${parseInt(slotIndex) + 1}`,
           courseTitle: data.courseTitle,
           roomId: currentSlot.matrixRoomId,
@@ -148,16 +166,19 @@ const InstructorLiveSessionPage = ({ params }) => {
       setIsRecording(true);
 
       console.log('✅ WebRTC setup complete - YOU SHOULD SEE YOUR VIDEO NOW!');
+      
+      return stream; // ✅ Return stream for broadcasting
     } catch (error) {
       console.error('❌ WebRTC setup failed:', error);
       toast.error('Failed to access camera/microphone');
+      throw error;
     }
   };
 
   const handleStartSession = async () => {
     try {
       setIsManaging(true);
-      console.log('🚀 START BUTTON: Step 1 - Starting live session');
+      console.log('🚀 START: Step 1 - Starting live session');
 
       if (isStreaming) {
         console.log('✅ Already streaming');
@@ -173,7 +194,7 @@ const InstructorLiveSessionPage = ({ params }) => {
           sessionTitle: `Session ${parseInt(slotIndex) + 1}`
         });
 
-        console.log('🚀 START BUTTON: Step 2 - Backend response:', result);
+        console.log('🚀 START: Step 2 - Backend response:', result);
 
         if (!result.success) {
           console.error('❌ Failed to start session:', result.error);
@@ -184,24 +205,46 @@ const InstructorLiveSessionPage = ({ params }) => {
 
         toast.success('Live session started! 🔴');
         
-        console.log('🚀 START BUTTON: Step 3 - Updating session status');
         setSessionData(prev => ({
           ...prev,
           sessionStatus: 'live'
         }));
       }
 
-      console.log('🚀 START BUTTON: Step 4 - Setting streaming states');
+      console.log('🚀 START: Step 3 - Setting streaming states');
       setIsStreaming(true);
       setIsCameraOn(true);
       setIsMicOn(true);
       
-      console.log('🚀 START BUTTON: Step 5 - Waiting 100ms for React render');
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      console.log('🚀 START BUTTON: Step 6 - Calling setupWebRTC');
-      await setupWebRTC();
-      console.log('🚀 START BUTTON: Step 7 - Done!');
+      console.log('🚀 START: Step 4 - Setting up WebRTC');
+      const stream = await setupWebRTC();
+      
+      // ✅ NEW: Initialize and start broadcasting
+      console.log('📡 START: Step 5 - Initializing broadcast service');
+      // Use Matrix Room ID as session key (guaranteed to be the same)
+      const sessionKey = sessionData?.matrixRoomId || sessionData?.roomId;
+      console.log('📡 Session key (matrixRoomId):', sessionKey);
+      
+      const initResult = await webrtcBroadcastService.initialize(sessionKey, true);
+      if (!initResult.success) {
+        console.error('❌ Broadcast init failed:', initResult.error);
+        toast.error('Failed to initialize broadcasting');
+        return;
+      }
+      
+      console.log('📡 START: Step 6 - Starting broadcast with stream');
+      const broadcastResult = await webrtcBroadcastService.startBroadcast(stream);
+      if (!broadcastResult.success) {
+        console.error('❌ Broadcast start failed:', broadcastResult.error);
+        toast.error('Failed to start broadcasting');
+        return;
+      }
+      
+      setIsBroadcasting(true);
+      console.log('✅ START: Broadcasting to students successfully!');
+      toast.success('🎥 Broadcasting to students!');
       
     } catch (err) {
       console.error('❌ Error starting session:', err);
@@ -214,16 +257,23 @@ const InstructorLiveSessionPage = ({ params }) => {
   const handleEndSession = async () => {
     try {
       setIsManaging(true);
-      console.log('🔴 Step 1: Ending live session...');
+      console.log('🔴 END: Step 1 - Ending live session');
 
-      console.log('🔴 Step 2: Stopping recording...');
+      // ✅ NEW: Stop broadcasting first
+      if (isBroadcasting) {
+        console.log('📡 END: Step 1.5 - Stopping broadcast');
+        webrtcBroadcastService.stopBroadcast();
+        setIsBroadcasting(false);
+        toast.info('Stopped broadcasting');
+      }
+
+      console.log('🔴 END: Step 2 - Stopping recording');
       const recordingBlob = await webrtcService.stopRecording();
       setIsRecording(false);
-      console.log('✅ Recording stopped, blob size:', recordingBlob?.size);
 
       let recordingUrl = '';
       if (recordingBlob) {
-        console.log('📤 Step 3: Uploading recording...');
+        console.log('📤 END: Step 3 - Uploading recording');
         toast.success('Uploading recording...');
         
         try {
@@ -235,7 +285,6 @@ const InstructorLiveSessionPage = ({ params }) => {
 
           if (uploadResult.success) {
             recordingUrl = uploadResult.data.url;
-            console.log('✅ Recording uploaded:', recordingUrl);
             toast.success('Recording uploaded!');
           }
         } catch (uploadError) {
@@ -244,7 +293,7 @@ const InstructorLiveSessionPage = ({ params }) => {
         }
       }
 
-      console.log('🔴 Step 4: Calling backend to end session...');
+      console.log('🔴 END: Step 4 - Calling backend to end session');
       const result = await manageLiveSession(courseId, {
         action: 'end',
         slotIndex: parseInt(slotIndex),
@@ -252,7 +301,6 @@ const InstructorLiveSessionPage = ({ params }) => {
       });
 
       if (result.success) {
-        console.log('✅ Step 5: Session ended successfully');
         toast.success('Live session ended ✅');
         
         setIsCameraOn(false);
@@ -267,14 +315,12 @@ const InstructorLiveSessionPage = ({ params }) => {
           sessionStatus: 'completed'
         }));
       } else {
-        console.error('❌ Failed to end session:', result.error);
         toast.error(result.error || 'Failed to end session');
       }
     } catch (err) {
       console.error('❌ Error ending session:', err);
       toast.error('Failed to end session');
     } finally {
-      console.log('🔴 Step 6: Setting isManaging = false');
       setIsManaging(false);
     }
   };
@@ -382,7 +428,6 @@ const InstructorLiveSessionPage = ({ params }) => {
 
   return (
     <div className="h-auto d-flex flex-column bg-dark">
-      {/* Professional Header */}
       <div className="bg-gradient" style={{ 
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
@@ -390,12 +435,7 @@ const InstructorLiveSessionPage = ({ params }) => {
         <Container fluid className="px-4">
           <div className="d-flex align-items-center justify-content-between py-3">
             <div className="d-flex align-items-center gap-3">
-              <Button
-                variant="light"
-                size="sm"
-                onClick={handleBackToDashboard}
-                className="d-flex align-items-center gap-2 px-3"
-              >
+              <Button variant="light" size="sm" onClick={handleBackToDashboard} className="d-flex align-items-center gap-2 px-3">
                 <FaSignOutAlt />
                 <span className="d-none d-md-inline">Exit</span>
               </Button>
@@ -407,6 +447,12 @@ const InstructorLiveSessionPage = ({ params }) => {
             
             <div className="d-flex align-items-center gap-3">
               {getSessionStatusBadge()}
+              {/* ✅ NEW: Broadcasting indicator */}
+              {isBroadcasting && (
+                <Badge bg="success" className="px-3 py-2">
+                  📡 Broadcasting
+                </Badge>
+              )}
               <div className="text-white d-none d-md-flex align-items-center gap-2">
                 <FaUsers />
                 <span className="fw-bold">{roomMembers.studentCount || 0}</span>
@@ -417,14 +463,11 @@ const InstructorLiveSessionPage = ({ params }) => {
         </Container>
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-grow-1 overflow-hidden">
         <Container fluid className="h-100 p-3">
           <Row className="h-100 g-3">
-            {/* Video Section - 70% */}
             <Col lg={8} xxl={9} className="h-100">
               <div className="h-100 d-flex flex-column">
-                {/* Video Display */}
                 <div className="flex-grow-1 position-relative rounded-3 overflow-hidden shadow-lg" style={{
                   background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                   minHeight: '400px'
@@ -439,7 +482,6 @@ const InstructorLiveSessionPage = ({ params }) => {
                         className="w-100 h-100 position-absolute top-0 start-0"
                         style={{ objectFit: 'cover' }}
                       />
-                      {/* Recording Indicator */}
                       {isRecording && (
                         <div className="position-absolute top-0 start-0 m-3">
                           <Badge bg="danger" className="px-3 py-2 d-flex align-items-center gap-2 shadow">
@@ -448,7 +490,6 @@ const InstructorLiveSessionPage = ({ params }) => {
                           </Badge>
                         </div>
                       )}
-                      {/* Stats Overlay */}
                       <div className="position-absolute top-0 end-0 m-3">
                         <div className="bg-dark bg-opacity-75 rounded-3 px-3 py-2 text-white">
                           <div className="d-flex align-items-center gap-2">
@@ -476,53 +517,30 @@ const InstructorLiveSessionPage = ({ params }) => {
                   )}
                 </div>
 
-                {/* Controls Bar */}
                 <div className="mt-3">
                   <Card className="border-0 shadow-sm" style={{ background: 'rgba(255,255,255,0.95)' }}>
                     <Card.Body className="p-3">
                       <Row className="align-items-center">
                         <Col>
                           <div className="d-flex gap-2">
-                            <Button
-                              variant={isCameraOn ? "primary" : "outline-secondary"}
-                              onClick={toggleCamera}
-                              disabled={!isStreaming}
-                              className="d-flex align-items-center gap-2 px-3"
-                            >
+                            <Button variant={isCameraOn ? "primary" : "outline-secondary"} onClick={toggleCamera} disabled={!isStreaming} className="d-flex align-items-center gap-2 px-3">
                               {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
-                              <span className="d-none d-md-inline">{isCameraOn ? 'Camera' : 'Camera'}</span>
+                              <span className="d-none d-md-inline">Camera</span>
                             </Button>
-                            <Button
-                              variant={isMicOn ? "primary" : "outline-secondary"}
-                              onClick={toggleMicrophone}
-                              disabled={!isStreaming}
-                              className="d-flex align-items-center gap-2 px-3"
-                            >
+                            <Button variant={isMicOn ? "primary" : "outline-secondary"} onClick={toggleMicrophone} disabled={!isStreaming} className="d-flex align-items-center gap-2 px-3">
                               {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
-                              <span className="d-none d-md-inline">{isMicOn ? 'Mic' : 'Mic'}</span>
+                              <span className="d-none d-md-inline">Mic</span>
                             </Button>
                           </div>
                         </Col>
                         <Col xs="auto">
                           {!isStreaming ? (
-                            <Button
-                              variant="success"
-                              size="lg"
-                              onClick={handleStartSession}
-                              disabled={isManaging}
-                              className="px-4 d-flex align-items-center gap-2 shadow"
-                            >
+                            <Button variant="success" size="lg" onClick={handleStartSession} disabled={isManaging} className="px-4 d-flex align-items-center gap-2 shadow">
                               <FaPlay />
                               <span>{isManaging ? 'Starting...' : isSessionLive() ? 'Start Streaming' : 'Go Live'}</span>
                             </Button>
                           ) : (
-                            <Button
-                              variant="danger"
-                              size="lg"
-                              onClick={handleEndSession}
-                              disabled={isManaging}
-                              className="px-4 d-flex align-items-center gap-2 shadow"
-                            >
+                            <Button variant="danger" size="lg" onClick={handleEndSession} disabled={isManaging} className="px-4 d-flex align-items-center gap-2 shadow">
                               <FaStop />
                               <span>{isManaging ? 'Ending...' : 'End Session'}</span>
                             </Button>
@@ -535,10 +553,8 @@ const InstructorLiveSessionPage = ({ params }) => {
               </div>
             </Col>
 
-            {/* Sidebar - 30% */}
             <Col lg={4} xxl={3} className="h-auto">
               <div className="h-100 d-flex flex-column gap-3">
-                {/* Session Info */}
                 <Card className="border-0 shadow-sm">
                   <Card.Body className="p-3">
                     <div className="d-flex align-items-center mb-3">
@@ -566,7 +582,6 @@ const InstructorLiveSessionPage = ({ params }) => {
                   </Card.Body>
                 </Card>
 
-                {/* Chat Panel */}
                 <div className="flex-grow-1 position-relative" style={{ minHeight: 0 }}>
                   {matrixCredentials && sessionData?.matrixRoomId ? (
                     <div className="h-100">
