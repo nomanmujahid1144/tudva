@@ -45,6 +45,8 @@ export async function POST(request) {
     // Parse the request body
     const reqBody = await request.json();
     
+    console.log(reqBody, 'reqBody')
+
     // Extract course ID
     const { courseId } = reqBody;
     
@@ -58,6 +60,8 @@ export async function POST(request) {
     
     // Find the course
     const course = await Course.findById(courseId);
+
+    console.log(course, 'course')
     
     if (!course) {
       return NextResponse.json({
@@ -87,6 +91,10 @@ export async function POST(request) {
     const plannedLessons = course.liveCourseMeta?.plannedLessons || 0;
     const startDate = course.liveCourseMeta?.startDate ? new Date(course.liveCourseMeta.startDate) : new Date();
     
+    console.log(timeSlots, 'timeSlots')
+    console.log(plannedLessons, 'plannedLessons')
+    console.log(startDate, 'startDate')
+
     // Verify course has time slots and planned lessons
     if (timeSlots.length === 0 || plannedLessons === 0) {
       return NextResponse.json({
@@ -100,6 +108,8 @@ export async function POST(request) {
       learner: new mongoose.Types.ObjectId(auth.user.id)
     });
     
+    console.log(scheduler, 'scheduler')
+
     if (!scheduler) {
       // Create new scheduler for the learner
       scheduler = new CourseSchedulerEnrollment({
@@ -117,6 +127,8 @@ export async function POST(request) {
     const existingCourseIndex = scheduler.scheduledCourses.findIndex(
       sc => sc.course.toString() === courseId
     );
+
+    console.log(existingCourseIndex, 'existingCourseIndex')
     
     // If course is already fully scheduled, return error
     if (existingCourseIndex !== -1) {

@@ -85,7 +85,7 @@ const InstructorLiveSessionPage = ({ params }) => {
       console.log('🧹 Cleaning up: Stopping broadcast');
       webrtcBroadcastService.stopBroadcast();
     }
-    
+
     webrtcService.cleanup();
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -146,14 +146,14 @@ const InstructorLiveSessionPage = ({ params }) => {
       console.log('🔄 Step 1: Getting media stream...');
       const stream = await webrtcService.getMediaStream();
       console.log('✅ Step 2: Got stream with', stream.getVideoTracks().length, 'video tracks');
-      
+
       console.log('🔄 Step 3: Checking videoRef.current...');
       if (videoRef.current) {
         console.log('✅ Step 4: Video element EXISTS, attaching stream');
         videoRef.current.srcObject = stream;
         videoRef.current.muted = true;
         videoRef.current.playsInline = true;
-        
+
         console.log('🔄 Step 5: Playing video...');
         await videoRef.current.play();
         console.log('✅ Step 6: Video PLAYING!');
@@ -166,7 +166,7 @@ const InstructorLiveSessionPage = ({ params }) => {
       setIsRecording(true);
 
       console.log('✅ WebRTC setup complete - YOU SHOULD SEE YOUR VIDEO NOW!');
-      
+
       return stream; // ✅ Return stream for broadcasting
     } catch (error) {
       console.error('❌ WebRTC setup failed:', error);
@@ -177,6 +177,7 @@ const InstructorLiveSessionPage = ({ params }) => {
 
   const handleStartSession = async () => {
     try {
+      console.log('🚀🚀🚀 START BUTTON CLICKED! 🚀🚀🚀'); // ADD THIS LINE
       setIsManaging(true);
       console.log('🚀 START: Step 1 - Starting live session');
 
@@ -204,7 +205,7 @@ const InstructorLiveSessionPage = ({ params }) => {
         }
 
         toast.success('Live session started! 🔴');
-        
+
         setSessionData(prev => ({
           ...prev,
           sessionStatus: 'live'
@@ -215,25 +216,25 @@ const InstructorLiveSessionPage = ({ params }) => {
       setIsStreaming(true);
       setIsCameraOn(true);
       setIsMicOn(true);
-      
+
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       console.log('🚀 START: Step 4 - Setting up WebRTC');
       const stream = await setupWebRTC();
-      
+
       // ✅ NEW: Initialize and start broadcasting
       console.log('📡 START: Step 5 - Initializing broadcast service');
       // Use Matrix Room ID as session key (guaranteed to be the same)
       const sessionKey = sessionData?.matrixRoomId || sessionData?.roomId;
       console.log('📡 Session key (matrixRoomId):', sessionKey);
-      
+
       const initResult = await webrtcBroadcastService.initialize(sessionKey, true);
       if (!initResult.success) {
         console.error('❌ Broadcast init failed:', initResult.error);
         toast.error('Failed to initialize broadcasting');
         return;
       }
-      
+
       console.log('📡 START: Step 6 - Starting broadcast with stream');
       const broadcastResult = await webrtcBroadcastService.startBroadcast(stream);
       if (!broadcastResult.success) {
@@ -241,11 +242,11 @@ const InstructorLiveSessionPage = ({ params }) => {
         toast.error('Failed to start broadcasting');
         return;
       }
-      
+
       setIsBroadcasting(true);
       console.log('✅ START: Broadcasting to students successfully!');
       toast.success('🎥 Broadcasting to students!');
-      
+
     } catch (err) {
       console.error('❌ Error starting session:', err);
       toast.error('Failed to start live session');
@@ -275,7 +276,7 @@ const InstructorLiveSessionPage = ({ params }) => {
       if (recordingBlob) {
         console.log('📤 END: Step 3 - Uploading recording');
         toast.success('Uploading recording...');
-        
+
         try {
           const uploadResult = await webrtcService.uploadRecording(
             recordingBlob,
@@ -302,14 +303,14 @@ const InstructorLiveSessionPage = ({ params }) => {
 
       if (result.success) {
         toast.success('Live session ended ✅');
-        
+
         setIsCameraOn(false);
         setIsMicOn(false);
         setIsStreaming(false);
         setStreamLoading(false);
-        
+
         webrtcService.stopLocalStream();
-        
+
         setSessionData(prev => ({
           ...prev,
           sessionStatus: 'completed'
@@ -427,8 +428,8 @@ const InstructorLiveSessionPage = ({ params }) => {
   }
 
   return (
-    <div className="h-auto d-flex flex-column bg-dark">
-      <div className="bg-gradient" style={{ 
+    <div className="vh-100 d-flex flex-column bg-dark">
+      <div className="bg-gradient" style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
@@ -444,7 +445,7 @@ const InstructorLiveSessionPage = ({ params }) => {
                 <small className="opacity-75">{sessionData?.courseTitle}</small>
               </div>
             </div>
-            
+
             <div className="d-flex align-items-center gap-3">
               {getSessionStatusBadge()}
               {/* ✅ NEW: Broadcasting indicator */}
@@ -553,9 +554,9 @@ const InstructorLiveSessionPage = ({ params }) => {
               </div>
             </Col>
 
-            <Col lg={4} xxl={3} className="h-auto">
+            <Col lg={4} xxl={3} className="h-100">
               <div className="h-100 d-flex flex-column gap-3">
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-sm flex-shrink-0">
                   <Card.Body className="p-3">
                     <div className="d-flex align-items-center mb-3">
                       <FaClock className="text-primary me-2" />
@@ -582,7 +583,8 @@ const InstructorLiveSessionPage = ({ params }) => {
                   </Card.Body>
                 </Card>
 
-                <div className="flex-grow-1 position-relative" style={{ minHeight: 0 }}>
+                {/* ✅ FIXED: Chat panel with proper height constraint */}
+                <div className="flex-grow-1 overflow-hidden" style={{ minHeight: 0 }}>
                   {matrixCredentials && sessionData?.matrixRoomId ? (
                     <div className="h-100">
                       <ChatPanel
@@ -592,6 +594,8 @@ const InstructorLiveSessionPage = ({ params }) => {
                         className="shadow-sm border-0 h-100"
                         showHeader={true}
                         allowFileUpload={false}
+                        showMemberCount={true}
+                        actualMemberCount={roomMembers.studentCount || 0}
                       />
                     </div>
                   ) : (

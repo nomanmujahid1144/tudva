@@ -1,4 +1,4 @@
-// src/app/api/course/[courseId]/join-session/route.js - UPDATED FOR NEW MATRIX SERVER
+// src/app/api/course/[courseId]/join-session/route.js - FINAL FIXED VERSION
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Course, { CourseType } from '@/models/Course';
@@ -6,61 +6,21 @@ import CourseSchedulerEnrollment from '@/models/CourseSchedulerEnrollment';
 import User from '@/models/User';
 import mongoose from 'mongoose';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
-import axios from 'axios';
 
 // ✅ UPDATED: New Matrix server configuration
 const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151.hu';
-const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
 const MATRIX_DOMAIN = process.env.MATRIX_DOMAIN || '151.hu';
 
 /**
- * ✅ UPDATED: Invite user to Matrix room
+ * ✅ SIMPLIFIED: Skip Matrix invite entirely
+ * ChatPanel will handle joining the Matrix room via /api/matrix/join-room
  */
 async function inviteUserToRoom(roomId, userId) {
-  try {
-    await axios.post(
-      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`, // ✅ Changed to v3
-      {
-        user_id: userId
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return true;
-  } catch (error) {
-    console.error('Error inviting user to room:', error.response?.data || error.message);
-    return false;
-  }
-}
-
-/**
- * ✅ UPDATED: Send message to Matrix room
- */
-async function sendMessageToRoom(roomId, message) {
-  try {
-    const txnId = Date.now(); // Transaction ID
-    await axios.put(
-      `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`, // ✅ Changed to PUT with txnId
-      {
-        msgtype: 'm.text',
-        body: message
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return true;
-  } catch (error) {
-    console.error('Error sending message to room:', error.response?.data || error.message);
-    return false;
-  }
+  console.log('ℹ️ Skipping backend Matrix invite');
+  console.log('ℹ️ ChatPanel will handle Matrix room join for:', userId);
+  console.log('ℹ️ Room:', roomId);
+  
+  return true; // Always return success
 }
 
 /**
@@ -250,38 +210,30 @@ export async function POST(request, { params }) {
     
     // Get user information for Matrix
     const user = await User.findById(auth.user.id).select('fullName email');
-    const matrixUserId = `@student_${auth.user.id}:${MATRIX_DOMAIN}`; // ✅ Updated domain
+    const matrixUserId = `@student_${auth.user.id}:${MATRIX_DOMAIN}`;
     
-    console.log('🔗 Inviting student to Matrix room:', {
+    console.log('🔗 Student joining session:', {
       userId: auth.user.id,
       userName: user.fullName,
       matrixUserId,
       roomId: timeSlot.matrixRoomId
     });
     
-    // Invite user to the Matrix room
+    // ✅ SIMPLIFIED: Just skip the invite - ChatPanel will handle it
     const inviteSuccess = await inviteUserToRoom(timeSlot.matrixRoomId, matrixUserId);
     
     if (!inviteSuccess) {
-      console.log('❌ Failed to invite user to Matrix room');
+      console.log('❌ Failed to prepare session join');
       return NextResponse.json({
         success: false,
-        error: 'Failed to join the session room. Please try again.'
+        error: 'Failed to prepare session join'
       }, { status: 500 });
     }
     
-    console.log('✅ User invited to Matrix room successfully');
+    console.log('✅ Session join prepared successfully');
     
-    // Send welcome message
-    try {
-      await sendMessageToRoom(
-        timeSlot.matrixRoomId,
-        `🎓 ${user.fullName} has joined the session.`
-      );
-      console.log('✅ Welcome message sent');
-    } catch (msgError) {
-      console.log('⚠️ Welcome message failed, but join succeeded');
-    }
+    // ✅ Skip welcome message - ChatPanel will send it
+    console.log('ℹ️ Welcome message will be sent by ChatPanel when student actually joins Matrix room');
     
     // Return session join details
     const joinResponse = {
@@ -449,7 +401,7 @@ export async function GET(request, { params }) {
         minutesUntilSession: minutesUntilSession > 0 ? minutesUntilSession : 0,
         hasMatrixRoom: !!(timeSlot && timeSlot.matrixRoomId),
         matrixRoomStatus: timeSlot?.sessionStatus || 'scheduled',
-        isSessionLive: timeSlot?.sessionStatus === 'live' // Added this for debugging
+        isSessionLive: timeSlot?.sessionStatus === 'live'
       }
     });
     

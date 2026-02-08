@@ -1,4 +1,6 @@
 // src/app/api/scheduler/available-courses/route.js
+// FIXED: Prevent infinite loop in live course session calculation
+
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Course, { CourseStatus, CourseType } from '@/models/Course';
@@ -13,7 +15,7 @@ export async function GET(request) {
     
     // Authenticate the request
     const auth = await authenticateRequest(request);
-    
+
     if (!auth.success) {
       return NextResponse.json({
         success: false,
@@ -23,12 +25,12 @@ export async function GET(request) {
     
     // Get query parameters
     const { searchParams } = new URL(request.url);
-    const courseType = searchParams.get('type'); // 'live', 'recorded', or null for all
-    const query = searchParams.get('query') || ''; // Search query
+    const courseType = searchParams.get('type');
+    const query = searchParams.get('query') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
-    
+
     // Build query object for finding courses
     const queryObj = {
       status: CourseStatus.PUBLISHED,
@@ -49,7 +51,7 @@ export async function GET(request) {
       ];
     }
     
-    // Get the user's scheduler enrollment to check already scheduled items
+    // Get the user's scheduler enrollment
     const scheduler = await CourseSchedulerEnrollment.findOne({
       learner: new mongoose.Types.ObjectId(auth.user.id)
     });
@@ -83,49 +85,36 @@ export async function GET(request) {
         }
       }
       
-      // Base course info for all course types
+      // Base course info
       const result = {
         _id: course._id,
         title: course.title,
-        description: course.shortDescription || (course.description.substring(0, 150) + '...'),
+        description: course.shortDescription || (course.description?.substring(0, 150) + '...'),
         type: course.type,
         backgroundColorHex: course.backgroundColorHex,
         iconUrl: course.iconUrl,
         level: course.level,
         progress: {
           scheduledCount: scheduledItemIds.length,
-          totalCount: 0 // Will be set based on course type
+          totalCount: 0
         }
       };
       
-      // Add specific info for live courses
+      // ✅ LIVE COURSES - FIXED INFINITE LOOP
       if (course.type === CourseType.LIVE) {
-        // Get info about live course
         const plannedLessons = course.liveCourseMeta?.plannedLessons || 0;
         result.progress.totalCount = plannedLessons;
         
-        // If all sessions are already scheduled, skip this course
+        // Skip if all sessions are already scheduled
         if (scheduledItemIds.length >= plannedLessons) {
           continue;
         }
         
-        // Get time slots
         const timeSlots = course.liveCourseMeta?.timeSlots || [];
-        
-        // Calculate sessions based on time slots and plannedLessons
         const sessionSchedule = [];
         const startDate = course.liveCourseMeta?.startDate ? new Date(course.liveCourseMeta.startDate) : new Date();
         
-        // Get the day of the week for each time slot
-        const timeSlotsByDay = {};
-        timeSlots.forEach(slot => {
-          if (!timeSlotsByDay[slot.weekDay]) {
-            timeSlotsByDay[slot.weekDay] = [];
-          }
-          timeSlotsByDay[slot.weekDay].push(slot);
-        });
-        
-        // Get the slot display times
+        // Slot display times
         const slotTimes = {
           'slot_1': '9:00 - 9:40',
           'slot_2': '9:45 - 10:25',
@@ -135,61 +124,60 @@ export async function GET(request) {
           'slot_6': '14:20 - 15:00'
         };
         
-        // Calculate next Wednesday (or course start date)
+        // ✅ FIX: Calculate next Wednesday properly
         const firstWednesday = new Date(startDate);
-        const daysTillWednesday = (3 - firstWednesday.getDay() + 7) % 7;
-        firstWednesday.setDate(firstWednesday.getDate() + daysTillWednesday);
+        const currentDay = firstWednesday.getDay();
+        
+        // If it's Wednesday (3), use same day. Otherwise, get next Wednesday
+        if (currentDay !== 3) {
+          const daysTillWednesday = (3 - currentDay + 7) % 7;
+          firstWednesday.setDate(firstWednesday.getDate() + daysTillWednesday);
+        }
         
         // Reset to midnight
         firstWednesday.setHours(0, 0, 0, 0);
         
-        // Calculate sessions for each week based on time slots
+        // ✅ FIX: Add safety check to prevent infinite loop
         const slotsPerWeek = timeSlots.length;
-        const weeksNeeded = Math.ceil(plannedLessons / slotsPerWeek);
+        const weeksNeeded = Math.ceil(plannedLessons / Math.max(slotsPerWeek, 1)); // Prevent division by zero
         
         let sessionCount = 0;
+        const maxIterations = weeksNeeded + 1; // Safety limit
         
-        for (let week = 0; week < weeksNeeded; week++) {
+        // ✅ FIX: Use proper loop with break conditions
+        for (let week = 0; week < maxIterations && sessionCount < plannedLessons; week++) {
           const weekDate = new Date(firstWednesday);
           weekDate.setDate(weekDate.getDate() + (week * 7));
           
-          // For Wednesday slots
-          if (timeSlotsByDay['wednesday']) {
-            for (const slot of timeSlotsByDay['wednesday']) {
-              sessionCount++;
-              
-              // Break if we've reached plannedLessons
-              if (sessionCount > plannedLessons) break;
-              
-              // Get formatted session date
-              const sessionDate = new Date(weekDate);
-              
-              // Create session object
-              const session = {
-                sessionNumber: sessionCount,
-                sessionId: `session_${sessionCount}`,
-                title: `Session ${sessionCount}`,
-                date: sessionDate,
-                formattedDate: sessionDate.toLocaleDateString('en-US', { 
-                  month: 'short', day: 'numeric', year: 'numeric'
-                }),
-                weekDay: 'wednesday',
-                slotId: slot.slot,
-                slotTime: slotTimes[slot.slot] || 'Unknown time',
-                isScheduled: scheduledItemIds.includes(`session_${sessionCount}`),
-                isFirstSession: sessionCount === 1
-              };
-              
-              // Add to sessions
-              sessionSchedule.push(session);
-            }
+          // Process each time slot for this week
+          for (const slot of timeSlots) {
+            if (sessionCount >= plannedLessons) break; // ✅ Safety break
+            
+            sessionCount++;
+            const sessionDate = new Date(weekDate);
+            
+            const session = {
+              sessionNumber: sessionCount,
+              sessionId: `session_${sessionCount}`,
+              title: `Session ${sessionCount}`,
+              date: sessionDate,
+              formattedDate: sessionDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric'
+              }),
+              weekDay: 'wednesday',
+              slotId: slot.slot,
+              slotTime: slotTimes[slot.slot] || 'Unknown time',
+              isScheduled: scheduledItemIds.includes(`session_${sessionCount}`),
+              isFirstSession: sessionCount === 1
+            };
+            
+            sessionSchedule.push(session);
           }
-          
-          // If we've reached plannedLessons, break
-          if (sessionCount >= plannedLessons) break;
         }
         
-        // Include live course meta information
+        // Include live course meta
         result.liveCourseMeta = {
           maxEnrollment: course.liveCourseMeta?.maxEnrollment || 0,
           plannedLessons: plannedLessons,
@@ -203,14 +191,14 @@ export async function GET(request) {
           sessionSchedule: sessionSchedule,
           remainingSessions: plannedLessons - scheduledItemIds.length,
           nextSessionNumber: scheduledItemIds.length + 1,
-          isFullySchedulable: true, // Live courses can be added all at once
+          isFullySchedulable: true,
           weeksOfInstruction: weeksNeeded
         };
       }
       
-      // Add specific info for recorded courses
+      // ✅ RECORDED COURSES
       if (course.type === CourseType.RECORDED) {
-        // Calculate total videos for the course
+        // Calculate total videos
         let totalVideos = 0;
         if (course.modules) {
           course.modules.forEach(module => {
@@ -227,14 +215,12 @@ export async function GET(request) {
           continue;
         }
         
-        // Track which lessons are already scheduled by their sequence
+        // Track scheduled lesson sequences
         const scheduledLessonSequences = new Set();
         let totalLessonIndex = 0;
-        
-        // Create a mapping of itemId to sequence number
         const itemIdToSequence = {};
         
-        // First, map all lessons to sequence numbers
+        // Map all lessons to sequence numbers
         for (const module of course.modules) {
           if (module.videos && module.videos.length > 0) {
             for (const video of module.videos) {
@@ -244,7 +230,7 @@ export async function GET(request) {
           }
         }
         
-        // Now, identify which sequences are already scheduled
+        // Identify scheduled sequences
         for (const itemId of scheduledItemIds) {
           const sequence = itemIdToSequence[itemId];
           if (sequence) {
@@ -252,10 +238,8 @@ export async function GET(request) {
           }
         }
         
-        // Reset counter to create available lessons list
+        // Reset and create available lessons list
         totalLessonIndex = 0;
-        
-        // Add available lessons
         result.availableLessons = [];
         
         for (const module of course.modules) {
@@ -274,7 +258,6 @@ export async function GET(request) {
                 .map(i => i + 1)
                 .every(seq => scheduledLessonSequences.has(seq));
               
-              // Add to available lessons
               result.availableLessons.push({
                 id: itemId,
                 type: 'recorded-lesson',
@@ -293,14 +276,14 @@ export async function GET(request) {
         }
       }
       
-      // Only add course if it has available lessons or is a live course not fully scheduled
-      if ((course.type === CourseType.RECORDED && result.availableLessons.length > 0) || 
+      // Only add course if it has available content
+      if ((course.type === CourseType.RECORDED && result.availableLessons?.length > 0) || 
           (course.type === CourseType.LIVE && result.progress.scheduledCount < result.progress.totalCount)) {
         formattedCourses.push(result);
       }
     }
     
-    // Return paginated courses with metadata
+    // Return response
     return NextResponse.json({
       success: true,
       data: {

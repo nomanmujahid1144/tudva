@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
-import { FaVideo, FaVideoSlash, FaVolumeUp, FaVolumeMute, FaSignOutAlt, FaUsers, FaClock, FaCircle } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
+import { FaSignOutAlt, FaClock, FaCircle, FaVideo } from 'react-icons/fa';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { joinLiveSession, getSessionJoinInfo } from '@/services/learningService';
@@ -23,8 +23,6 @@ const StudentLiveSessionPage = ({ params }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isJoined, setIsJoined] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [remoteStream, setRemoteStream] = useState(null); // ✅ NEW STATE
   const [isConnecting, setIsConnecting] = useState(false); // ✅ NEW STATE
 
@@ -45,10 +43,21 @@ const StudentLiveSessionPage = ({ params }) => {
 
   // ✅ NEW: Setup stream reception when joined
   useEffect(() => {
-    if (isJoined && sessionData && user) {
+    if (isJoined && sessionData && user && !remoteStream) {
       setupStreamReception();
     }
   }, [isJoined, sessionData, user]);
+
+  // ✅ NEW: Update video element when stream changes
+  useEffect(() => {
+    if (remoteStream && videoRef.current) {
+      console.log('🎥 Attaching stream to video element');
+      videoRef.current.srcObject = remoteStream;
+      videoRef.current.play().catch(err => {
+        console.error('Error playing video:', err);
+      });
+    }
+  }, [remoteStream]);
 
   const handleCleanup = () => {
     // ✅ NEW: Disconnect WebRTC receive service
@@ -56,7 +65,7 @@ const StudentLiveSessionPage = ({ params }) => {
       console.log('🧹 Cleaning up: Disconnecting WebRTC...');
       webrtcReceiveService.disconnect();
     }
-    
+
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
     }
@@ -67,12 +76,17 @@ const StudentLiveSessionPage = ({ params }) => {
     try {
       setIsConnecting(true);
       console.log('📡 Setting up stream reception...');
-      
+
       // Use Matrix Room ID as session key (same as instructor)
       const sessionKey = sessionData?.matrixRoomId || sessionData?.roomId;
       console.log('📡 Session key (matrixRoomId):', sessionKey);
-      
-      // Initialize WebRTC receive service
+
+      // ✅ ADD THIS DEBUG CODE:
+      console.log('🔍 DEBUG: webrtcReceiveService object:', webrtcReceiveService);
+      console.log('🔍 DEBUG: Has socket?', !!webrtcReceiveService.socket);
+      console.log('🔍 DEBUG: setupSocketListeners function exists?', typeof webrtcReceiveService.setupSocketListeners);
+
+      // Initialize WebRTC receive service with broadcast stop callback
       await webrtcReceiveService.initialize(
         sessionKey,
         user.id,
@@ -80,20 +94,19 @@ const StudentLiveSessionPage = ({ params }) => {
           console.log('✅ Received instructor stream!');
           setRemoteStream(stream);
           setIsConnecting(false);
-          
-          // Attach to video element
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play().catch(err => {
-              console.error('Error playing video:', err);
-            });
-            toast.success('Connected to instructor!');
-          }
+          toast.success('Connected to instructor!');
+        },
+        () => {
+          // ✅ NEW: Handle broadcast stopped
+          console.log('🛑 Instructor stopped broadcasting');
+          setRemoteStream(null);
+          setIsConnecting(true);
+          toast.info('Instructor stopped streaming');
         }
       );
-      
+
       console.log('📡 Waiting for instructor stream...');
-      
+
     } catch (error) {
       console.error('❌ Failed to setup stream reception:', error);
       setIsConnecting(false);
@@ -105,21 +118,21 @@ const StudentLiveSessionPage = ({ params }) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       console.log('🔄 Student joining session:', {
         courseId,
         sessionId,
         userId: user.id,
         userName: user.fullName
       });
-      
+
       const result = await joinLiveSession(courseId, sessionId);
-      
+
       console.log('📡 Join session API result:', result);
 
       if (result.success) {
         console.log('✅ Successfully joined session:', result.data);
-        
+
         setSessionData({
           sessionTitle: result.data.sessionTitle,
           courseTitle: result.data.courseTitle,
@@ -131,14 +144,14 @@ const StudentLiveSessionPage = ({ params }) => {
           joinedAt: result.data.joinedAt,
           user: result.data.user
         });
-        
+
         setIsJoined(true);
         toast.success('🎓 Joined live session!');
-        
+
       } else {
         console.error('❌ Failed to join session:', result.error);
         setError(result.error || 'Failed to join the live session');
-        
+
         try {
           const infoResult = await getSessionJoinInfo(courseId, sessionId);
           if (infoResult.success) {
@@ -167,24 +180,8 @@ const StudentLiveSessionPage = ({ params }) => {
 
   const handleLeaveSession = () => {
     handleCleanup();
-    router.push('/my-learning');
     toast.info('Left the session');
-  };
-
-  const toggleAudio = () => {
-    const newMutedState = !isMuted;
-    setIsMuted(newMutedState);
-    
-    if (videoRef.current) {
-      videoRef.current.muted = newMutedState;
-    }
-    
-    toast.success(newMutedState ? '🔇 Audio muted' : '🔊 Audio unmuted');
-  };
-
-  const toggleVideo = () => {
-    setIsVideoEnabled(!isVideoEnabled);
-    toast.info(isVideoEnabled ? 'Video hidden' : 'Video shown');
+    router.push('/my-learning');
   };
 
   const getSessionStatusBadge = () => {
@@ -255,7 +252,7 @@ const StudentLiveSessionPage = ({ params }) => {
   return (
     <div className="vh-100 d-flex flex-column bg-dark">
       {/* Professional Header */}
-      <div className="bg-gradient" style={{ 
+      <div className="bg-gradient" style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
@@ -276,13 +273,9 @@ const StudentLiveSessionPage = ({ params }) => {
                 <small className="opacity-75">{sessionData?.courseTitle}</small>
               </div>
             </div>
-            
+
             <div className="d-flex align-items-center gap-3">
               {getSessionStatusBadge()}
-              <div className="text-white d-none d-md-flex align-items-center gap-2">
-                <FaUsers />
-                <span className="fw-bold">Attending</span>
-              </div>
             </div>
           </div>
         </Container>
@@ -300,21 +293,20 @@ const StudentLiveSessionPage = ({ params }) => {
                   background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                   minHeight: '400px'
                 }}>
-                  {isVideoEnabled && isJoined ? (
+                  {isJoined ? (
                     <>
                       {/* ✅ Video element for remote stream */}
                       <video
                         ref={videoRef}
                         autoPlay
                         playsInline
-                        muted={isMuted}
                         className="w-100 h-100 position-absolute top-0 start-0"
-                        style={{ 
+                        style={{
                           objectFit: 'cover',
                           display: remoteStream ? 'block' : 'none' // Show only when stream exists
                         }}
                       />
-                      
+
                       {/* ✅ Placeholder while waiting for stream */}
                       {!remoteStream && (
                         <div className="w-100 h-100 d-flex align-items-center justify-content-center text-white">
@@ -333,8 +325,8 @@ const StudentLiveSessionPage = ({ params }) => {
                               {isConnecting ? 'Connecting...' : 'Watching Instructor'}
                             </h3>
                             <p className="text-white-50 mb-0">
-                              {isConnecting 
-                                ? 'Establishing connection to instructor...' 
+                              {isConnecting
+                                ? 'Establishing connection to instructor...'
                                 : 'Waiting for instructor to start streaming...'}
                             </p>
                             <Badge bg="danger" className="mt-3 px-3 py-2">
@@ -344,7 +336,7 @@ const StudentLiveSessionPage = ({ params }) => {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Live Indicator */}
                       {remoteStream && (
                         <div className="position-absolute top-0 start-0 m-3">
@@ -358,42 +350,30 @@ const StudentLiveSessionPage = ({ params }) => {
                   ) : (
                     <div className="w-100 h-100 d-flex align-items-center justify-content-center text-white">
                       <div className="text-center">
-                        <div className="mb-4">
-                          <div className="rounded-circle bg-white bg-opacity-10 mx-auto d-flex align-items-center justify-content-center"
-                            style={{ width: '120px', height: '120px' }}>
-                            <FaVideoSlash size={50} className="opacity-50" />
-                          </div>
-                        </div>
-                        <h3 className="mb-2">Video Hidden</h3>
-                        <p className="text-white-50 mb-0">Click the video button to show</p>
+                        <Spinner animation="border" variant="light" style={{ width: '60px', height: '60px' }} className="mb-3" />
+                        <h3 className="mb-2">Joining Session...</h3>
+                        <p className="text-white-50 mb-0">Please wait</p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Student Controls */}
+                {/* Student Info Bar - No Controls */}
                 <div className="mt-3">
                   <Card className="border-0 shadow-sm" style={{ background: 'rgba(255,255,255,0.95)' }}>
                     <Card.Body className="p-3">
                       <Row className="align-items-center">
                         <Col>
-                          <div className="d-flex gap-2">
-                            <Button
-                              variant={isVideoEnabled ? "primary" : "outline-secondary"}
-                              onClick={toggleVideo}
-                              className="d-flex align-items-center gap-2 px-3"
-                            >
-                              {isVideoEnabled ? <FaVideo /> : <FaVideoSlash />}
-                              <span className="d-none d-md-inline">Video</span>
-                            </Button>
-                            <Button
-                              variant={!isMuted ? "primary" : "outline-secondary"}
-                              onClick={toggleAudio}
-                              className="d-flex align-items-center gap-2 px-3"
-                            >
-                              {!isMuted ? <FaVolumeUp /> : <FaVolumeMute />}
-                              <span className="d-none d-md-inline">Audio</span>
-                            </Button>
+                          <div className="d-flex align-items-center gap-2">
+                            <Badge bg="success" className="px-2 py-1">
+                              <FaCircle size={6} className="me-1" />
+                              Live
+                            </Badge>
+                            {remoteStream && (
+                              <Badge bg="primary" className="px-2 py-1">
+                                Connected
+                              </Badge>
+                            )}
                           </div>
                         </Col>
                         <Col xs="auto">
@@ -453,6 +433,7 @@ const StudentLiveSessionPage = ({ params }) => {
                         className="shadow-sm border-0 h-100"
                         showHeader={true}
                         allowFileUpload={false}
+                        showMemberCount={false}
                       />
                     </div>
                   ) : (

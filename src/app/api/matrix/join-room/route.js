@@ -1,5 +1,5 @@
 // src/app/api/matrix/join-room/route.js
-// FIXED: Detect user role and use correct Matrix user prefix
+// UPDATED: Handle rate limits + retry logic + prevent duplicate invites
 
 import { NextResponse } from 'next/server';
 import { authenticateRequest } from '@/middlewares/authMiddleware';
@@ -9,13 +9,13 @@ const MATRIX_HOME_SERVER = process.env.MATRIX_HOME_SERVER || 'https://matrix.151
 const MATRIX_ACCESS_TOKEN = process.env.MATRIX_ACCESS_TOKEN;
 const MATRIX_DOMAIN = process.env.MATRIX_DOMAIN || '151.hu';
 
+// ✅ NEW: Helper to wait for retry
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function POST(request) {
   try {
     const auth = await authenticateRequest(request);
 
-    console.log(request.headers.get('Authorization')?.replace('Bearer ', ''));
-
-    console.log(auth, 'AUTH')
     if (!auth.success) {
       return NextResponse.json({
         success: false,
@@ -25,7 +25,7 @@ export async function POST(request) {
 
     const { roomId, userRole } = await request.json();
 
-    // ✅ FIXED: Determine correct Matrix user ID based on role
+    // Determine correct Matrix user ID based on role
     let matrixUserId;
     
     if (userRole === 'instructor') {
@@ -36,26 +36,75 @@ export async function POST(request) {
       console.log('👨‍🎓 Student joining as:', matrixUserId);
     }
 
-    // Invite user to the room (will fail if already invited - that's ok)
+    // ✅ NEW: Check if user is already in the room FIRST
+    let isAlreadyMember = false;
     try {
-      await axios.post(
-        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`,
-        { user_id: matrixUserId },
+      const membersResponse = await axios.get(
+        `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/joined_members`,
         {
-          headers: {
-            'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}` }
         }
       );
-      console.log('✅ User invited to room');
-    } catch (inviteError) {
-      // Already invited or already in room - this is normal
-      const errCode = inviteError.response?.data?.errcode;
-      if (errCode === 'M_FORBIDDEN' || errCode === 'M_UNKNOWN') {
-        console.log('ℹ️ User already in room or invited');
-      } else {
-        console.log('ℹ️ Invite error (continuing):', errCode);
+      
+      isAlreadyMember = membersResponse.data.joined && 
+                        Object.keys(membersResponse.data.joined).includes(matrixUserId);
+      
+      if (isAlreadyMember) {
+        console.log('✅ User already in room, skipping invite');
+      }
+    } catch (memberCheckError) {
+      console.log('⚠️ Could not check membership:', memberCheckError.message);
+    }
+
+    // ✅ UPDATED: Only invite if NOT already a member
+    if (!isAlreadyMember) {
+      try {
+        await axios.post(
+          `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`,
+          { user_id: matrixUserId },
+          {
+            headers: {
+              'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        console.log('✅ User invited to room');
+      } catch (inviteError) {
+        const errCode = inviteError.response?.data?.errcode;
+        
+        // ✅ NEW: Handle rate limit
+        if (errCode === 'M_LIMIT_EXCEEDED') {
+          const retryAfter = inviteError.response?.data?.retry_after_ms || 1000;
+          console.log(`⏳ Rate limited, waiting ${retryAfter}ms before retry...`);
+          
+          // Wait for the specified time
+          await wait(retryAfter);
+          
+          // ✅ Retry the invite once
+          try {
+            await axios.post(
+              `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/invite`,
+              { user_id: matrixUserId },
+              {
+                headers: {
+                  'Authorization': `Bearer ${MATRIX_ACCESS_TOKEN}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            console.log('✅ User invited to room (after retry)');
+          } catch (retryError) {
+            // If retry also fails, just proceed - user might already be in room
+            console.log('ℹ️ Retry failed, proceeding anyway');
+          }
+        }
+        // Handle other errors
+        else if (errCode === 'M_FORBIDDEN' || errCode === 'M_UNKNOWN') {
+          console.log('ℹ️ User already in room or invited');
+        } else {
+          console.log('ℹ️ Invite error (continuing):', errCode);
+        }
       }
     }
 
@@ -78,15 +127,17 @@ export async function POST(request) {
       console.log('ℹ️ Could not fetch room state');
     }
 
-    // Send welcome message (only for students, not instructors)
-    if (userRole !== 'instructor') {
+    // ✅ UPDATED: Send welcome message ONLY if NOT already a member
+    if (userRole !== 'instructor' && !isAlreadyMember) {
       try {
         const txnId = Date.now();
+        const roleEmoji = '🎓';
+        
         await axios.put(
           `${MATRIX_HOME_SERVER}/_matrix/client/v3/rooms/${roomId}/send/m.room.message/${txnId}`,
           {
             msgtype: 'm.text',
-            body: `${auth.user.fullName || 'User'} has joined the session.`
+            body: `${roleEmoji} ${auth.user.fullName || 'User'} has joined the session.`
           },
           {
             headers: {
@@ -97,8 +148,10 @@ export async function POST(request) {
         );
         console.log('✅ Welcome message sent');
       } catch (messageError) {
-        console.log('ℹ️ Welcome message failed');
+        console.log('ℹ️ Welcome message failed:', messageError.message);
       }
+    } else if (isAlreadyMember) {
+      console.log('ℹ️ Skipping welcome message (already member)');
     } else {
       console.log('ℹ️ Skipping welcome message for instructor');
     }
@@ -110,7 +163,8 @@ export async function POST(request) {
         matrixUserId,
         userRole,
         ...roomInfo,
-        messages: []
+        messages: [],
+        alreadyMember: isAlreadyMember
       }
     });
 

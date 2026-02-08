@@ -1,5 +1,5 @@
 // src/components/LiveSession/ChatPanel.jsx
-// Professional live chat with modern streaming platform design
+// Professional live chat - FIXED: No member count for students, better design
 
 'use client';
 
@@ -16,7 +16,9 @@ const ChatPanel = ({
   className = '',
   height = '500px',
   showHeader = true,
-  allowFileUpload = false 
+  allowFileUpload = false,
+  showMemberCount = true, // ✅ NEW: Control member count visibility
+  actualMemberCount = null // ✅ NEW: Pass actual member count from parent
 }) => {
   const {
     messages,
@@ -97,7 +99,6 @@ const ChatPanel = ({
   };
 
   const getConnectionStatus = () => {
-    // Check if we have messages or are connected
     const isActuallyConnected = canSendMessage || messages.length > 0;
     
     if (isActuallyConnected || connectionStatus === 'PREPARED') {
@@ -109,7 +110,25 @@ const ChatPanel = ({
     }
   };
 
+  // ✅ Filter out join/leave system messages
+  const filteredMessages = messages.filter(msg => {
+    // Filter out system join messages (these are duplicates)
+    if (msg.content && typeof msg.content === 'string') {
+      const content = msg.content.toLowerCase();
+      if (content.includes('has joined the session') || 
+          content.includes('joined the session') ||
+          content.includes('has left the session') ||
+          content.includes('left the session')) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   const status = getConnectionStatus();
+  
+  // ✅ Use actual member count if provided, otherwise use roomInfo
+  const displayMemberCount = actualMemberCount !== null ? actualMemberCount : (roomInfo?.memberCount || 0);
 
   return (
     <div className={`d-flex flex-column h-100 rounded-3 overflow-hidden shadow-sm ${className}`} style={{ height }}>
@@ -125,9 +144,10 @@ const ChatPanel = ({
                 <FaUsers size={16} />
                 <span className="fw-semibold">Live Chat</span>
               </div>
-              {roomInfo && (
+              {/* ✅ Only show member count if showMemberCount is true */}
+              {showMemberCount && (
                 <Badge bg="light" text="dark" className="px-2 py-1">
-                  {roomInfo.memberCount || 0}
+                  {displayMemberCount}
                 </Badge>
               )}
             </div>
@@ -177,7 +197,8 @@ const ChatPanel = ({
             scrollbarColor: '#cbd5e0 transparent'
           }}>
             <div className="p-3">
-              {messages.length === 0 ? (
+              {/* ✅ Use filtered messages instead of all messages */}
+              {filteredMessages.length === 0 ? (
                 <div className="text-center py-5">
                   <div className="mb-3">
                     <div className="rounded-circle bg-white shadow-sm mx-auto d-flex align-items-center justify-content-center" 
@@ -190,7 +211,7 @@ const ChatPanel = ({
                 </div>
               ) : (
                 <MessageList 
-                  messages={messages}
+                  messages={filteredMessages}
                   currentUserId={userCredentials?.userId}
                   onMessageClick={(message) => console.log('Message clicked:', message)}
                 />
@@ -309,7 +330,7 @@ const ChatPanel = ({
               {canSendMessage && (
                 <div className="mt-2">
                   <small className="text-muted">
-                    Press <kbd className="bg-light border px-1 py-0 rounded">Enter</kbd> to send, <kbd className="bg-light border px-1 py-0 rounded">Shift + Enter</kbd> for new line
+                    Press <kbd className="bg-light border px-1 py-0 rounded">Enter</kbd> to send
                   </small>
                 </div>
               )}
