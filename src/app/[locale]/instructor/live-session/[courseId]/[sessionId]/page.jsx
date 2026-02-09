@@ -1,4 +1,4 @@
-// src/app/instructor/live-session/[courseId]/[slotIndex]/page.jsx
+// src/app/[locale]/instructor/live-session/[courseId]/[slotIndex]/page.jsx
 // ✅ COMPLETE: End Session with confirmation modal + recording upload + redirects
 
 'use client';
@@ -8,6 +8,7 @@ import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, Modal } from 
 import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaUsers, FaPlay, FaStop, FaSignOutAlt, FaClock, FaCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { getLiveSessionData, manageLiveSession } from '@/services/courseService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
@@ -20,6 +21,7 @@ const InstructorLiveSessionPage = ({ params }) => {
   const { courseId, sessionId } = params;
   const slotIndex = sessionId;
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations('instructor.liveSessionPage');
 
   const videoRef = useRef(null);
   const [sessionData, setSessionData] = useState(null);
@@ -172,7 +174,7 @@ const InstructorLiveSessionPage = ({ params }) => {
       return stream;
     } catch (error) {
       console.error('❌ WebRTC setup failed:', error);
-      toast.error('Failed to access camera/microphone');
+      toast.error(t('toast.failedToAccess'));
       throw error;
     }
   };
@@ -201,12 +203,12 @@ const InstructorLiveSessionPage = ({ params }) => {
 
         if (!result.success) {
           console.error('❌ Failed to start session:', result.error);
-          toast.error(result.error || 'Failed to start live session');
+          toast.error(result.error || t('toast.failedToStart'));
           setIsManaging(false);
           return;
         }
 
-        toast.success('Live session started! 🔴');
+        toast.success(t('toast.sessionStarted'));
 
         setSessionData(prev => ({
           ...prev,
@@ -231,7 +233,7 @@ const InstructorLiveSessionPage = ({ params }) => {
       const initResult = await webrtcBroadcastService.initialize(sessionKey, true);
       if (!initResult.success) {
         console.error('❌ Broadcast init failed:', initResult.error);
-        toast.error('Failed to initialize broadcasting');
+        toast.error(t('toast.failedToInitBroadcast'));
         return;
       }
 
@@ -239,17 +241,17 @@ const InstructorLiveSessionPage = ({ params }) => {
       const broadcastResult = await webrtcBroadcastService.startBroadcast(stream);
       if (!broadcastResult.success) {
         console.error('❌ Broadcast start failed:', broadcastResult.error);
-        toast.error('Failed to start broadcasting');
+        toast.error(t('toast.failedToStartBroadcast'));
         return;
       }
 
       setIsBroadcasting(true);
       console.log('✅ START: Broadcasting to students successfully!');
-      toast.success('🎥 Broadcasting to students!');
+      toast.success(t('toast.broadcastingToStudents'));
 
     } catch (err) {
       console.error('❌ Error starting session:', err);
-      toast.error('Failed to start live session');
+      toast.error(t('toast.failedToStart'));
     } finally {
       setIsManaging(false);
     }
@@ -292,7 +294,7 @@ const InstructorLiveSessionPage = ({ params }) => {
 
       if (recordingBlob) {
         console.log('📤 STEP 2: Uploading recording to GCS...');
-        toast.loading('Uploading recording... Please wait', { id: 'upload-toast' });
+        toast.loading(t('toast.uploadingRecording'), { id: 'upload-toast' });
 
         try {
           const uploadResult = await webrtcService.uploadRecording(
@@ -304,14 +306,14 @@ const InstructorLiveSessionPage = ({ params }) => {
           if (uploadResult.success && uploadResult.data?.url) {
             recordingUrl = uploadResult.data.url;
             console.log('✅ Recording uploaded successfully:', recordingUrl);
-            toast.success('Recording uploaded!', { id: 'upload-toast' });
+            toast.success(t('toast.recordingUploaded'), { id: 'upload-toast' });
           } else {
             console.error('❌ Upload failed:', uploadResult.error);
-            toast.error('Warning: Recording upload failed', { id: 'upload-toast' });
+            toast.error(t('toast.uploadFailed'), { id: 'upload-toast' });
           }
         } catch (uploadError) {
           console.error('❌ Upload error:', uploadError);
-          toast.error('Warning: Recording upload failed', { id: 'upload-toast' });
+          toast.error(t('toast.uploadFailed'), { id: 'upload-toast' });
         }
       } else {
         console.warn('⚠️ No recording blob to upload');
@@ -347,7 +349,7 @@ const InstructorLiveSessionPage = ({ params }) => {
 
       if (result.success) {
         console.log('✅ Session ended successfully in backend');
-        toast.success('Live session ended successfully! ✅');
+        toast.success(t('toast.sessionEnded'));
 
         // Clean up UI states
         setIsCameraOn(false);
@@ -368,7 +370,7 @@ const InstructorLiveSessionPage = ({ params }) => {
         // STEP 5: Redirect instructor to dashboard
         // ==========================================
         console.log('🏠 STEP 5: Redirecting to dashboard...');
-        toast.success('Redirecting to dashboard...', { duration: 2000 });
+        toast.success(t('toast.redirecting'), { duration: 2000 });
 
         setTimeout(() => {
           router.push('/live-sessions');
@@ -376,12 +378,12 @@ const InstructorLiveSessionPage = ({ params }) => {
 
       } else {
         console.error('❌ Backend failed to end session:', result.error);
-        toast.error(result.error || 'Failed to end session in database');
+        toast.error(result.error || t('toast.failedToEnd'));
       }
 
     } catch (err) {
       console.error('❌ ERROR in end session flow:', err);
-      toast.error('Failed to end session: ' + err.message);
+      toast.error(t('toast.failedToStart') + ': ' + err.message);
     } finally {
       setIsManaging(false);
       setIsUploading(false);
@@ -394,7 +396,7 @@ const InstructorLiveSessionPage = ({ params }) => {
 
   const toggleCamera = () => {
     if (!isSessionLive() || !isStreaming) {
-      toast.error('Start the session first');
+      toast.error(t('toast.startSessionFirst'));
       return;
     }
 
@@ -403,13 +405,13 @@ const InstructorLiveSessionPage = ({ params }) => {
       const newState = !isCameraOn;
       videoTrack.enabled = newState;
       setIsCameraOn(newState);
-      toast.success(newState ? 'Camera on' : 'Camera off');
+      toast.success(newState ? t('toast.cameraOn') : t('toast.cameraOff'));
     }
   };
 
   const toggleMicrophone = () => {
     if (!isSessionLive() || !isStreaming) {
-      toast.error('Start the session first');
+      toast.error(t('toast.startSessionFirst'));
       return;
     }
 
@@ -418,29 +420,29 @@ const InstructorLiveSessionPage = ({ params }) => {
       const newState = !isMicOn;
       audioTrack.enabled = newState;
       setIsMicOn(newState);
-      toast.success(newState ? 'Microphone unmuted' : 'Microphone muted');
+      toast.success(newState ? t('toast.micUnmuted') : t('toast.micMuted'));
     }
   };
 
   const getSessionStatusBadge = () => {
-    if (!sessionData) return <Badge bg="secondary">Loading...</Badge>;
+    if (!sessionData) return <Badge bg="secondary">{t('status.loading')}</Badge>;
 
     switch (sessionData.sessionStatus) {
       case 'live':
         return (
           <Badge bg="danger" className="d-flex align-items-center gap-1 px-3 py-2">
             <FaCircle size={8} className="animate-pulse" />
-            <span className="fw-bold">LIVE</span>
+            <span className="fw-bold">{t('status.live')}</span>
           </Badge>
         );
       case 'scheduled':
-        return <Badge bg="primary" className="px-3 py-2">Scheduled</Badge>;
+        return <Badge bg="primary" className="px-3 py-2">{t('status.scheduled')}</Badge>;
       case 'completed':
-        return <Badge bg="success" className="px-3 py-2">Completed</Badge>;
+        return <Badge bg="success" className="px-3 py-2">{t('status.completed')}</Badge>;
       case 'cancelled':
-        return <Badge bg="secondary" className="px-3 py-2">Cancelled</Badge>;
+        return <Badge bg="secondary" className="px-3 py-2">{t('status.cancelled')}</Badge>;
       default:
-        return <Badge bg="secondary" className="px-3 py-2">Unknown</Badge>;
+        return <Badge bg="secondary" className="px-3 py-2">{t('status.unknown')}</Badge>;
     }
   };
 
@@ -449,8 +451,8 @@ const InstructorLiveSessionPage = ({ params }) => {
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <div className="text-center text-white">
           <Spinner animation="border" variant="light" className="mb-3" style={{ width: '3rem', height: '3rem' }} />
-          <h4>{authLoading ? 'Authenticating...' : 'Loading Session...'}</h4>
-          <p className="text-muted">Please wait</p>
+          <h4>{authLoading ? t('loading.authenticating') : t('loading.loadingSession')}</h4>
+          <p className="text-muted">{t('loading.pleaseWait')}</p>
         </div>
       </div>
     );
@@ -460,10 +462,10 @@ const InstructorLiveSessionPage = ({ params }) => {
     return (
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <Alert variant="warning" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
-          <h5>Authentication Required</h5>
-          <p>Please log in to access the instructor session.</p>
+          <h5>{t('auth.required')}</h5>
+          <p>{t('auth.loginPrompt')}</p>
           <Button variant="primary" onClick={() => router.push('/login')}>
-            Go to Login
+            {t('auth.goToLogin')}
           </Button>
         </Alert>
       </div>
@@ -474,14 +476,14 @@ const InstructorLiveSessionPage = ({ params }) => {
     return (
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <Alert variant="danger" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
-          <h5>Session Error</h5>
+          <h5>{t('error.title')}</h5>
           <p>{error}</p>
           <div className="mt-3">
             <Button variant="primary" onClick={loadSessionData} className="me-2">
-              Try Again
+              {t('error.tryAgain')}
             </Button>
             <Button variant="outline-light" onClick={handleBackToDashboard}>
-              Back to Dashboard
+              {t('error.backToDashboard')}
             </Button>
           </div>
         </Alert>
@@ -492,6 +494,7 @@ const InstructorLiveSessionPage = ({ params }) => {
   return (
     <>
       <div className="vh-100 d-flex flex-column bg-dark">
+        {/* Professional Header */}
         <div className="bg-gradient" style={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
@@ -499,9 +502,14 @@ const InstructorLiveSessionPage = ({ params }) => {
           <Container fluid className="px-4">
             <div className="d-flex align-items-center justify-content-between py-3">
               <div className="d-flex align-items-center gap-3">
-                <Button variant="light" size="sm" onClick={handleBackToDashboard} className="d-flex align-items-center gap-2 px-3">
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={handleBackToDashboard}
+                  className="d-flex align-items-center gap-2 px-3"
+                >
                   <FaSignOutAlt />
-                  <span className="d-none d-md-inline">Exit</span>
+                  <span className="d-none d-md-inline">{t('header.exit')}</span>
                 </Button>
                 <div className="text-white">
                   <h5 className="mb-0 fw-bold">{sessionData?.sessionTitle}</h5>
@@ -513,24 +521,27 @@ const InstructorLiveSessionPage = ({ params }) => {
                 {getSessionStatusBadge()}
                 {isBroadcasting && (
                   <Badge bg="success" className="px-3 py-2">
-                    📡 Broadcasting
+                    {t('header.broadcasting')}
                   </Badge>
                 )}
                 <div className="text-white d-none d-md-flex align-items-center gap-2">
                   <FaUsers />
                   <span className="fw-bold">{studentCount}</span>
-                  <span className="opacity-75 small">viewers</span>
+                  <span className="opacity-75 small">{t('header.viewers')}</span>
                 </div>
               </div>
             </div>
           </Container>
         </div>
 
+        {/* Main Content Area */}
         <div className="flex-grow-1 overflow-hidden">
           <Container fluid className="h-100 p-3">
             <Row className="h-100 g-3">
+              {/* Video Section - 70% */}
               <Col lg={8} xxl={9} className="h-100">
                 <div className="h-100 d-flex flex-column">
+                  {/* Video Display */}
                   <div className="flex-grow-1 position-relative rounded-3 overflow-hidden shadow-lg" style={{
                     background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                     minHeight: '400px'
@@ -549,7 +560,7 @@ const InstructorLiveSessionPage = ({ params }) => {
                           <div className="position-absolute top-0 start-0 m-3">
                             <Badge bg="danger" className="px-3 py-2 d-flex align-items-center gap-2 shadow">
                               <FaCircle size={8} className="animate-pulse" />
-                              <span className="fw-bold">REC</span>
+                              <span className="fw-bold">{t('status.rec')}</span>
                             </Badge>
                           </div>
                         )}
@@ -571,41 +582,64 @@ const InstructorLiveSessionPage = ({ params }) => {
                               <FaVideoSlash size={50} className="opacity-50" />
                             </div>
                           </div>
-                          <h3 className="mb-2">Camera Off</h3>
+                          <h3 className="mb-2">{t('video.cameraOff')}</h3>
                           <p className="text-white-50 mb-0">
-                            {isSessionLive() ? 'Click "Start Streaming" to begin' : 'Click "Go Live" to start the session'}
+                            {isSessionLive() ? t('video.clickToStart') : t('video.clickGoLive')}
                           </p>
                         </div>
                       </div>
                     )}
                   </div>
 
+                  {/* Instructor Controls */}
                   <div className="mt-3">
                     <Card className="border-0 shadow-sm" style={{ background: 'rgba(255,255,255,0.95)' }}>
                       <Card.Body className="p-3">
                         <Row className="align-items-center">
                           <Col>
                             <div className="d-flex gap-2">
-                              <Button variant={isCameraOn ? "primary" : "outline-secondary"} onClick={toggleCamera} disabled={!isStreaming} className="d-flex align-items-center gap-2 px-3">
+                              <Button
+                                variant={isCameraOn ? "primary" : "outline-secondary"}
+                                onClick={toggleCamera}
+                                disabled={!isStreaming}
+                                className="d-flex align-items-center gap-2 px-3"
+                              >
                                 {isCameraOn ? <FaVideo /> : <FaVideoSlash />}
-                                <span className="d-none d-md-inline">Camera</span>
+                                <span className="d-none d-md-inline">{t('controls.camera')}</span>
                               </Button>
-                              <Button variant={isMicOn ? "primary" : "outline-secondary"} onClick={toggleMicrophone} disabled={!isStreaming} className="d-flex align-items-center gap-2 px-3">
+                              <Button
+                                variant={isMicOn ? "primary" : "outline-secondary"}
+                                onClick={toggleMicrophone}
+                                disabled={!isStreaming}
+                                className="d-flex align-items-center gap-2 px-3"
+                              >
                                 {isMicOn ? <FaMicrophone /> : <FaMicrophoneSlash />}
-                                <span className="d-none d-md-inline">Mic</span>
+                                <span className="d-none d-md-inline">{t('controls.mic')}</span>
                               </Button>
                             </div>
                           </Col>
                           <Col xs="auto">
                             {!isStreaming ? (
-                              <Button variant="success" size="lg" onClick={handleStartSession} disabled={isManaging} className="px-4 d-flex align-items-center gap-2 shadow">
+                              <Button
+                                variant="success"
+                                size="lg"
+                                onClick={handleStartSession}
+                                disabled={isManaging}
+                                className="px-4 d-flex align-items-center gap-2 shadow"
+                              >
                                 <FaPlay />
-                                <span>{isManaging ? 'Starting...' : isSessionLive() ? 'Start Streaming' : 'Go Live'}</span>
+                                <span>{isManaging ? t('controls.starting') : isSessionLive() ? t('controls.startStreaming') : t('controls.goLive')}</span>
                               </Button>
                             ) : (
-                              <Button variant="danger" size="lg" onClick={handleEndSessionClick} disabled={isManaging} className="px-4 d-flex align-items-center gap-2 shadow">
+                              <Button
+                                variant="danger"
+                                size="lg"
+                                onClick={handleEndSessionClick}
+                                disabled={isManaging}
+                                className="px-4 d-flex align-items-center gap-2 shadow"
+                              >
                                 <FaStop />
-                                <span>{isManaging ? 'Ending...' : 'End Session'}</span>
+                                <span>{isManaging ? t('controls.ending') : t('controls.endSession')}</span>
                               </Button>
                             )}
                           </Col>
@@ -616,35 +650,38 @@ const InstructorLiveSessionPage = ({ params }) => {
                 </div>
               </Col>
 
+              {/* Sidebar - 30% */}
               <Col lg={4} xxl={3} className="h-100">
                 <div className="h-100 d-flex flex-column gap-3">
+                  {/* Session Info */}
                   <Card className="border-0 shadow-sm flex-shrink-0">
                     <Card.Body className="p-3">
                       <div className="d-flex align-items-center mb-3">
                         <FaClock className="text-primary me-2" />
-                        <h6 className="mb-0 fw-bold">Session Info</h6>
+                        <h6 className="mb-0 fw-bold">{t('sessionInfo.title')}</h6>
                       </div>
                       <div className="small">
                         <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                          <span className="text-muted">Course:</span>
+                          <span className="text-muted">{t('sessionInfo.course')}</span>
                           <span className="fw-semibold text-end">{sessionData?.courseTitle}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                          <span className="text-muted">Session:</span>
+                          <span className="text-muted">{t('sessionInfo.session')}</span>
                           <span className="fw-semibold">{sessionData?.sessionTitle}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                          <span className="text-muted">Status:</span>
+                          <span className="text-muted">{t('sessionInfo.status')}</span>
                           {getSessionStatusBadge()}
                         </div>
                         <div className="d-flex justify-content-between">
-                          <span className="text-muted">Students:</span>
+                          <span className="text-muted">{t('sessionInfo.students')}</span>
                           <Badge bg="primary" className="px-2">{studentCount}</Badge>
                         </div>
                       </div>
                     </Card.Body>
                   </Card>
 
+                  {/* Chat Panel */}
                   <div className="flex-grow-1 overflow-hidden" style={{ minHeight: 0 }}>
                     {matrixCredentials && sessionData?.matrixRoomId ? (
                       <div className="h-100">
@@ -665,13 +702,13 @@ const InstructorLiveSessionPage = ({ params }) => {
                           <div className="text-center text-muted">
                             {!sessionData?.matrixRoomId ? (
                               <>
-                                <h6>Chat Not Available</h6>
-                                <p className="mb-0 small">Matrix room not created yet</p>
+                                <h6>{t('chat.notAvailable')}</h6>
+                                <p className="mb-0 small">{t('chat.roomNotCreated')}</p>
                               </>
                             ) : (
                               <>
                                 <Spinner className="mb-3" />
-                                <p className="mb-0">Connecting to chat...</p>
+                                <p className="mb-0">{t('chat.connecting')}</p>
                               </>
                             )}
                           </div>
@@ -701,28 +738,28 @@ const InstructorLiveSessionPage = ({ params }) => {
         <Modal.Header closeButton={!isManaging}>
           <Modal.Title className="d-flex align-items-center gap-2">
             <FaExclamationTriangle className="text-warning" />
-            End Live Session?
+            {t('endModal.title')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p className="mb-3">
-            Are you sure you want to end this live session? This will:
+            {t('endModal.confirmation')}
           </p>
           <ul className="mb-3">
-            <li>Stop broadcasting to all students</li>
-            <li>Stop and upload the recording</li>
-            <li>Disconnect all participants</li>
-            <li>Mark the session as completed</li>
+            <li>{t('endModal.points.stopBroadcast')}</li>
+            <li>{t('endModal.points.uploadRecording')}</li>
+            <li>{t('endModal.points.disconnectAll')}</li>
+            <li>{t('endModal.points.markCompleted')}</li>
           </ul>
           <Alert variant="info" className="mb-0">
             <small>
-              <strong>Note:</strong> The recording will be uploaded and students will be redirected to their learning dashboard.
+              <strong>{t('endModal.note')}</strong> {t('endModal.noteText')}
             </small>
           </Alert>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowEndModal(false)} disabled={isManaging}>
-            Cancel
+            {t('endModal.cancel')}
           </Button>
           <Button
             variant="danger"
@@ -733,12 +770,12 @@ const InstructorLiveSessionPage = ({ params }) => {
             {isManaging ? (
               <>
                 <Spinner size="sm" />
-                {isUploading ? 'Uploading Recording...' : 'Ending Session...'}
+                {isUploading ? t('endModal.uploadingRecording') : t('endModal.endingSession')}
               </>
             ) : (
               <>
                 <FaStop />
-                End Session
+                {t('endModal.confirm')}
               </>
             )}
           </Button>

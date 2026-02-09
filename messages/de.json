@@ -779,6 +779,168 @@
       "profile": "Profil",
       "myCourses": "Meine Kurse",
       "signOut": "Abmelden"
+    },
+    "liveSessions": {
+      "pageTitle": "Live-Sitzungsverwaltung",
+      "pageSubtitle": "Verwalte deine Live-Kurse und Sitzungen",
+      "refreshButton": "Sitzungen aktualisieren",
+      
+      "loading": "Live-Sitzungen werden geladen...",
+      
+      "error": {
+        "title": "Fehler beim Laden der Live-Sitzungen",
+        "retry": "Erneut versuchen"
+      },
+      
+      "emptyState": {
+        "title": "Keine Live-Kurse gefunden",
+        "description": "Du hast noch keine Live-Kurse. Erstelle einen Live-Kurs, um mit der Verwaltung von Sitzungen zu beginnen.",
+        "createButton": "Live-Kurs erstellen"
+      },
+      
+      "stats": {
+        "liveCourses": "Live-Kurse",
+        "activeSessions": "Aktive Sitzungen",
+        "readyToStart": "Bereit zum Start",
+        "totalStudents": "Gesamt Studenten"
+      },
+      
+      "courseCard": {
+        "students": "Studenten:",
+        "sessions": "Sitzungen:",
+        "next": "Nächste:"
+      },
+      
+      "status": {
+        "live": "LIVE",
+        "waitingForSchedules": "Warten auf Schülerzeitpläne",
+        "ready": "Bereit:",
+        "allCompleted": "Alle Sitzungen abgeschlossen",
+        "noSession": "Keine Sitzung"
+      },
+      
+      "actions": {
+        "setupRoom": "Sitzungsraum einrichten",
+        "viewLive": "Live-Sitzung ansehen",
+        "endSession": "Live-Sitzung beenden",
+        "completed": "Sitzung abgeschlossen",
+        "cancelled": "Sitzung abgesagt",
+        "start": "{sessionTitle} starten",
+        "startsIn": "{sessionTitle} in {countdown}",
+        "waiting": "Warten auf Schülerzeitpläne"
+      },
+      
+      "toast": {
+        "roomCreated": "Sitzungsraum erstellt! Schüler können jetzt Sitzungen planen.",
+        "createFailed": "Sitzung konnte nicht erstellt werden",
+        "tooEarly": "Nächste Sitzung ({sessionTitle}) beginnt in {countdown}",
+        "sessionStarted": "{sessionTitle} gestartet!",
+        "startFailed": "Sitzung konnte nicht gestartet werden",
+        "sessionEnded": "Live-Sitzung erfolgreich beendet!",
+        "endFailed": "Sitzung konnte nicht beendet werden"
+      },
+      
+      "messages": {
+        "noStudents": "Noch keine Schüler haben diesen Kurs geplant",
+        "allCompleted": "Alle Sitzungen abgeschlossen",
+        "tooEarly": "Zu früh zum Starten"
+      },
+      
+      "dateFormat": {
+        "notSet": "Nicht festgelegt"
+      }
+    },
+    "liveSessionPage": {
+      "loading": {
+        "authenticating": "Authentifizierung...",
+        "loadingSession": "Sitzung wird geladen...",
+        "pleaseWait": "Bitte warten"
+      },
+      "auth": {
+        "required": "Authentifizierung erforderlich",
+        "loginPrompt": "Bitte melden Sie sich an, um auf die Dozentensitzung zuzugreifen.",
+        "goToLogin": "Zur Anmeldung"
+      },
+      "error": {
+        "title": "Sitzungsfehler",
+        "tryAgain": "Erneut versuchen",
+        "backToDashboard": "Zurück zum Dashboard"
+      },
+      "header": {
+        "exit": "Beenden",
+        "broadcasting": "📡 Sendet",
+        "viewers": "Zuschauer"
+      },
+      "status": {
+        "live": "LIVE",
+        "scheduled": "Geplant",
+        "completed": "Abgeschlossen",
+        "cancelled": "Abgebrochen",
+        "unknown": "Unbekannt",
+        "loading": "Lädt...",
+        "rec": "AUFN"
+      },
+      "video": {
+        "cameraOff": "Kamera aus",
+        "clickToStart": "Klicken Sie auf \"Streaming starten\", um zu beginnen",
+        "clickGoLive": "Klicken Sie auf \"Live gehen\", um die Sitzung zu starten"
+      },
+      "controls": {
+        "camera": "Kamera",
+        "mic": "Mikrofon",
+        "starting": "Startet...",
+        "startStreaming": "Streaming starten",
+        "goLive": "Live gehen",
+        "ending": "Beendet...",
+        "endSession": "Sitzung beenden"
+      },
+      "sessionInfo": {
+        "title": "Sitzungsinfo",
+        "course": "Kurs:",
+        "session": "Sitzung:",
+        "status": "Status:",
+        "students": "Studenten:"
+      },
+      "chat": {
+        "notAvailable": "Chat nicht verfügbar",
+        "roomNotCreated": "Matrix-Raum noch nicht erstellt",
+        "connecting": "Verbindung zum Chat..."
+      },
+      "endModal": {
+        "title": "Live-Sitzung beenden?",
+        "confirmation": "Sind Sie sicher, dass Sie diese Live-Sitzung beenden möchten? Dies wird:",
+        "points": {
+          "stopBroadcast": "Übertragung an alle Studenten stoppen",
+          "uploadRecording": "Aufnahme stoppen und hochladen",
+          "disconnectAll": "Alle Teilnehmer trennen",
+          "markCompleted": "Sitzung als abgeschlossen markieren"
+        },
+        "note": "Hinweis:",
+        "noteText": "Die Aufnahme wird hochgeladen und die Studenten werden zu ihrem Lerndashboard weitergeleitet.",
+        "cancel": "Abbrechen",
+        "uploadingRecording": "Aufnahme wird hochgeladen...",
+        "endingSession": "Sitzung wird beendet...",
+        "confirm": "Sitzung beenden"
+      },
+      "toast": {
+        "sessionStarted": "Live-Sitzung gestartet! 🔴",
+        "broadcastingToStudents": "🎥 Übertragung an Studenten!",
+        "startSessionFirst": "Starten Sie zuerst die Sitzung",
+        "cameraOn": "Kamera an",
+        "cameraOff": "Kamera aus",
+        "micUnmuted": "Mikrofon aktiviert",
+        "micMuted": "Mikrofon stummgeschaltet",
+        "recordingUploaded": "Aufnahme hochgeladen!",
+        "uploadFailed": "Warnung: Aufnahme-Upload fehlgeschlagen",
+        "sessionEnded": "Live-Sitzung erfolgreich beendet! ✅",
+        "redirecting": "Weiterleitung zum Dashboard...",
+        "failedToAccess": "Kamera/Mikrofon-Zugriff fehlgeschlagen",
+        "failedToStart": "Live-Sitzung konnte nicht gestartet werden",
+        "failedToInitBroadcast": "Übertragung konnte nicht initialisiert werden",
+        "failedToStartBroadcast": "Übertragung konnte nicht gestartet werden",
+        "failedToEnd": "Sitzung konnte nicht in der Datenbank beendet werden",
+        "uploadingRecording": "Aufnahme wird hochgeladen... Bitte warten"
+      }
     }
   },
   "student": {
@@ -862,6 +1024,66 @@
         "active": "TESTMODUS AKTIV",
         "description": "Countdown-Timer auf 5, 10, 15 Sekunden eingestellt",
         "disable": "Testmodus deaktivieren"
+      }
+    },
+    "liveSession": {
+      "loading": {
+        "authenticating": "Authentifizierung...",
+        "joining": "Sitzung beitreten...",
+        "pleaseWait": "Bitte warten"
+      },
+      "auth": {
+        "required": "Authentifizierung erforderlich",
+        "loginPrompt": "Bitte melden Sie sich an, um an der Live-Sitzung teilzunehmen.",
+        "goToLogin": "Zur Anmeldung"
+      },
+      "error": {
+        "title": "Verbindungsfehler",
+        "tryAgain": "Erneut versuchen",
+        "backToLearning": "Zurück zu Mein Lernen"
+      },
+      "header": {
+        "leave": "Verlassen"
+      },
+      "status": {
+        "live": "LIVE",
+        "scheduled": "Geplant",
+        "completed": "Abgeschlossen",
+        "unknown": "Unbekannt",
+        "loading": "Lädt..."
+      },
+      "video": {
+        "connecting": "Verbinden...",
+        "watching": "Dozent zusehen",
+        "establishingConnection": "Verbindung zum Dozenten wird hergestellt...",
+        "waitingForStream": "Warten auf Dozenten-Stream...",
+        "joiningSession": "Sitzung beitreten..."
+      },
+      "studentBar": {
+        "live": "Live",
+        "connected": "Verbunden",
+        "attendingAs": "Teilnahme als:"
+      },
+      "sessionInfo": {
+        "title": "Sitzungsinfo",
+        "course": "Kurs:",
+        "session": "Sitzung:",
+        "status": "Status:",
+        "connection": "Verbindung:",
+        "waiting": "Warten"
+      },
+      "chat": {
+        "notAvailable": "Chat nicht verfügbar",
+        "roomNotAccessible": "Sitzungsraum nicht zugänglich",
+        "connecting": "Verbindung zum Chat..."
+      },
+      "toast": {
+        "joined": "🎓 Live-Sitzung beigetreten!",
+        "connectedToInstructor": "Mit Dozent verbunden!",
+        "instructorStopped": "Dozent hat Streaming gestoppt",
+        "sessionEnded": "Sitzung wurde beendet. Weiterleitung zu Mein Lernen...",
+        "connectionFailed": "Verbindung zum Dozenten-Stream fehlgeschlagen",
+        "leftSession": "Sitzung verlassen"
       }
     }
   },

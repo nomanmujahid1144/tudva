@@ -779,6 +779,158 @@
       "profile": "Profil",
       "myCourses": "Kurzusaim",
       "signOut": "Kijelentkezés"
+    },
+    "liveSessions": {
+      "pageTitle": "Élő foglalkozások kezelése",
+      "pageSubtitle": "Kezeld az élő kurzusaidat és foglalkozásaidat",
+      "refreshButton": "Foglalkozások frissítése",
+      "loading": "Élő foglalkozások betöltése...",
+      "error": {
+        "title": "Hiba az élő foglalkozások betöltésekor",
+        "retry": "Próbáld újra"
+      },
+      "emptyState": {
+        "title": "Nem található élő kurzus",
+        "description": "Még nincsenek élő kurzusaid. Hozz létre egy élő kurzust a foglalkozások kezeléséhez.",
+        "createButton": "Élő kurzus létrehozása"
+      },
+      "stats": {
+        "liveCourses": "Élő kurzusok",
+        "activeSessions": "Aktív foglalkozások",
+        "readyToStart": "Indításra kész",
+        "totalStudents": "Összes diák"
+      },
+      "courseCard": {
+        "students": "Diákok:",
+        "sessions": "Foglalkozások:",
+        "next": "Következő:"
+      },
+      "status": {
+        "live": "ÉLŐ",
+        "waitingForSchedules": "Diák időbeosztásokra várva",
+        "ready": "Kész:",
+        "allCompleted": "Minden foglalkozás befejezve",
+        "noSession": "Nincs foglalkozás"
+      },
+      "actions": {
+        "setupRoom": "Foglalkozási szoba beállítása",
+        "viewLive": "Élő foglalkozás megtekintése",
+        "endSession": "Élő foglalkozás befejezése",
+        "completed": "Foglalkozás befejezve",
+        "cancelled": "Foglalkozás törölve",
+        "start": "{sessionTitle} indítása",
+        "startsIn": "{sessionTitle} {countdown} múlva",
+        "waiting": "Diák időbeosztásokra várva"
+      },
+      "toast": {
+        "roomCreated": "Foglalkozási szoba létrehozva! A diákok most már ütemezhetnek foglalkozásokat.",
+        "createFailed": "Foglalkozás létrehozása sikertelen",
+        "tooEarly": "Következő foglalkozás ({sessionTitle}) {countdown} múlva kezdődik",
+        "sessionStarted": "{sessionTitle} elindítva!",
+        "startFailed": "Foglalkozás indítása sikertelen",
+        "sessionEnded": "Élő foglalkozás sikeresen befejezve!",
+        "endFailed": "Foglalkozás befejezése sikertelen"
+      },
+      "messages": {
+        "noStudents": "Még egyik diák sem ütemezte be ezt a kurzust",
+        "allCompleted": "Minden foglalkozás befejezve",
+        "tooEarly": "Túl korai az indításhoz"
+      },
+      "dateFormat": {
+        "notSet": "Nincs beállítva"
+      }
+    },
+    "liveSessionPage": {
+      "loading": {
+        "authenticating": "Hitelesítés...",
+        "loadingSession": "Munkamenet betöltése...",
+        "pleaseWait": "Kérjük, várjon"
+      },
+      "auth": {
+        "required": "Hitelesítés szükséges",
+        "loginPrompt": "Kérjük, jelentkezzen be az oktatói munkamenet eléréséhez.",
+        "goToLogin": "Bejelentkezés"
+      },
+      "error": {
+        "title": "Munkamenet hiba",
+        "tryAgain": "Próbálja újra",
+        "backToDashboard": "Vissza a Műszerfalhoz"
+      },
+      "header": {
+        "exit": "Kilépés",
+        "broadcasting": "📡 Közvetítés",
+        "viewers": "néző"
+      },
+      "status": {
+        "live": "ÉLŐ",
+        "scheduled": "Tervezett",
+        "completed": "Befejezett",
+        "cancelled": "Törölve",
+        "unknown": "Ismeretlen",
+        "loading": "Betöltés...",
+        "rec": "FELVÉTEL"
+      },
+      "video": {
+        "cameraOff": "Kamera kikapcsolva",
+        "clickToStart": "Kattintson a \"Közvetítés indítása\" gombra a kezdéshez",
+        "clickGoLive": "Kattintson az \"Élő indítás\" gombra a munkamenet elindításához"
+      },
+      "controls": {
+        "camera": "Kamera",
+        "mic": "Mikrofon",
+        "starting": "Indítás...",
+        "startStreaming": "Közvetítés indítása",
+        "goLive": "Élő indítás",
+        "ending": "Befejezés...",
+        "endSession": "Munkamenet befejezése"
+      },
+      "sessionInfo": {
+        "title": "Munkamenet info",
+        "course": "Tanfolyam:",
+        "session": "Munkamenet:",
+        "status": "Állapot:",
+        "students": "Diákok:"
+      },
+      "chat": {
+        "notAvailable": "Chat nem elérhető",
+        "roomNotCreated": "Matrix szoba még nem létrehozva",
+        "connecting": "Csatlakozás a chathez..."
+      },
+      "endModal": {
+        "title": "Élő munkamenet befejezése?",
+        "confirmation": "Biztosan be szeretné fejezni ezt az élő munkamenetet? Ez a következőket teszi:",
+        "points": {
+          "stopBroadcast": "Közvetítés leállítása minden diák számára",
+          "uploadRecording": "Felvétel leállítása és feltöltése",
+          "disconnectAll": "Minden résztvevő lekapcsolása",
+          "markCompleted": "Munkamenet befejezettként való megjelölése"
+        },
+        "note": "Megjegyzés:",
+        "noteText": "A felvétel feltöltésre kerül, és a diákok átirányításra kerülnek a tanulási műszerfalukra.",
+        "cancel": "Mégse",
+        "uploadingRecording": "Felvétel feltöltése...",
+        "endingSession": "Munkamenet befejezése...",
+        "confirm": "Munkamenet befejezése"
+      },
+      "toast": {
+        "sessionStarted": "Élő munkamenet elindítva! 🔴",
+        "broadcastingToStudents": "🎥 Közvetítés a diákoknak!",
+        "startSessionFirst": "Először indítsa el a munkamenetet",
+        "cameraOn": "Kamera bekapcsolva",
+        "cameraOff": "Kamera kikapcsolva",
+        "micUnmuted": "Mikrofon bekapcsolva",
+        "micMuted": "Mikrofon némítva",
+        "recordingUploaded": "Felvétel feltöltve!",
+        "uploadFailed": "Figyelmeztetés: Felvétel feltöltése sikertelen",
+        "sessionEnded": "Élő munkamenet sikeresen befejezve! ✅",
+        "redirecting": "Átirányítás a műszerfalhoz...",
+        "failedToAccess": "Kamera/mikrofon hozzáférés sikertelen",
+        "failedToStart": "Élő munkamenet indítása sikertelen",
+        "failedToInitBroadcast": "Közvetítés inicializálása sikertelen",
+        "failedToStartBroadcast": "Közvetítés indítása sikertelen",
+        "failedToEnd": "Munkamenet befejezése az adatbázisban sikertelen",
+        "uploadingRecording": "Felvétel feltöltése... Kérjük, várjon"
+      }
     }
   },
   "student": {
@@ -862,6 +1014,66 @@
         "active": "TESZT MÓD AKTÍV",
         "description": "Visszaszámlálók 5, 10, 15 másodpercre állítva",
         "disable": "Teszt mód kikapcsolása"
+      }
+    },
+    "liveSession": {
+      "loading": {
+        "authenticating": "Hitelesítés...",
+        "joining": "Csatlakozás a munkamenethez...",
+        "pleaseWait": "Kérjük, várjon"
+      },
+      "auth": {
+        "required": "Hitelesítés szükséges",
+        "loginPrompt": "Kérjük, jelentkezzen be az élő munkamenethez való csatlakozáshoz.",
+        "goToLogin": "Bejelentkezés"
+      },
+      "error": {
+        "title": "Kapcsolati hiba",
+        "tryAgain": "Próbálja újra",
+        "backToLearning": "Vissza a Tanuláshoz"
+      },
+      "header": {
+        "leave": "Kilépés"
+      },
+      "status": {
+        "live": "ÉLŐ",
+        "scheduled": "Tervezett",
+        "completed": "Befejezett",
+        "unknown": "Ismeretlen",
+        "loading": "Betöltés..."
+      },
+      "video": {
+        "connecting": "Csatlakozás...",
+        "watching": "Oktató figyelése",
+        "establishingConnection": "Kapcsolat létrehozása az oktatóval...",
+        "waitingForStream": "Várakozás az oktató közvetítésére...",
+        "joiningSession": "Csatlakozás a munkamenethez..."
+      },
+      "studentBar": {
+        "live": "Élő",
+        "connected": "Csatlakozva",
+        "attendingAs": "Részvétel mint:"
+      },
+      "sessionInfo": {
+        "title": "Munkamenet info",
+        "course": "Tanfolyam:",
+        "session": "Munkamenet:",
+        "status": "Állapot:",
+        "connection": "Kapcsolat:",
+        "waiting": "Várakozás"
+      },
+      "chat": {
+        "notAvailable": "Chat nem elérhető",
+        "roomNotAccessible": "Munkamenet szoba nem elérhető",
+        "connecting": "Csatlakozás a chathez..."
+      },
+      "toast": {
+        "joined": "🎓 Csatlakozott az élő munkamenethez!",
+        "connectedToInstructor": "Csatlakozva az oktatóhoz!",
+        "instructorStopped": "Az oktató leállította a közvetítést",
+        "sessionEnded": "A munkamenet véget ért. Átirányítás a Tanuláshoz...",
+        "connectionFailed": "Nem sikerült csatlakozni az oktató közvetítéséhez",
+        "leftSession": "Elhagyta a munkamenetet"
       }
     }
   },

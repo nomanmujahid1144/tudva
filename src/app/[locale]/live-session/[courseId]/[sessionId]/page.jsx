@@ -1,6 +1,3 @@
-// src/app/[locale]/live-session/[courseId]/[sessionId]/page.jsx
-// ✅ COMPLETE WITH WEBRTC STREAM RECEPTION
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -8,23 +5,25 @@ import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-
 import { FaSignOutAlt, FaClock, FaCircle, FaVideo } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { joinLiveSession, getSessionJoinInfo } from '@/services/learningService';
 import ChatPanel from '@/components/LiveSession/ChatPanel';
-import webrtcReceiveService from '@/services/webrtcReceiveService'; // ✅ NEW IMPORT
+import webrtcReceiveService from '@/services/webrtcReceiveService';
 
 const StudentLiveSessionPage = ({ params }) => {
   const router = useRouter();
   const { courseId, sessionId } = params;
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations('student.liveSession');
 
   const videoRef = useRef(null);
   const [sessionData, setSessionData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isJoined, setIsJoined] = useState(false);
-  const [remoteStream, setRemoteStream] = useState(null); // ✅ NEW STATE
-  const [isConnecting, setIsConnecting] = useState(false); // ✅ NEW STATE
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const matrixCredentials = user ? {
     userId: `@student_${user.id}:151.hu`,
@@ -35,96 +34,60 @@ const StudentLiveSessionPage = ({ params }) => {
     if (!authLoading && user) {
       initializeAndJoinSession();
     }
-
     return () => {
       handleCleanup();
     };
   }, [courseId, sessionId, user, authLoading]);
 
-  // ✅ NEW: Setup stream reception when joined
   useEffect(() => {
     if (isJoined && sessionData && user && !remoteStream) {
       setupStreamReception();
     }
   }, [isJoined, sessionData, user]);
 
-  // ✅ NEW: Update video element when stream changes
   useEffect(() => {
     if (remoteStream && videoRef.current) {
-      console.log('🎥 Attaching stream to video element');
       videoRef.current.srcObject = remoteStream;
-      videoRef.current.play().catch(err => {
-        console.error('Error playing video:', err);
-      });
+      videoRef.current.play().catch(err => console.error('Error playing video:', err));
     }
   }, [remoteStream]);
 
   const handleCleanup = () => {
-    // ✅ NEW: Disconnect WebRTC receive service
     if (remoteStream) {
-      console.log('🧹 Cleaning up: Disconnecting WebRTC...');
       webrtcReceiveService.disconnect();
     }
-
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
     }
   };
 
-  // ✅ NEW: Setup WebRTC stream reception
-  // ✅ NEW: Setup WebRTC stream reception
   const setupStreamReception = async () => {
     try {
       setIsConnecting(true);
-      console.log('📡 Setting up stream reception...');
-
-      // Use Matrix Room ID as session key (same as instructor)
       const sessionKey = sessionData?.matrixRoomId || sessionData?.roomId;
-      console.log('📡 Session key (matrixRoomId):', sessionKey);
 
-      console.log('🔍 DEBUG: webrtcReceiveService object:', webrtcReceiveService);
-      console.log('🔍 DEBUG: Has socket?', !!webrtcReceiveService.socket);
-      console.log('🔍 DEBUG: setupSocketListeners function exists?', typeof webrtcReceiveService.setupSocketListeners);
-
-      // Initialize WebRTC receive service with all callbacks
       await webrtcReceiveService.initialize(
         sessionKey,
         user.id,
-        // onStreamReceived callback
         (stream) => {
-          console.log('✅ Received instructor stream!');
           setRemoteStream(stream);
           setIsConnecting(false);
-          toast.success('Connected to instructor!');
+          toast.success(t('toast.connectedToInstructor'));
         },
-        // onBroadcastStopped callback
         () => {
-          console.log('🛑 Instructor stopped broadcasting');
           setRemoteStream(null);
           setIsConnecting(true);
-          toast.info('Instructor stopped streaming');
+          toast.info(t('toast.instructorStopped'));
         },
-        // ✅ NEW: onSessionEnded callback
         () => {
-          console.log('🏁 Session ended by instructor, redirecting...');
-          toast.info('Session has ended. Redirecting to My Learning...', { duration: 3000 });
-
-          // Cleanup
+          toast.info(t('toast.sessionEnded'), { duration: 3000 });
           handleCleanup();
-
-          // Redirect after 2 seconds
-          setTimeout(() => {
-            router.push('/my-learning');
-          }, 2000);
+          setTimeout(() => router.push('/my-learning'), 2000);
         }
       );
-
-      console.log('📡 Waiting for instructor stream...');
-
     } catch (error) {
-      console.error('❌ Failed to setup stream reception:', error);
       setIsConnecting(false);
-      toast.error('Failed to connect to instructor stream');
+      toast.error(t('toast.connectionFailed'));
     }
   };
 
@@ -132,21 +95,9 @@ const StudentLiveSessionPage = ({ params }) => {
     try {
       setIsLoading(true);
       setError(null);
-
-      console.log('🔄 Student joining session:', {
-        courseId,
-        sessionId,
-        userId: user.id,
-        userName: user.fullName
-      });
-
       const result = await joinLiveSession(courseId, sessionId);
 
-      console.log('📡 Join session API result:', result);
-
       if (result.success) {
-        console.log('✅ Successfully joined session:', result.data);
-
         setSessionData({
           sessionTitle: result.data.sessionTitle,
           courseTitle: result.data.courseTitle,
@@ -158,14 +109,10 @@ const StudentLiveSessionPage = ({ params }) => {
           joinedAt: result.data.joinedAt,
           user: result.data.user
         });
-
         setIsJoined(true);
-        toast.success('🎓 Joined live session!');
-
+        toast.success(t('toast.joined'));
       } else {
-        console.error('❌ Failed to join session:', result.error);
         setError(result.error || 'Failed to join the live session');
-
         try {
           const infoResult = await getSessionJoinInfo(courseId, sessionId);
           if (infoResult.success) {
@@ -176,12 +123,9 @@ const StudentLiveSessionPage = ({ params }) => {
               canJoinNow: false
             });
           }
-        } catch (infoErr) {
-          console.error('Failed to get session info:', infoErr);
-        }
+        } catch (infoErr) {}
       }
     } catch (err) {
-      console.error('❌ Error joining session:', err);
       setError('Failed to join the live session. Please try again.');
     } finally {
       setIsLoading(false);
@@ -194,27 +138,27 @@ const StudentLiveSessionPage = ({ params }) => {
 
   const handleLeaveSession = () => {
     handleCleanup();
-    toast.info('Left the session');
+    toast.info(t('toast.leftSession'));
     router.push('/my-learning');
   };
 
   const getSessionStatusBadge = () => {
-    if (!sessionData) return <Badge bg="secondary">Loading...</Badge>;
+    if (!sessionData) return <Badge bg="secondary">{t('status.loading')}</Badge>;
 
     switch (sessionData.sessionStatus) {
       case 'live':
         return (
           <Badge bg="danger" className="d-flex align-items-center gap-1 px-3 py-2">
             <FaCircle size={8} className="animate-pulse" />
-            <span className="fw-bold">LIVE</span>
+            <span className="fw-bold">{t('status.live')}</span>
           </Badge>
         );
       case 'scheduled':
-        return <Badge bg="primary" className="px-3 py-2">Scheduled</Badge>;
+        return <Badge bg="primary" className="px-3 py-2">{t('status.scheduled')}</Badge>;
       case 'completed':
-        return <Badge bg="success" className="px-3 py-2">Completed</Badge>;
+        return <Badge bg="success" className="px-3 py-2">{t('status.completed')}</Badge>;
       default:
-        return <Badge bg="secondary" className="px-3 py-2">Unknown</Badge>;
+        return <Badge bg="secondary" className="px-3 py-2">{t('status.unknown')}</Badge>;
     }
   };
 
@@ -223,8 +167,8 @@ const StudentLiveSessionPage = ({ params }) => {
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <div className="text-center text-white">
           <Spinner animation="border" variant="light" className="mb-3" style={{ width: '3rem', height: '3rem' }} />
-          <h4>{authLoading ? 'Authenticating...' : 'Joining Session...'}</h4>
-          <p className="text-muted">Please wait</p>
+          <h4>{authLoading ? t('loading.authenticating') : t('loading.joining')}</h4>
+          <p className="text-muted">{t('loading.pleaseWait')}</p>
         </div>
       </div>
     );
@@ -234,10 +178,10 @@ const StudentLiveSessionPage = ({ params }) => {
     return (
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <Alert variant="warning" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
-          <h5>Authentication Required</h5>
-          <p>Please log in to join the live session.</p>
+          <h5>{t('auth.required')}</h5>
+          <p>{t('auth.loginPrompt')}</p>
           <Button variant="primary" onClick={() => router.push('/login')}>
-            Go to Login
+            {t('auth.goToLogin')}
           </Button>
         </Alert>
       </div>
@@ -248,14 +192,14 @@ const StudentLiveSessionPage = ({ params }) => {
     return (
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
         <Alert variant="danger" className="text-center p-4 border-0 shadow-lg" style={{ maxWidth: '500px' }}>
-          <h5>Connection Error</h5>
+          <h5>{t('error.title')}</h5>
           <p>{error}</p>
           <div className="mt-3">
             <Button variant="primary" onClick={retryJoinSession} className="me-2">
-              Try Again
+              {t('error.tryAgain')}
             </Button>
             <Button variant="outline-light" onClick={handleLeaveSession}>
-              Back to My Learning
+              {t('error.backToLearning')}
             </Button>
           </div>
         </Alert>
@@ -265,7 +209,6 @@ const StudentLiveSessionPage = ({ params }) => {
 
   return (
     <div className="vh-100 d-flex flex-column bg-dark">
-      {/* Professional Header */}
       <div className="bg-gradient" style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
@@ -280,14 +223,13 @@ const StudentLiveSessionPage = ({ params }) => {
                 className="d-flex align-items-center gap-2 px-3"
               >
                 <FaSignOutAlt />
-                <span className="d-none d-md-inline">Leave</span>
+                <span className="d-none d-md-inline">{t('header.leave')}</span>
               </Button>
               <div className="text-white">
                 <h5 className="mb-0 fw-bold">{sessionData?.sessionTitle}</h5>
                 <small className="opacity-75">{sessionData?.courseTitle}</small>
               </div>
             </div>
-
             <div className="d-flex align-items-center gap-3">
               {getSessionStatusBadge()}
             </div>
@@ -295,21 +237,17 @@ const StudentLiveSessionPage = ({ params }) => {
         </Container>
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-grow-1 overflow-hidden">
         <Container fluid className="h-100 p-3">
           <Row className="h-100 g-3">
-            {/* Video Section - 70% */}
             <Col lg={8} xxl={9} className="h-100">
               <div className="h-100 d-flex flex-column">
-                {/* Video Display */}
                 <div className="flex-grow-1 position-relative rounded-3 overflow-hidden shadow-lg" style={{
                   background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                   minHeight: '400px'
                 }}>
                   {isJoined ? (
                     <>
-                      {/* ✅ Video element for remote stream */}
                       <video
                         ref={videoRef}
                         autoPlay
@@ -317,11 +255,10 @@ const StudentLiveSessionPage = ({ params }) => {
                         className="w-100 h-100 position-absolute top-0 start-0"
                         style={{
                           objectFit: 'cover',
-                          display: remoteStream ? 'block' : 'none' // Show only when stream exists
+                          display: remoteStream ? 'block' : 'none'
                         }}
                       />
 
-                      {/* ✅ Placeholder while waiting for stream */}
                       {!remoteStream && (
                         <div className="w-100 h-100 d-flex align-items-center justify-content-center text-white">
                           <div className="text-center">
@@ -336,27 +273,26 @@ const StudentLiveSessionPage = ({ params }) => {
                               )}
                             </div>
                             <h3 className="mb-2">
-                              {isConnecting ? 'Connecting...' : 'Watching Instructor'}
+                              {isConnecting ? t('video.connecting') : t('video.watching')}
                             </h3>
                             <p className="text-white-50 mb-0">
                               {isConnecting
-                                ? 'Establishing connection to instructor...'
-                                : 'Waiting for instructor to start streaming...'}
+                                ? t('video.establishingConnection')
+                                : t('video.waitingForStream')}
                             </p>
                             <Badge bg="danger" className="mt-3 px-3 py-2">
                               <FaCircle size={8} className="animate-pulse me-2" />
-                              LIVE
+                              {t('status.live')}
                             </Badge>
                           </div>
                         </div>
                       )}
 
-                      {/* Live Indicator */}
                       {remoteStream && (
                         <div className="position-absolute top-0 start-0 m-3">
                           <Badge bg="danger" className="px-3 py-2 d-flex align-items-center gap-2 shadow">
                             <FaCircle size={8} className="animate-pulse" />
-                            <span className="fw-bold">LIVE</span>
+                            <span className="fw-bold">{t('status.live')}</span>
                           </Badge>
                         </div>
                       )}
@@ -365,14 +301,13 @@ const StudentLiveSessionPage = ({ params }) => {
                     <div className="w-100 h-100 d-flex align-items-center justify-content-center text-white">
                       <div className="text-center">
                         <Spinner animation="border" variant="light" style={{ width: '60px', height: '60px' }} className="mb-3" />
-                        <h3 className="mb-2">Joining Session...</h3>
-                        <p className="text-white-50 mb-0">Please wait</p>
+                        <h3 className="mb-2">{t('video.joiningSession')}</h3>
+                        <p className="text-white-50 mb-0">{t('loading.pleaseWait')}</p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Student Info Bar - No Controls */}
                 <div className="mt-3">
                   <Card className="border-0 shadow-sm" style={{ background: 'rgba(255,255,255,0.95)' }}>
                     <Card.Body className="p-3">
@@ -381,18 +316,18 @@ const StudentLiveSessionPage = ({ params }) => {
                           <div className="d-flex align-items-center gap-2">
                             <Badge bg="success" className="px-2 py-1">
                               <FaCircle size={6} className="me-1" />
-                              Live
+                              {t('studentBar.live')}
                             </Badge>
                             {remoteStream && (
                               <Badge bg="primary" className="px-2 py-1">
-                                Connected
+                                {t('studentBar.connected')}
                               </Badge>
                             )}
                           </div>
                         </Col>
                         <Col xs="auto">
                           <div className="text-muted small">
-                            Attending as: <strong>{user?.fullName}</strong>
+                            {t('studentBar.attendingAs')} <strong>{user?.fullName}</strong>
                           </div>
                         </Col>
                       </Row>
@@ -402,41 +337,37 @@ const StudentLiveSessionPage = ({ params }) => {
               </div>
             </Col>
 
-            {/* Sidebar - 30% */}
             <Col lg={4} xxl={3} className="h-100">
               <div className="h-100 d-flex flex-column gap-3">
-                {/* Session Info */}
                 <Card className="border-0 shadow-sm">
                   <Card.Body className="p-3">
                     <div className="d-flex align-items-center mb-3">
                       <FaClock className="text-primary me-2" />
-                      <h6 className="mb-0 fw-bold">Session Info</h6>
+                      <h6 className="mb-0 fw-bold">{t('sessionInfo.title')}</h6>
                     </div>
                     <div className="small">
                       <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                        <span className="text-muted">Course:</span>
+                        <span className="text-muted">{t('sessionInfo.course')}</span>
                         <span className="fw-semibold text-end">{sessionData?.courseTitle}</span>
                       </div>
                       <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                        <span className="text-muted">Session:</span>
+                        <span className="text-muted">{t('sessionInfo.session')}</span>
                         <span className="fw-semibold">{sessionData?.sessionTitle}</span>
                       </div>
                       <div className="d-flex justify-content-between mb-2 pb-2 border-bottom">
-                        <span className="text-muted">Status:</span>
+                        <span className="text-muted">{t('sessionInfo.status')}</span>
                         {getSessionStatusBadge()}
                       </div>
-                      {/* ✅ NEW: Show connection status */}
                       <div className="d-flex justify-content-between">
-                        <span className="text-muted">Connection:</span>
+                        <span className="text-muted">{t('sessionInfo.connection')}</span>
                         <Badge bg={remoteStream ? 'success' : 'warning'} className="px-2">
-                          {remoteStream ? 'Connected' : isConnecting ? 'Connecting...' : 'Waiting'}
+                          {remoteStream ? t('studentBar.connected') : isConnecting ? t('video.connecting') : t('sessionInfo.waiting')}
                         </Badge>
                       </div>
                     </div>
                   </Card.Body>
                 </Card>
 
-                {/* Chat Panel */}
                 <div className="flex-grow-1 position-relative" style={{ minHeight: 0 }}>
                   {matrixCredentials && sessionData?.matrixRoomId && isJoined ? (
                     <div className="h-100">
@@ -456,13 +387,13 @@ const StudentLiveSessionPage = ({ params }) => {
                         <div className="text-center text-muted">
                           {!sessionData?.matrixRoomId ? (
                             <>
-                              <h6>Chat Not Available</h6>
-                              <p className="mb-0 small">Session room not accessible</p>
+                              <h6>{t('chat.notAvailable')}</h6>
+                              <p className="mb-0 small">{t('chat.roomNotAccessible')}</p>
                             </>
                           ) : (
                             <>
                               <Spinner className="mb-3" />
-                              <p className="mb-0">Connecting to chat...</p>
+                              <p className="mb-0">{t('chat.connecting')}</p>
                             </>
                           )}
                         </div>

@@ -780,6 +780,158 @@
       "profile": "Profile",
       "myCourses": "My Courses",
       "signOut": "Sign Out"
+    },
+    "liveSessions": {
+      "pageTitle": "Live Session Management",
+      "pageSubtitle": "Manage your live courses and sessions",
+      "refreshButton": "Refresh Sessions",
+      "loading": "Loading Live Sessions...",
+      "error": {
+        "title": "Error Loading Live Sessions",
+        "retry": "Retry"
+      },
+      "emptyState": {
+        "title": "No Live Courses Found",
+        "description": "You don't have any live courses yet. Create a live course to start managing sessions.",
+        "createButton": "Create Live Course"
+      },
+      "stats": {
+        "liveCourses": "Live Courses",
+        "activeSessions": "Active Sessions",
+        "readyToStart": "Ready to Start",
+        "totalStudents": "Total Students"
+      },
+      "courseCard": {
+        "students": "Students:",
+        "sessions": "Sessions:",
+        "next": "Next:"
+      },
+      "status": {
+        "live": "LIVE",
+        "waitingForSchedules": "Waiting for Student Schedules",
+        "ready": "Ready:",
+        "allCompleted": "All Sessions Completed",
+        "noSession": "No Session"
+      },
+      "actions": {
+        "setupRoom": "Setup Session Room",
+        "viewLive": "View Live Session",
+        "endSession": "End Live Session",
+        "completed": "Session Completed",
+        "cancelled": "Session Cancelled",
+        "start": "Start {sessionTitle}",
+        "startsIn": "{sessionTitle} in {countdown}",
+        "waiting": "Waiting for Student Schedules"
+      },
+      "toast": {
+        "roomCreated": "Session room created! Students can now schedule sessions.",
+        "createFailed": "Failed to create session",
+        "tooEarly": "Next session ({sessionTitle}) starts in {countdown}",
+        "sessionStarted": "{sessionTitle} started!",
+        "startFailed": "Failed to start session",
+        "sessionEnded": "Live session ended successfully!",
+        "endFailed": "Failed to end session"
+      },
+      "messages": {
+        "noStudents": "No students have scheduled this course yet",
+        "allCompleted": "All sessions completed",
+        "tooEarly": "Too early to start"
+      },
+      "dateFormat": {
+        "notSet": "Not set"
+      }
+    },
+    "liveSessionPage": {
+      "loading": {
+        "authenticating": "Authenticating...",
+        "loadingSession": "Loading Session...",
+        "pleaseWait": "Please wait"
+      },
+      "auth": {
+        "required": "Authentication Required",
+        "loginPrompt": "Please log in to access the instructor session.",
+        "goToLogin": "Go to Login"
+      },
+      "error": {
+        "title": "Session Error",
+        "tryAgain": "Try Again",
+        "backToDashboard": "Back to Dashboard"
+      },
+      "header": {
+        "exit": "Exit",
+        "broadcasting": "📡 Broadcasting",
+        "viewers": "viewers"
+      },
+      "status": {
+        "live": "LIVE",
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown",
+        "loading": "Loading...",
+        "rec": "REC"
+      },
+      "video": {
+        "cameraOff": "Camera Off",
+        "clickToStart": "Click \"Start Streaming\" to begin",
+        "clickGoLive": "Click \"Go Live\" to start the session"
+      },
+      "controls": {
+        "camera": "Camera",
+        "mic": "Mic",
+        "starting": "Starting...",
+        "startStreaming": "Start Streaming",
+        "goLive": "Go Live",
+        "ending": "Ending...",
+        "endSession": "End Session"
+      },
+      "sessionInfo": {
+        "title": "Session Info",
+        "course": "Course:",
+        "session": "Session:",
+        "status": "Status:",
+        "students": "Students:"
+      },
+      "chat": {
+        "notAvailable": "Chat Not Available",
+        "roomNotCreated": "Matrix room not created yet",
+        "connecting": "Connecting to chat..."
+      },
+      "endModal": {
+        "title": "End Live Session?",
+        "confirmation": "Are you sure you want to end this live session? This will:",
+        "points": {
+          "stopBroadcast": "Stop broadcasting to all students",
+          "uploadRecording": "Stop and upload the recording",
+          "disconnectAll": "Disconnect all participants",
+          "markCompleted": "Mark the session as completed"
+        },
+        "note": "Note:",
+        "noteText": "The recording will be uploaded and students will be redirected to their learning dashboard.",
+        "cancel": "Cancel",
+        "uploadingRecording": "Uploading Recording...",
+        "endingSession": "Ending Session...",
+        "confirm": "End Session"
+      },
+      "toast": {
+        "sessionStarted": "Live session started! 🔴",
+        "broadcastingToStudents": "🎥 Broadcasting to students!",
+        "startSessionFirst": "Start the session first",
+        "cameraOn": "Camera on",
+        "cameraOff": "Camera off",
+        "micUnmuted": "Microphone unmuted",
+        "micMuted": "Microphone muted",
+        "recordingUploaded": "Recording uploaded!",
+        "uploadFailed": "Warning: Recording upload failed",
+        "sessionEnded": "Live session ended successfully! ✅",
+        "redirecting": "Redirecting to dashboard...",
+        "failedToAccess": "Failed to access camera/microphone",
+        "failedToStart": "Failed to start live session",
+        "failedToInitBroadcast": "Failed to initialize broadcasting",
+        "failedToStartBroadcast": "Failed to start broadcasting",
+        "failedToEnd": "Failed to end session in database",
+        "uploadingRecording": "Uploading recording... Please wait"
+      }
     }
   },
   "student": {
@@ -863,6 +1015,66 @@
         "active": "TEST MODE ACTIVE",
         "description": "Countdown timers set to 5, 10, 15 seconds",
         "disable": "Disable Test Mode"
+      }
+    },
+    "liveSession": {
+      "loading": {
+        "authenticating": "Authenticating...",
+        "joining": "Joining Session...",
+        "pleaseWait": "Please wait"
+      },
+      "auth": {
+        "required": "Authentication Required",
+        "loginPrompt": "Please log in to join the live session.",
+        "goToLogin": "Go to Login"
+      },
+      "error": {
+        "title": "Connection Error",
+        "tryAgain": "Try Again",
+        "backToLearning": "Back to My Learning"
+      },
+      "header": {
+        "leave": "Leave"
+      },
+      "status": {
+        "live": "LIVE",
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "unknown": "Unknown",
+        "loading": "Loading..."
+      },
+      "video": {
+        "connecting": "Connecting...",
+        "watching": "Watching Instructor",
+        "establishingConnection": "Establishing connection to instructor...",
+        "waitingForStream": "Waiting for instructor to start streaming...",
+        "joiningSession": "Joining Session..."
+      },
+      "studentBar": {
+        "live": "Live",
+        "connected": "Connected",
+        "attendingAs": "Attending as:"
+      },
+      "sessionInfo": {
+        "title": "Session Info",
+        "course": "Course:",
+        "session": "Session:",
+        "status": "Status:",
+        "connection": "Connection:",
+        "waiting": "Waiting"
+      },
+      "chat": {
+        "notAvailable": "Chat Not Available",
+        "roomNotAccessible": "Session room not accessible",
+        "connecting": "Connecting to chat..."
+      },
+      "toast": {
+        "joined": "🎓 Joined live session!",
+        "connectedToInstructor": "Connected to instructor!",
+        "instructorStopped": "Instructor stopped streaming",
+        "sessionEnded": "Session has ended. Redirecting to My Learning...",
+        "connectionFailed": "Failed to connect to instructor stream",
+        "leftSession": "Left the session"
       }
     }
   },

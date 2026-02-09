@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import PageBanner from '../../components/banner/PageBanner';
 import { Col, Container, Row, Button, Card, Nav, Image, Spinner, Modal } from 'react-bootstrap';
-import { FaCalendarAlt, FaClock, FaLock, FaUser, FaCheckCircle, FaPlay, FaUsers } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaLock, FaUser, FaCheckCircle, FaPlay, FaUsers, FaCalendarTimes } from 'react-icons/fa';
 import liveIcon from '@/assets/images/live-course.png';
 import recordedIcon from '@/assets/images/recorded-course.png';
 import learningService from '@/services/learningService';
 import CountdownTimer from './components/CountdownTimer';
-import CourseScheduler from '../student/schedule/components/CourseScheduler';
 import CourseMaterials from './components/CourseMaterials';
+import CourseScheduler from '../student/schedule/components/CourseScheduler';
 
 const MyLearning = () => {
     const router = useRouter();
@@ -19,10 +19,6 @@ const MyLearning = () => {
     const [activeTab, setActiveTab] = useState('lessons');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // TEST MODE - Set this to true for testing
-    const [testMode, setTestMode] = useState(true); // Change to false for production
-
     const [learningData, setLearningData] = useState({
         nextWednesday: {
             date: '',
@@ -41,64 +37,30 @@ const MyLearning = () => {
     const [selectedVideo, setSelectedVideo] = useState(null);
 
     // Load next learning day data
-    // Load next learning day data
     const loadNextLearningDay = async () => {
         try {
             setLoading(true);
             const result = await learningService.getNextLearningDay();
 
             if (result.success) {
-                let finalData = result.data;
+                setLearningData(result.data);
 
-                // If in test mode, modify the data to have near-future times
-                if (testMode) {
-                    const testData = { ...result.data };
-
-                    // Set the date to current time for testing
-                    const now = new Date();
-                    testData.nextWednesday.date = now.toISOString();
-                    testData.nextWednesday.formattedDate = now.toLocaleDateString();
-                    testData.nextWednesday.daysFromNow = 0;
-
-                    // Modify slot times to be just seconds from now
-                    testData.slots = testData.slots.map((slot, index) => {
-                        if (slot.isReserved) {
-                            const testTime = new Date();
-                            testTime.setSeconds(testTime.getSeconds() + (index + 1) * 5); // 5, 10, 15 seconds from now
-
-                            const hours = testTime.getHours().toString().padStart(2, '0');
-                            const minutes = testTime.getMinutes().toString().padStart(2, '0');
-                            const endTime = new Date(testTime);
-                            endTime.setMinutes(endTime.getMinutes() + 40);
-                            const endHours = endTime.getHours().toString().padStart(2, '0');
-                            const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
-
-                            return {
-                                ...slot,
-                                time: `${hours}:${minutes} - ${endHours}:${endMinutes}`
-                            };
-                        }
-                        return slot;
-                    });
-
-                    finalData = testData;
-                }
-
-                setLearningData(finalData);
-
-                // Initialize ready state
+                // Initialize which courses are already ready to join
                 const now = new Date();
-                const courseDate = new Date(finalData.nextWednesday.date);
+                const courseDate = new Date(result.data.nextWednesday.date);
                 const initialReadyState = {};
 
-                finalData.slots.forEach(slot => {
+                result.data.slots.forEach(slot => {
                     if (slot.isReserved) {
+                        // Parse the slot time
                         const [startTime] = slot.time.split(' - ');
                         const [hours, minutes] = startTime.split(':').map(num => parseInt(num, 10));
 
+                        // Set time for this slot on the next Wednesday
                         const slotDateTime = new Date(courseDate);
                         slotDateTime.setHours(hours, minutes, 0, 0);
 
+                        // Check if already past the time
                         initialReadyState[slot.id] = now >= slotDateTime;
                     }
                 });
@@ -133,7 +95,7 @@ const MyLearning = () => {
                 url: course.videoUrl,
                 videoData: course.videoData,
                 courseInfo: course.courseInfo,
-                itemId: course._id  // ✅ Use _id instead of itemId
+                itemId: course._id  // ✅ ADDED: Pass _id as itemId for marking completed
             });
             setShowVideoModal(true);
         } else if (course?.type === 'live' && course?.joinUrl) {
@@ -177,7 +139,9 @@ const MyLearning = () => {
             case 'scheduler':
                 return <CourseScheduler />;
             case 'materials':
-                return <CourseMaterials />;
+                return (
+                    <CourseMaterials />
+                );
             case 'lessons':
             default:
                 return renderNextLessonsContent();
@@ -212,8 +176,8 @@ const MyLearning = () => {
                             <Card.Body className="py-3">
                                 <h3 className="text-primary mb-0 d-flex align-items-center fs-5">
                                     <FaCalendarAlt className="me-2" />
-                                    {testMode ? t('nextLessons.today') : `${t('nextLessons.wednesday')}, ${learningData.nextWednesday.formattedDate}`}
-                                    {!testMode && learningData.nextWednesday.daysFromNow > 0 &&
+                                    {t('nextLessons.wednesday')}, {learningData.nextWednesday.formattedDate}
+                                    {learningData.nextWednesday.daysFromNow > 0 &&
                                         ` (${learningData.nextWednesday.daysFromNow} ${t('nextLessons.daysFromNow')})`}
                                 </h3>
                             </Card.Body>
@@ -232,16 +196,46 @@ const MyLearning = () => {
                                         const isReserved = slot.isReserved;
                                         const canJoin = isReserved && readyToJoin[slot.id];
                                         const courseType = course?.type || '';
-                                        const bgColor = course?.courseInfo?.backgroundColorHex || '#5a975a';
+                                        const bgColor = course?.courseInfo?.backgroundColorHex || '#7EAA7E';
 
                                         return (
                                             <Col xs={12} md={6} lg={4} key={slot.id} className="mb-4">
-                                                <Card className={`h-100 ${!isReserved ? 'bg-light' : ''}`}
-                                                    style={{ opacity: isReserved ? 1 : 0.7 }}>
+                                                <Card className={`h-100`}>
                                                     <Card.Header
                                                         className="text-white d-flex justify-content-between align-items-center py-2"
                                                         style={{ backgroundColor: bgColor }}
                                                     >
+                                                        <div className='d-flex align-items-center justify-content-center gap-2'>
+                                                            <div
+                                                                className="text-white lead rounded d-flex align-items-center justify-content-center"
+                                                                style={{
+                                                                    width: '35px',
+                                                                    height: '35px',
+                                                                    fontWeight: 'lighter',
+                                                                    padding: '2px',
+                                                                    backgroundColor: '#4c4c4c',
+                                                                    fontSize: '1.6rem'
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    className='rounded'
+                                                                    style={{
+                                                                        border: '2px solid white',
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
+                                                                        alignItems: 'center',
+                                                                    }}
+                                                                >
+                                                                    {slot.name.split(' ')[1]}
+                                                                </span>
+                                                            </div>
+                                                            <div className="d-flex align-items-center">
+                                                                <FaClock className="me-1" size={14} />
+                                                                <small>{slot.time}</small>
+                                                            </div>
+                                                        </div>
                                                         {slot.course?.courseInfo?.iconUrl && (
                                                             <div className="d-flex align-items-center justify-content-center">
                                                                 {/* Check if it's a custom image/URL */}
@@ -261,12 +255,13 @@ const MyLearning = () => {
                                                                             objectFit: 'contain'
                                                                         }}
                                                                         onError={(e) => {
+                                                                            // Fallback to default icon if image fails
                                                                             e.target.style.display = 'none';
                                                                             const parent = e.target.parentNode;
                                                                             if (!parent.querySelector('.fallback-icon')) {
                                                                                 const fallbackIcon = document.createElement('i');
                                                                                 fallbackIcon.className = 'fas fa-book fallback-icon';
-                                                                                fallbackIcon.style.fontSize = '24px';
+                                                                                fallbackIcon.style.fontSize = '35px';
                                                                                 parent.appendChild(fallbackIcon);
                                                                             }
                                                                         }}
@@ -278,46 +273,34 @@ const MyLearning = () => {
                                                                             slot.course.courseInfo.iconUrl.substring(5) :
                                                                             slot.course.courseInfo.iconUrl;
 
+                                                                        // You'll need to import the specific icons you use
                                                                         const iconMap = {
                                                                             'FaBook': 'fas fa-book',
                                                                             'FaVideo': 'fas fa-video',
                                                                             'FaGraduationCap': 'fas fa-graduation-cap',
+                                                                            // Add other icons you use
                                                                         };
 
                                                                         return (
                                                                             <i
                                                                                 className={iconMap[iconKey] || 'fas fa-book'}
-                                                                                style={{ fontSize: '24px' }}
+                                                                                style={{ fontSize: '35px' }}
                                                                             />
                                                                         );
                                                                     })()
                                                                 )}
                                                             </div>
                                                         )}
-                                                        <div
-                                                            className="bg-white rounded-circle d-flex align-items-center justify-content-center"
-                                                            style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                fontWeight: 'bold',
-                                                                color: bgColor
-                                                            }}
-                                                        >
-                                                            {slot.name.split(' ')[1]}
-                                                        </div>
-                                                        <div className="d-flex align-items-center">
-                                                            <FaClock className="me-1" size={14} />
-                                                            <small>{slot.time}</small>
-                                                        </div>
+
                                                     </Card.Header>
 
                                                     <Card.Body className="d-flex flex-column border border-primary">
                                                         {course ? (
                                                             <>
                                                                 <div className="mb-3 flex-grow-1">
-                                                                    <h5 className="fs-6 fw-bold mb-2">{course.title}</h5>
+                                                                    <h5 className="fs-6 fw-bold mb-2">{course.courseInfo.title}</h5>
                                                                     {course.moduleTitle && (
-                                                                        <div className="text-muted small mb-2">
+                                                                        <div className="small mb-2">
                                                                             {course.moduleTitle}
                                                                         </div>
                                                                     )}
@@ -389,7 +372,7 @@ const MyLearning = () => {
                                                         ) : (
                                                             <div className="text-center py-4 text-muted">
                                                                 <p className="mb-2">{t('nextLessons.noCourseScheduled')}</p>
-                                                                <FaLock size={24} />
+                                                                <FaCalendarTimes size={24} />
                                                             </div>
                                                         )}
                                                     </Card.Body>
@@ -402,7 +385,7 @@ const MyLearning = () => {
                         </Card>
                     </Col>
                 </Row>
-            </div>
+            </div >
         );
     };
 
@@ -411,27 +394,6 @@ const MyLearning = () => {
             <PageBanner bannerHeadline={t('pageTitle')} />
 
             <Container className="my-4">
-                {/* TEST MODE CONTROLS - Remove in production */}
-                {testMode && (
-                    <Row className="mb-3">
-                        <Col xs={12}>
-                            <div className="alert alert-warning d-flex justify-content-between align-items-center">
-                                <span>🧪 <strong>{t('testMode.active')}</strong> - {t('testMode.description')}</span>
-                                <Button
-                                    size="sm"
-                                    variant="outline-secondary"
-                                    onClick={() => {
-                                        setTestMode(false);
-                                        loadNextLearningDay(); // Reload with real data
-                                    }}
-                                >
-                                    {t('testMode.disable')}
-                                </Button>
-                            </div>
-                        </Col>
-                    </Row>
-                )}
-
                 <Row>
                     <Col xs={12}>
                         <p className="text-primary fs-5 mb-4">
