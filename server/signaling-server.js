@@ -135,6 +135,22 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Session ended by instructor
+  socket.on('session-ended', ({ sessionId }) => {
+    console.log('🏁 Session ended by instructor:', sessionId);
+    
+    const session = activeSessions.get(sessionId);
+    if (session && session.instructorId === socket.id) {
+      // Notify all students that session has ended
+      io.to(sessionId).emit('session-ended');
+      console.log('✅ Notified', session.students.size, 'students that session ended');
+      
+      // Clean up session
+      activeSessions.delete(sessionId);
+      console.log('🧹 Cleaned up session:', sessionId);
+    }
+  });
+
   socket.on('offer', ({ targetId, offer }) => {
     console.log('📤 Forwarding offer to student:', targetId);
     io.to(targetId).emit('offer', {

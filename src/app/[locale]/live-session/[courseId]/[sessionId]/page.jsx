@@ -72,6 +72,7 @@ const StudentLiveSessionPage = ({ params }) => {
   };
 
   // ✅ NEW: Setup WebRTC stream reception
+  // ✅ NEW: Setup WebRTC stream reception
   const setupStreamReception = async () => {
     try {
       setIsConnecting(true);
@@ -81,27 +82,40 @@ const StudentLiveSessionPage = ({ params }) => {
       const sessionKey = sessionData?.matrixRoomId || sessionData?.roomId;
       console.log('📡 Session key (matrixRoomId):', sessionKey);
 
-      // ✅ ADD THIS DEBUG CODE:
       console.log('🔍 DEBUG: webrtcReceiveService object:', webrtcReceiveService);
       console.log('🔍 DEBUG: Has socket?', !!webrtcReceiveService.socket);
       console.log('🔍 DEBUG: setupSocketListeners function exists?', typeof webrtcReceiveService.setupSocketListeners);
 
-      // Initialize WebRTC receive service with broadcast stop callback
+      // Initialize WebRTC receive service with all callbacks
       await webrtcReceiveService.initialize(
         sessionKey,
         user.id,
+        // onStreamReceived callback
         (stream) => {
           console.log('✅ Received instructor stream!');
           setRemoteStream(stream);
           setIsConnecting(false);
           toast.success('Connected to instructor!');
         },
+        // onBroadcastStopped callback
         () => {
-          // ✅ NEW: Handle broadcast stopped
           console.log('🛑 Instructor stopped broadcasting');
           setRemoteStream(null);
           setIsConnecting(true);
           toast.info('Instructor stopped streaming');
+        },
+        // ✅ NEW: onSessionEnded callback
+        () => {
+          console.log('🏁 Session ended by instructor, redirecting...');
+          toast.info('Session has ended. Redirecting to My Learning...', { duration: 3000 });
+
+          // Cleanup
+          handleCleanup();
+
+          // Redirect after 2 seconds
+          setTimeout(() => {
+            router.push('/my-learning');
+          }, 2000);
         }
       );
 

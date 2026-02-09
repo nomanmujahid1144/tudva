@@ -303,6 +303,44 @@ import { matrixService } from '@/services/matrixService';
 import chatSocketService from '@/services/chatSocketService';
 import { toast } from 'react-hot-toast';
 
+/**
+ * ✅ Helper: Get user info from auth token in cookies
+ */
+const getUserInfoFromCookies = () => {
+  if (typeof document === 'undefined') return null;
+  
+  try {
+    // Get auth token from cookies
+    const cookies = document.cookie.split(';');
+    let authToken = null;
+    
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'auth_token') {
+        authToken = value;
+        break;
+      }
+    }
+    
+    if (!authToken || authToken === 'undefined' || authToken === 'null') {
+      return null;
+    }
+    
+    // Decode JWT token
+    const payload = JSON.parse(atob(authToken.split('.')[1]));
+    
+    return {
+      fullName: payload.fullName || payload.name || 'User',
+      email: payload.email || '',
+      role: payload.role || 'student',
+      userId: payload.userId
+    };
+  } catch (error) {
+    console.error('❌ Failed to decode auth token:', error);
+    return null;
+  }
+};
+
 export const useMatrixChat = (roomId, userCredentials) => {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -453,6 +491,7 @@ export const useMatrixChat = (roomId, userCredentials) => {
       try {
         setIsJoining(true);
         console.log('🔄 Joining room:', roomId);
+        console.log('👤 User credentials:', userCredentials);
 
         // 1. Join Matrix room (get history only)
         const joinResult = await matrixService.joinRoom(roomId, userCredentials);
@@ -472,8 +511,18 @@ export const useMatrixChat = (roomId, userCredentials) => {
         console.log('✅ Fetched', joinResult.messages?.length || 0, 'history messages from Matrix');
 
         // 2. Connect to WebSocket for real-time messages
-        const userName = userCredentials?.userId?.split(':')[0]?.replace('@instructor_', '').replace('@student_', '') || 'User';
+        // ✅ FIXED: Get actual user name from auth token
+        const userInfo = getUserInfoFromCookies();
+        
+        const userName = userInfo?.fullName || 
+                        userCredentials?.userName || 
+                        userCredentials?.name || 
+                        userCredentials?.fullName ||
+                        'User';
+        
         const userRole = userCredentials?.userId?.includes('@instructor_') ? 'instructor' : 'student';
+
+        console.log('📝 Using userName:', userName, '| Role:', userRole);
 
         const socketResult = await chatSocketService.connect(
           roomId,
@@ -514,29 +563,45 @@ export const useMatrixChat = (roomId, userCredentials) => {
     if (!content.trim() || !isConnected) return { success: false };
 
     try {
+      // ✅ FIXED: Get actual user name from auth token
+      const userInfo = getUserInfoFromCookies();
+      
+      const userName = userInfo?.fullName || 
+                      userCredentials?.userName || 
+                      userCredentials?.name || 
+                      userCredentials?.fullName ||
+                      'User';
+
       // Create message object
       const message = {
         id: `temp_${Date.now()}`,
         content: content.trim(),
-        sender: userCredentials?.userId?.split(':')[0]?.replace('@instructor_', '').replace('@student_', '') || 'User',
+        sender: userName, // ✅ Use actual name from auth token
         senderId: userCredentials?.userId || 'unknown',
         senderRole: userCredentials?.userId?.includes('@instructor_') ? 'instructor' : 'student',
         timestamp: new Date().toISOString(),
         type: 'user'
       };
 
-      // 1. Send via WebSocket (instant delivery)
+      // ✅ CRITICAL FIX: Send to BOTH WebSocket AND Matrix
+      console.log('📤 Sending message to WebSocket + Matrix...');
+
+      // 1. Send via WebSocket (instant delivery to users in chat)
       const socketResult = chatSocketService.sendMessage(message);
       
       if (!socketResult.success) {
-        throw new Error('Failed to send via WebSocket');
+        console.warn('⚠️ WebSocket send failed, but will still save to Matrix');
       }
 
-      // 2. Save to Matrix (persistence) - fire and forget
-      matrixService.sendMessage(content.trim(), msgType).catch(err => {
-        console.warn('⚠️ Failed to save message to Matrix:', err);
-      });
+      // 2. ✅ ALWAYS save to Matrix (so it shows in Element app)
+      const matrixResult = await matrixService.sendMessage(content.trim(), msgType);
+      
+      if (!matrixResult.success) {
+        console.error('❌ Failed to save message to Matrix:', matrixResult.error);
+        throw new Error('Failed to save message to Matrix: ' + matrixResult.error);
+      }
 
+      console.log('✅ Message sent to WebSocket + Matrix successfully');
       return { success: true };
 
     } catch (error) {

@@ -226,6 +226,11 @@ class WebRTCBroadcastService {
             this.socket.emit('broadcast-stopped', {
                 sessionId: this.sessionId
             });
+
+            // Emit session-ended to trigger student redirects
+            this.socket.emit('session-ended', {
+                sessionId: this.sessionId
+            });
         }
 
         // Close all peer connections

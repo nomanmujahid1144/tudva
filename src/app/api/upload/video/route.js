@@ -4,7 +4,7 @@ import { getAuthHeader } from '@/utils/auth';
 
 // Helper function to get the backend URL
 const getBackendUrl = () => {
-  return process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3001';
+  return process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:3000';
 };
 
 export async function POST(request) {
