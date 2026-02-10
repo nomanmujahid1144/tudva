@@ -1,13 +1,14 @@
 "use client";
 
 import TinySlider from "@/components/TinySlider";
-import { currency } from "@/context/constants";
 import Image from "next/image";
-import { Card, CardBody, CardTitle, Container, Row } from "react-bootstrap";
+import { Badge, Card, CardBody, CardTitle, Container, Row } from "react-bootstrap";
 import { renderToString } from "react-dom/server";
-import { FaChevronLeft, FaChevronRight, FaCircle, FaShoppingCart, FaStar, FaUserGraduate } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { FaChevronLeft, FaChevronRight, FaStar, FaUserGraduate } from "react-icons/fa";
+import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import liveIcon from '@/assets/images/live-course.png';
+import recordedIcon from '@/assets/images/recorded-course.png';
 
 // Default placeholder image
 import placeholderImg from '@/assets/images/courses/4by3/01.jpg';
@@ -15,61 +16,77 @@ import placeholderAvatar from '@/assets/images/avatar/01.jpg';
 
 const CourseCard = ({ course }) => {
   const router = useRouter();
-  
+  const params = useParams();
+  const locale = params?.locale || 'en';
+  const t = useTranslations('courses.detail.related');
+
   if (!course) return null;
-  
-  // Format course data
+
+  // Format course data from API response
   const {
     id,
     title,
+    slug,
     stats = {},
     instructor = {},
     thumbnailUrl,
     iconUrl,
+    backgroundColorHex,
     shortDescription,
     category,
     subcategory,
     level,
     type
   } = course;
-  
-  // Default or fallback values
+
+  // Use dynamic values from API
   const studentCount = stats.enrollmentCount || 0;
-  const rating = stats.rating || 5.0;
-  const price = 149; // This would come from course.price
+  const rating = stats.rating || 0;
   const instructorAvatar = instructor?.profilePicture || placeholderAvatar;
-  const courseImage = thumbnailUrl || placeholderImg;
-  
+  const instructorName = instructor?.name || 'Unknown Instructor';
+
+  // Use iconUrl with backgroundColorHex if available, otherwise use thumbnailUrl
+  const courseImage = iconUrl || thumbnailUrl || placeholderImg;
+  const useColoredBackground = !!iconUrl;
+
   // Handle click to go to course detail page
   const handleCourseClick = () => {
-    router.push(`/courses/${course.slug || id}`);
+    router.push(`/${locale}/courses/${slug || id}`);
   };
 
   return (
     <Card className="p-2 border h-100" onClick={handleCourseClick} role="button" style={{ cursor: 'pointer' }}>
       <div className="rounded-top overflow-hidden">
         <div className="card-overlay-hover">
-          <Image 
-            src={courseImage} 
-            className="card-img-top" 
-            alt={title} 
-            width={400}
-            height={300}
-            style={{ objectFit: 'cover', height: '200px' }}
-          />
-        </div>
-        <div className="card-img-overlay">
-          <div className="card-element-hover d-flex justify-content-end">
-            <a href="#" className="icon-md bg-white rounded-circle text-center" onClick={(e) => {
-              e.stopPropagation();
-              // Add to cart logic here
-            }}>
-              <FaShoppingCart className="text-danger" />
-            </a>
-          </div>
+          {useColoredBackground ? (
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                height: '200px',
+                backgroundColor: backgroundColorHex || '#f5f5f5'
+              }}
+            >
+              <Image
+                src={courseImage}
+                alt={title}
+                width={120}
+                height={120}
+                style={{ objectFit: 'contain' }}
+              />
+            </div>
+          ) : (
+            <Image
+              src={courseImage}
+              className="card-img-top"
+              alt={title}
+              width={400}
+              height={300}
+              style={{ objectFit: 'cover', height: '200px' }}
+            />
+          )}
         </div>
       </div>
-      
+
       <CardBody>
         <div className="d-flex justify-content-between">
           <ul className="list-inline hstack gap-2 mb-0">
@@ -83,34 +100,47 @@ const CourseCard = ({ course }) => {
               <div className="icon-md bg-warning bg-opacity-15 text-warning rounded-circle">
                 <FaStar />
               </div>
-              <span className="h6 fw-light ms-2 mb-0">{rating.toFixed(1)}</span>
+              <span className="h6 fw-light ms-2 mb-0">{rating > 0 ? rating.toFixed(1) : '0.0'}</span>
             </li>
           </ul>
-          
+
           {/* Instructor avatar */}
           {instructor && (
             <div className="avatar avatar-sm">
-              <Image 
-                className="avatar-img rounded-circle" 
-                src={instructorAvatar} 
-                alt={instructor.name || "Instructor"}
+              <Image
+                className="avatar-img rounded-circle"
+                src={instructorAvatar}
+                alt={instructorName}
                 width={30}
                 height={30}
               />
             </div>
           )}
         </div>
-        
+
         <hr />
-        
+
         <CardTitle>
           <div className="course-title text-truncate-2">{title}</div>
         </CardTitle>
-        
+
+        <div className="d-flex align-items-start gap-3">
+          <Image
+            src={type === 'live' ? liveIcon : recordedIcon}
+            alt={type === 'live' ? t('liveCourseBadge') : t('recordedCourseBadge')}
+            className='me-2'
+            width={60}
+            height={60}
+          />
+          <p className="fs-6 mb-2">
+            {shortDescription?.substring(0, 50) + (shortDescription?.length > 50 ? '...' : '') || t('noDescription')}
+          </p>
+        </div>
+
         <div className="d-flex justify-content-between align-items-center">
-          <a href="#" className="badge bg-info bg-opacity-10 text-info" onClick={(e) => e.stopPropagation()}>
-            <FaCircle className="small fw-bold me-2" />{category || subcategory || level || type || 'Course'}
-          </a>
+          <Badge bg="primary" className="px-3 rounded-pill fw-normal" onClick={(e) => e.stopPropagation()}>
+            {category || subcategory || level || type || 'Course'}
+          </Badge>
         </div>
       </CardBody>
 
@@ -128,11 +158,11 @@ const CourseCard = ({ course }) => {
 };
 
 const ListedCourses = ({ relatedCourses = [] }) => {
-  const t = useTranslations('courses.detail.relatedCourses');
-  
+  const t = useTranslations('courses.detail.related');
+
   // If there are no related courses, don't show this section
   if (!relatedCourses || relatedCourses.length === 0) return null;
-  
+
   const courseSliderSettings = {
     arrowKeys: true,
     gutter: 30,

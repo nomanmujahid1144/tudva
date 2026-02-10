@@ -12,7 +12,12 @@
     "searchCourses": {
       "heading": "Merülj el 300 leckében 2528 egyedi modullal.",
       "subheading": "Tanulj bármit, amit akarsz – mindig ingyenes!",
-      "placeholder": "Találd meg a kurzusod (kurzusnév vagy téma szerint)"
+      "placeholder": "Tanfolyamok, témák vagy oktatók keresése...",
+      "searching": "Keresés...",
+      "noResults": "Nem található tanfolyam. Próbáljon más keresési kifejezést.",
+      "resultsCount": "{count} / {total} tanfolyam találva",
+      "showingFirst": "Első {count} megjelenítése {total} eredményből",
+      "clear": "Keresés törlése"
     },
     "trendingCourses": {
       "title": "Népszerű",
@@ -25,23 +30,31 @@
       "duration": "időtartam"
     },
     "coursesOverview": {
-      "title": "Kurzusaim áttekintése",
+      "title": "Tanfolyam Áttekintés",
       "nextLessons": {
-        "title": "Következő leckéim",
+        "title": "Következő Leckéim",
         "learningDay": "Tanulási nap:",
-        "schoolHour": "tanóra",
-        "timeRemaining": "nap, {hours} óra, {minutes} perc",
-        "manageLink": "kurzusaim kezelése"
+        "schoolHour": "Iskolai óra",
+        "timeRemaining": "{hours}ó {minutes}p",
+        "startsIn": "Kezdés",
+        "manageLink": "Ütemterv kezelése",
+        "loading": "Következő lecke betöltése...",
+        "noScheduled": "Még nincsenek ütemezett leckék",
+        "scheduleNow": "Tanfolyam ütemezése"
       },
       "weekPlan": {
-        "title": "Heti terv előnézet",
-        "learningDay": "Tanulási nap: {date} [hét {week}/25]",
-        "noCourse": "nincs kiválasztott kurzus",
-        "chooseTopic": "válaszd ki a megfelelő témát",
-        "manageLink": "kurzusaim kezelése"
+        "title": "Heti Terv Előnézet",
+        "learningDay": "{date} - {week}. hét",
+        "noCourse": "Nincs ütemezett tanfolyam",
+        "chooseTopic": "Válassz témát a tanuláshoz",
+        "manageLink": "Heti terv kezelése",
+        "loading": "Heti előnézet betöltése...",
+        "noCourses": "Erre a hétre nincsenek tanfolyamok ütemezve",
+        "scheduleNow": "Hét tervezése"
       },
       "moreAbout": {
-        "title": "Többet a kurzusaimról"
+        "title": "Több a tanfolyamokról",
+        "comingSoon": "Hamarosan..."
       }
     }
   },
@@ -1079,6 +1092,15 @@
   },
   "courses": {
     "detail": {
+      "related": {
+        "title": "Kapcsolódó tanfolyamok",
+        "subtitle": "Ezek a tanfolyamok is érdekesek lehetnek",
+        "liveCourseBadge": "Élő tanfolyam",
+        "recordedCourseBadge": "Felvett tanfolyam",
+        "noDescription": "Nincs elérhető leírás",
+        "students": "Hallgatók",
+        "rating": "Értékelés"
+      },
       "error": {
         "title": "Hiba a kurzus betöltésekor",
         "notFound": "Kurzus nem található",
@@ -1265,6 +1287,84 @@
       "previous": "Előző",
       "next": "Következő",
       "page": "{number}. oldal"
+    }
+  },
+  "favorites": {
+    "component": {
+      "title": "Kedvenc tanfolyamaim",
+      "loading": "Kedvenc tanfolyamok betöltése...",
+      "youHave": "Ön rendelkezik",
+      "of": "/",
+      "favoriteCourse": "kedvenc tanfolyammal",
+      "favoriteCourses": "kedvenc tanfolyammal",
+      "searchPlaceholder": "Kedvenc tanfolyamok keresése...",
+      "clearSearch": "Keresés törlése",
+      "error": {
+        "title": "Hiba a kedvencek betöltésekor",
+        "tryAgain": "Próbálja újra"
+      },
+      "empty": {
+        "title": "Még nincs kedvenc tanfolyam",
+        "description": "Kezdje el felfedezni a tanfolyamokat és adja hozzá őket kedvenceihez a szív ikonra kattintva.",
+        "browseCourses": "Tanfolyamok böngészése"
+      },
+      "noResults": {
+        "title": "Nem található tanfolyam",
+        "description": "Nincs olyan tanfolyam, amely megfelel a keresési feltételeknek",
+        "clearSearch": "Keresés törlése"
+      },
+      "showingResults": "{count} / {total} kedvenc tanfolyam megjelenítése"
+    },
+    "page": {
+      "title": "Kedvenc tanfolyamaim",
+      "subtitle": "Későbbre elmentett tanfolyamok",
+      "metaTitle": "Kedvenc tanfolyamaim - Tudva",
+      "metaDescription": "Tekintse meg és kezelje kedvenc tanfolyamait. Érje el az összes tanfolyamot, amelyeket későbbi tanulásra mentett.",
+      "metaKeywords": "kedvenc tanfolyamok, mentett tanfolyamok, tanulás, oktatás, tanfolyamaim, könyvjelzőzött",
+      "bannerHeadline": "Kedvenc tanfolyamaim",
+      "bannerSubtext": "Minden mentett tanfolyam egy helyen. Folytassa tanulási útját a válogatott tanfolyamokkal."
+    },
+    "list": {
+      "loading": "Betöltés...",
+      "loadingMessage": "Kedvenc tanfolyamok betöltése...",
+      "empty": {
+        "title": "Még nincsenek kedvenc tanfolyamok",
+        "message": "Kezdje el gyűjteményét felépíteni tanfolyamok hozzáadásával a kedvencekhez",
+        "browseButton": "Tanfolyamok böngészése"
+      },
+      "notLoggedIn": {
+        "title": "Jelentkezzen be kedvencei megtekintéséhez",
+        "message": "Mentse el az érdeklődésre számot tartó tanfolyamokat, és férjen hozzájuk bármikor fiókjába bejelentkezve.",
+        "signInButton": "Bejelentkezés",
+        "browseButton": "Tanfolyamok böngészése"
+      },
+      "error": {
+        "title": "Hiba",
+        "fetchFailed": "A kedvencek betöltése sikertelen",
+        "retryButton": "Újrapróbálás"
+      },
+      "search": {
+        "placeholder": "Kedvenc tanfolyamok keresése cím vagy leírás alapján...",
+        "clearButton": "Keresés törlése"
+      },
+      "filter": {
+        "recentMessage": "Az elmúlt 7 napban hozzáadott kedvencek megjelenítése"
+      },
+      "table": {
+        "course": "Tanfolyam",
+        "added": "Hozzáadva",
+        "actions": "Műveletek"
+      },
+      "courseType": {
+        "live": "Élő tanfolyam",
+        "recorded": "Felvett tanfolyam"
+      },
+      "actions": {
+        "viewCourse": "Tanfolyam megtekintése"
+      },
+      "results": {
+        "showing": "{count} / {total} kedvenc tanfolyam megjelenítése"
+      }
     }
   },
   "scheduler": {

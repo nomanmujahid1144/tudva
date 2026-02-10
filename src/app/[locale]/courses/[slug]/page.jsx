@@ -61,6 +61,7 @@ const CourseDetailPage = () => {
       if (courseData.id) {
         try {
           const relatedResponse = await courseService.getRelatedCourses(courseData.id, 4);
+          console.log(relatedResponse, 'relatedResponse')
           if (relatedResponse.success) {
             setRelatedCourses(relatedResponse.data || []);
           }

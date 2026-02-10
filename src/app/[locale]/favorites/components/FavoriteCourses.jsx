@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
 import { FaSearch, FaHeart } from 'react-icons/fa';
+import { useTranslations } from 'next-intl';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useAuth } from '@/context/AuthContext';
 import CourseCard from '../../../components/courses/CourseCard';
@@ -14,6 +15,7 @@ const FavoriteCourses = () => {
   const { courses, isLoading, error, refresh, removeCourseFromList } = useFavorites();
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+  const t = useTranslations('favorites.component');
 
 
   if (!user && !loading) {
@@ -55,16 +57,16 @@ const FavoriteCourses = () => {
           <div className="mb-3 mb-sm-0">
             <h3 className="mb-1">
               <FaHeart className="text-danger me-2" />
-              My Favorite Courses
+              {t('title')}
             </h3>
             <p className="text-muted mb-0">
               {isLoading ? (
-                'Loading your favorite courses...'
+                t('loading')
               ) : (
                 <>
-                  You have {filteredCourses.length}
-                  {searchQuery ? ` of ${courses?.length || 0}` : ''}{" "}
-                  favorite course{filteredCourses.length !== 1 ? 's' : ''}
+                  {t('youHave')} {filteredCourses.length}
+                  {searchQuery ? ` ${t('of')} ${courses?.length || 0}` : ''}{" "}
+                  {filteredCourses.length !== 1 ? t('favoriteCourses') : t('favoriteCourse')}
                 </>
               )}
             </p>
@@ -76,14 +78,14 @@ const FavoriteCourses = () => {
               <InputGroup>
                 <Form.Control
                   type="search"
-                  placeholder="Search favorite courses..."
+                  placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />
                 <Button
                   variant="outline-secondary"
                   onClick={clearSearch}
-                  title="Clear search"
+                  title={t('clearSearch')}
                 >
                   <FaSearch />
                 </Button>
@@ -107,10 +109,10 @@ const FavoriteCourses = () => {
         {error && (
           <div className="text-center py-5">
             <div className="alert alert-danger">
-              <h5>Error Loading Favorites</h5>
+              <h5>{t('error.title')}</h5>
               <p className="mb-0">{error}</p>
               <Button variant="outline-primary" onClick={refresh} className="mt-3">
-                Try Again
+                {t('error.tryAgain')}
               </Button>
             </div>
           </div>
@@ -120,12 +122,12 @@ const FavoriteCourses = () => {
         {!isLoading && !error && courses && courses.length === 0 && (
           <div className="text-center py-5">
             <FaHeart size={64} className="text-muted mb-3" />
-            <h4>No Favorite Courses Yet</h4>
+            <h4>{t('empty.title')}</h4>
             <p className="text-muted mb-4">
-              Start exploring courses and add them to your favorites by clicking the heart icon.
+              {t('empty.description')}
             </p>
             <Button variant="primary" href="/courses">
-              Browse Courses
+              {t('empty.browseCourses')}
             </Button>
           </div>
         )}
@@ -144,12 +146,12 @@ const FavoriteCourses = () => {
         {!isLoading && !error && courses && courses.length > 0 && filteredCourses.length === 0 && (
           <div className="text-center py-5">
             <FaSearch size={48} className="text-muted mb-3" />
-            <h4>No Courses Found</h4>
+            <h4>{t('noResults.title')}</h4>
             <p className="text-muted mb-3">
-              No courses match your search criteria "{searchQuery}".
+              {t('noResults.description')} "{searchQuery}".
             </p>
             <Button variant="outline-primary" onClick={clearSearch}>
-              Clear Search
+              {t('noResults.clearSearch')}
             </Button>
           </div>
         )}
@@ -196,7 +198,7 @@ const FavoriteCourses = () => {
             {searchQuery && (
               <div className="text-center mt-4">
                 <small className="text-muted">
-                  Showing {filteredCourses.length} of {courses.length} favorite courses
+                  {t('showingResults', { count: filteredCourses.length, total: courses.length })}
                 </small>
               </div>
             )}

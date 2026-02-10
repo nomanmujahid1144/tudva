@@ -1,23 +1,31 @@
-// src/app/favorites/page.js
+// src/app/[locale]/favorites/page.js
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import PageBanner from "../../components/banner/PageBanner";
 import FavoriteCourses from './components/FavoriteCourses';
 
-export const metadata = {
-  title: 'My Favorite Courses - Tudva',
-  description: 'View and manage your favorite courses. Access all the courses you\'ve saved for later learning.',
-  keywords: 'favorite courses, saved courses, learning, education, my courses, bookmarked',
-};
+export async function generateMetadata({ params: { locale } }) {
+  const t = await getTranslations({ locale, namespace: 'favorites.page' });
+  
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    keywords: t('metaKeywords')
+  };
+}
 
 const FavoritesPage = () => {
+  const t = useTranslations('favorites.page');
+
   return (
     <>
       <PageBanner 
-        bannerHeadline="My Favorite Courses"
-        bannerSubtext="All your saved courses in one place. Continue your learning journey with your handpicked selection."
+        bannerHeadline={t('bannerHeadline')}
+        bannerSubtext={t('bannerSubtext')}
         showBreadcrumb={true}
         breadcrumbItems={[
           { name: "Home", link: "/" },
-          { name: "Favorites", link: "/favorites" }
+          { name: t('bannerHeadline'), link: "/favorites" }
         ]}
       />
       <FavoriteCourses />

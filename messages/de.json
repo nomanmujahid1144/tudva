@@ -12,7 +12,12 @@
     "searchCourses": {
       "heading": "Tauche ein in 300 Lektionen mit 2528 einzelnen Modulen.",
       "subheading": "Lerne alles, was du willst – es ist immer kostenlos!",
-      "placeholder": "Finde deinen Kurs (nach Kursname oder Thema)"
+      "placeholder": "Kurse, Themen oder Dozenten suchen...",
+      "searching": "Suche...",
+      "noResults": "Keine Kurse gefunden. Versuchen Sie einen anderen Suchbegriff.",
+      "resultsCount": "{count} von {total} Kursen gefunden",
+      "showingFirst": "Zeige erste {count} von {total} Ergebnissen",
+      "clear": "Suche löschen"
     },
     "trendingCourses": {
       "title": "Beliebte",
@@ -25,23 +30,31 @@
       "duration": "Dauer"
     },
     "coursesOverview": {
-      "title": "Meine Kursübersicht",
+      "title": "Kursübersicht",
       "nextLessons": {
         "title": "Meine nächsten Lektionen",
         "learningDay": "Lerntag:",
         "schoolHour": "Schulstunde",
-        "timeRemaining": "Tage, {hours} Stunden, {minutes} Minuten",
-        "manageLink": "meine Kurse verwalten"
+        "timeRemaining": "{hours}Std {minutes}Min",
+        "startsIn": "Beginnt in",
+        "manageLink": "Zeitplan verwalten",
+        "loading": "Lade nächste Lektion...",
+        "noScheduled": "Noch keine Lektionen geplant",
+        "scheduleNow": "Kurs planen"
       },
       "weekPlan": {
         "title": "Wochenplan Vorschau",
-        "learningDay": "Lerntag: {date} [Woche {week}/25]",
-        "noCourse": "kein Kurs ausgewählt",
-        "chooseTopic": "wähle das passende Thema",
-        "manageLink": "meine Kurse verwalten"
+        "learningDay": "{date} - Woche {week}",
+        "noCourse": "Kein Kurs geplant",
+        "chooseTopic": "Wähle ein Thema zum Lernen",
+        "manageLink": "Wochenplan verwalten",
+        "loading": "Lade Wochenvorschau...",
+        "noCourses": "Keine Kurse für diese Woche geplant",
+        "scheduleNow": "Woche planen"
       },
       "moreAbout": {
-        "title": "Mehr über meine Kurse"
+        "title": "Mehr über Kurse",
+        "comingSoon": "Demnächst..."
       }
     }
   },
@@ -784,33 +797,27 @@
       "pageTitle": "Live-Sitzungsverwaltung",
       "pageSubtitle": "Verwalte deine Live-Kurse und Sitzungen",
       "refreshButton": "Sitzungen aktualisieren",
-      
       "loading": "Live-Sitzungen werden geladen...",
-      
       "error": {
         "title": "Fehler beim Laden der Live-Sitzungen",
         "retry": "Erneut versuchen"
       },
-      
       "emptyState": {
         "title": "Keine Live-Kurse gefunden",
         "description": "Du hast noch keine Live-Kurse. Erstelle einen Live-Kurs, um mit der Verwaltung von Sitzungen zu beginnen.",
         "createButton": "Live-Kurs erstellen"
       },
-      
       "stats": {
         "liveCourses": "Live-Kurse",
         "activeSessions": "Aktive Sitzungen",
         "readyToStart": "Bereit zum Start",
         "totalStudents": "Gesamt Studenten"
       },
-      
       "courseCard": {
         "students": "Studenten:",
         "sessions": "Sitzungen:",
         "next": "Nächste:"
       },
-      
       "status": {
         "live": "LIVE",
         "waitingForSchedules": "Warten auf Schülerzeitpläne",
@@ -818,7 +825,6 @@
         "allCompleted": "Alle Sitzungen abgeschlossen",
         "noSession": "Keine Sitzung"
       },
-      
       "actions": {
         "setupRoom": "Sitzungsraum einrichten",
         "viewLive": "Live-Sitzung ansehen",
@@ -829,7 +835,6 @@
         "startsIn": "{sessionTitle} in {countdown}",
         "waiting": "Warten auf Schülerzeitpläne"
       },
-      
       "toast": {
         "roomCreated": "Sitzungsraum erstellt! Schüler können jetzt Sitzungen planen.",
         "createFailed": "Sitzung konnte nicht erstellt werden",
@@ -839,13 +844,11 @@
         "sessionEnded": "Live-Sitzung erfolgreich beendet!",
         "endFailed": "Sitzung konnte nicht beendet werden"
       },
-      
       "messages": {
         "noStudents": "Noch keine Schüler haben diesen Kurs geplant",
         "allCompleted": "Alle Sitzungen abgeschlossen",
         "tooEarly": "Zu früh zum Starten"
       },
-      
       "dateFormat": {
         "notSet": "Nicht festgelegt"
       }
@@ -1089,6 +1092,15 @@
   },
   "courses": {
     "detail": {
+      "related": {
+        "title": "Ähnliche Kurse",
+        "subtitle": "Diese Kurse könnten Sie auch interessieren",
+        "liveCourseBadge": "Live-Kurs",
+        "recordedCourseBadge": "Aufgezeichneter Kurs",
+        "noDescription": "Keine Beschreibung verfügbar",
+        "students": "Studierende",
+        "rating": "Bewertung"
+      },
       "error": {
         "title": "Fehler beim Laden des Kurses",
         "notFound": "Kurs nicht gefunden",
@@ -1275,6 +1287,84 @@
       "previous": "Zurück",
       "next": "Weiter",
       "page": "Seite {number}"
+    }
+  },
+  "favorites": {
+    "component": {
+      "title": "Meine Lieblingskurse",
+      "loading": "Ihre Lieblingskurse werden geladen...",
+      "youHave": "Sie haben",
+      "of": "von",
+      "favoriteCourse": "Lieblingskurs",
+      "favoriteCourses": "Lieblingskurse",
+      "searchPlaceholder": "Lieblingskurse durchsuchen...",
+      "clearSearch": "Suche löschen",
+      "error": {
+        "title": "Fehler beim Laden der Favoriten",
+        "tryAgain": "Erneut versuchen"
+      },
+      "empty": {
+        "title": "Noch keine Lieblingskurse",
+        "description": "Beginnen Sie, Kurse zu erkunden und fügen Sie sie zu Ihren Favoriten hinzu, indem Sie auf das Herzsymbol klicken.",
+        "browseCourses": "Kurse durchsuchen"
+      },
+      "noResults": {
+        "title": "Keine Kurse gefunden",
+        "description": "Keine Kurse entsprechen Ihren Suchkriterien",
+        "clearSearch": "Suche löschen"
+      },
+      "showingResults": "{count} von {total} Lieblingskursen werden angezeigt"
+    },
+    "page": {
+      "title": "Meine Lieblingskurse",
+      "subtitle": "Kurse, die Sie für später gespeichert haben",
+      "metaTitle": "Meine Lieblingskurse - Tudva",
+      "metaDescription": "Sehen und verwalten Sie Ihre Lieblingskurse. Greifen Sie auf alle Kurse zu, die Sie für späteres Lernen gespeichert haben.",
+      "metaKeywords": "Lieblingskurse, gespeicherte Kurse, Lernen, Bildung, meine Kurse, mit Lesezeichen versehen",
+      "bannerHeadline": "Meine Lieblingskurse",
+      "bannerSubtext": "Alle Ihre gespeicherten Kurse an einem Ort. Setzen Sie Ihre Lernreise mit Ihrer handverlesenen Auswahl fort."
+    },
+    "list": {
+      "loading": "Lädt...",
+      "loadingMessage": "Lade Ihre Lieblingskurse...",
+      "empty": {
+        "title": "Noch keine Lieblingskurse",
+        "message": "Beginnen Sie Ihre Sammlung aufzubauen, indem Sie Kurse zu Ihren Favoriten hinzufügen",
+        "browseButton": "Kurse durchsuchen"
+      },
+      "notLoggedIn": {
+        "title": "Melden Sie sich an, um Ihre Favoriten anzuzeigen",
+        "message": "Speichern Sie interessante Kurse und greifen Sie jederzeit darauf zu, indem Sie sich bei Ihrem Konto anmelden.",
+        "signInButton": "Anmelden",
+        "browseButton": "Kurse durchsuchen"
+      },
+      "error": {
+        "title": "Fehler",
+        "fetchFailed": "Favoriten konnten nicht geladen werden",
+        "retryButton": "Erneut versuchen"
+      },
+      "search": {
+        "placeholder": "Lieblingskurse nach Titel oder Beschreibung durchsuchen...",
+        "clearButton": "Suche löschen"
+      },
+      "filter": {
+        "recentMessage": "Zeigt Favoriten, die in den letzten 7 Tagen hinzugefügt wurden"
+      },
+      "table": {
+        "course": "Kurs",
+        "added": "Hinzugefügt",
+        "actions": "Aktionen"
+      },
+      "courseType": {
+        "live": "Live-Kurs",
+        "recorded": "Aufgezeichneter Kurs"
+      },
+      "actions": {
+        "viewCourse": "Kurs ansehen"
+      },
+      "results": {
+        "showing": "Zeige {count} von {total} Lieblingskursen"
+      }
     }
   },
   "scheduler": {

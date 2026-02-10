@@ -608,6 +608,23 @@ export const deleteCourse = async (courseId) => {
   );
 };
 
+/**
+ * Search courses by query
+ * @param {string} query - Search query string
+ * @param {number} limit - Maximum number of results
+ * @returns {Promise<Object>} Search results
+ */
+export const searchCourses = async (query, limit = 10) => {
+  const queryParams = new URLSearchParams();
+  queryParams.append('q', query);
+  queryParams.append('limit', limit);
+
+  return handleApiCall(
+    () => api.get(`/api/course/search?${queryParams.toString()}`),
+    'Failed to search courses.'
+  );
+};
+
 // ENHANCED: File and upload utilities
 export const FileUtils = {
   /**
@@ -688,6 +705,9 @@ export default {
   updateAdditionalInfo,
   getCourseCurriculum,
   getCourseAdditionalInfo,
+
+  // Search Course
+  searchCourses,
 
   // File uploads (enhanced)
   uploadFile, // Legacy compatibility

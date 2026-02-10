@@ -12,7 +12,12 @@
     "searchCourses": {
       "heading": "Dive into 300 Lessons with 2528 individual modules.",
       "subheading": "Learn anything you want – it's always free!",
-      "placeholder": "Find your course (by course name or topic)"
+      "placeholder": "Search courses, topics, or instructors...",
+      "searching": "Searching...",
+      "noResults": "No courses found. Try a different search term.",
+      "resultsCount": "Found {count} of {total} courses",
+      "showingFirst": "Showing first {count} of {total} results",
+      "clear": "Clear search"
     },
     "trendingCourses": {
       "title": "Trending",
@@ -25,23 +30,31 @@
       "duration": "duration"
     },
     "coursesOverview": {
-      "title": "My Courses Overview",
+      "title": "Courses Overview",
       "nextLessons": {
         "title": "My Next Lessons",
         "learningDay": "Learning Day:",
-        "schoolHour": "school hour",
-        "timeRemaining": "days, {hours} hours, {minutes} minutes",
-        "manageLink": "manage my courses"
+        "schoolHour": "School Hour",
+        "timeRemaining": "{hours}h {minutes}m",
+        "startsIn": "Starts in",
+        "manageLink": "Manage my schedule",
+        "loading": "Loading next lesson...",
+        "noScheduled": "No lessons scheduled yet",
+        "scheduleNow": "Schedule a Course"
       },
       "weekPlan": {
-        "title": "Weekplan Preview",
-        "learningDay": "Learning Day: {date} [week {week}/25]",
-        "noCourse": "no course selected",
-        "chooseTopic": "choose the matching topic",
-        "manageLink": "manage my courses"
+        "title": "Week Plan Preview",
+        "learningDay": "{date} - Week {week}",
+        "noCourse": "No Course Scheduled",
+        "chooseTopic": "Choose a topic to start learning",
+        "manageLink": "Manage week plan",
+        "loading": "Loading week preview...",
+        "noCourses": "No courses scheduled for this week",
+        "scheduleNow": "Plan Your Week"
       },
       "moreAbout": {
-        "title": "More About My Courses"
+        "title": "More About Courses",
+        "comingSoon": "Coming soon..."
       }
     }
   },
@@ -1080,6 +1093,15 @@
   },
   "courses": {
     "detail": {
+      "related": {
+        "title": "Related Courses",
+        "subtitle": "You might also be interested in these courses",
+        "liveCourseBadge": "Live Course",
+        "recordedCourseBadge": "Recorded Course",
+        "noDescription": "No description available",
+        "students": "Students",
+        "rating": "Rating"
+      },
       "error": {
         "title": "Error Loading Course",
         "notFound": "Course not found",
@@ -1266,6 +1288,84 @@
       "previous": "Previous",
       "next": "Next",
       "page": "Page {number}"
+    }
+  },
+  "favorites": {
+    "component": {
+      "title": "My Favorite Courses",
+      "loading": "Loading your favorite courses...",
+      "youHave": "You have",
+      "of": "of",
+      "favoriteCourse": "favorite course",
+      "favoriteCourses": "favorite courses",
+      "searchPlaceholder": "Search favorite courses...",
+      "clearSearch": "Clear search",
+      "error": {
+        "title": "Error Loading Favorites",
+        "tryAgain": "Try Again"
+      },
+      "empty": {
+        "title": "No Favorite Courses Yet",
+        "description": "Start exploring courses and add them to your favorites by clicking the heart icon.",
+        "browseCourses": "Browse Courses"
+      },
+      "noResults": {
+        "title": "No Courses Found",
+        "description": "No courses match your search criteria",
+        "clearSearch": "Clear Search"
+      },
+      "showingResults": "Showing {count} of {total} favorite courses"
+    },
+    "page": {
+      "title": "My Favorite Courses",
+      "subtitle": "Courses you've saved for later",
+      "metaTitle": "My Favorite Courses - Tudva",
+      "metaDescription": "View and manage your favorite courses. Access all the courses you've saved for later learning.",
+      "metaKeywords": "favorite courses, saved courses, learning, education, my courses, bookmarked",
+      "bannerHeadline": "My Favorite Courses",
+      "bannerSubtext": "All your saved courses in one place. Continue your learning journey with your handpicked selection."
+    },
+    "list": {
+      "loading": "Loading...",
+      "loadingMessage": "Loading your favorite courses...",
+      "empty": {
+        "title": "No favorite courses yet",
+        "message": "Start building your collection by adding courses to your favorites",
+        "browseButton": "Browse Courses"
+      },
+      "notLoggedIn": {
+        "title": "Sign in to view your favorites",
+        "message": "Save courses you're interested in and access them anytime by signing in to your account.",
+        "signInButton": "Sign In",
+        "browseButton": "Browse Courses"
+      },
+      "error": {
+        "title": "Error",
+        "fetchFailed": "Failed to fetch favorites",
+        "retryButton": "Retry"
+      },
+      "search": {
+        "placeholder": "Search favorite courses by title or description...",
+        "clearButton": "Clear search"
+      },
+      "filter": {
+        "recentMessage": "Showing favorites added in the last 7 days"
+      },
+      "table": {
+        "course": "Course",
+        "added": "Added",
+        "actions": "Actions"
+      },
+      "courseType": {
+        "live": "Live Course",
+        "recorded": "Recorded Course"
+      },
+      "actions": {
+        "viewCourse": "View Course"
+      },
+      "results": {
+        "showing": "Showing {count} of {total} favorite courses"
+      }
     }
   },
   "scheduler": {

@@ -106,9 +106,22 @@ export const checkSessionJoinEligibility = async (courseId, itemId) => {
   );
 };
 
+
+/**
+ * Get week plan preview (next Wednesday's schedule)
+ * @returns {Promise<Object>} Week preview data with scheduled courses
+ */
+export const getWeekPreview = async () => {
+  return handleApiCall(
+    () => api.get('/api/scheduler/week-preview'),
+    'Failed to fetch week preview.'
+  );
+};
+
 // Default export with all functions
 export default {
   getNextLearningDay,
+  getWeekPreview,
   markItemCompleted,
   getCourseMaterials,
   joinLiveSession,

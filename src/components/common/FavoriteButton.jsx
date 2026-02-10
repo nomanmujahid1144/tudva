@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-import { addToFavorites, removeFromFavorites, checkIsFavorite } from '../../services/favoritesService';
-import { addToWishlist, removeFromWishlist, isInWishlist } from '@/utils/fileWishlistApi';
+import favoritesService from '@/services/favoritesService'; // ✅ FIXED: Only use favoritesService
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -48,28 +47,13 @@ const FavoriteButton = ({
         setIsLoading(true);
         console.log('Checking favorite status for course:', courseId, 'user:', user.userId || user.id);
 
-        // Try both methods in sequence
-        let favoriteStatus = false;
+        // ✅ FIXED: Only use favoritesService
+        const response = await favoritesService.checkFavoriteStatus(courseId);
+        console.log('Favorite check result:', response);
 
-        // First try file-based wishlist API
-        try {
-          const isInWishlistResult = await isInWishlist(user.userId || user.id, courseId);
-          console.log('File-based wishlist check result:', isInWishlistResult);
-          favoriteStatus = isInWishlistResult;
-        } catch (fileWishlistError) {
-          console.warn('Error checking file-based wishlist:', fileWishlistError);
-
-          // Fall back to database API
-          try {
-            const response = await checkIsFavorite(courseId);
-            console.log('Database favorite check result:', response);
-            favoriteStatus = response.isFavorite;
-          } catch (dbError) {
-            console.warn('Error checking database favorites:', dbError);
-          }
+        if (response.success) {
+          setIsFavorite(response.data.isFavorite);
         }
-
-        setIsFavorite(favoriteStatus);
       } catch (error) {
         console.error('Error checking favorite status:', error);
       } finally {
@@ -99,51 +83,25 @@ const FavoriteButton = ({
       setIsProcessing(true);
       console.log('Toggling favorite for course:', courseId, 'current status:', isFavorite);
 
-      let success = false;
-      const userId = user.userId || user.id;
+      // ✅ FIXED: Only use favoritesService
+      const response = await favoritesService.toggleFavorite(courseId, isFavorite);
 
-      // Try file-based wishlist API first
-      try {
-        if (isFavorite) {
-          await removeFromWishlist(userId, courseId);
-          console.log('Successfully removed from wishlist');
-          success = true;
-        } else {
-          await addToWishlist(userId, courseId);
-          console.log('Successfully added to wishlist');
-          success = true;
-        }
-      } catch (fileWishlistError) {
-        console.warn('Error using file-based wishlist:', fileWishlistError);
-      }
-
-      // If file-based API failed, try database API
-      if (!success) {
-        try {
-          if (isFavorite) {
-            await removeFromFavorites(courseId);
-            console.log('Successfully removed from database favorites');
-            success = true;
-          } else {
-            await addToFavorites(courseId);
-            console.log('Successfully added to database favorites');
-            success = true;
-          }
-        } catch (dbError) {
-          console.warn('Error using database favorites:', dbError);
-        }
-      }
-
-      if (success) {
-        toast.success(isFavorite ? `${courseName} removed from favorites` : `${courseName} added to favorites`);
-        setIsFavorite(!isFavorite);
+      if (response.success) {
+        const newStatus = response.data.isFavorite;
+        setIsFavorite(newStatus);
+        
+        toast.success(
+          newStatus 
+            ? `${courseName} added to favorites` 
+            : `${courseName} removed from favorites`
+        );
 
         // Call the callback if provided
         if (onFavoriteChange) {
-          onFavoriteChange(!isFavorite);
+          onFavoriteChange(newStatus);
         }
       } else {
-        toast.error('Failed to update favorites. Please try again.');
+        toast.error(response.error || 'Failed to update favorites. Please try again.');
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
