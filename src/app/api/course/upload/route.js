@@ -5,13 +5,6 @@ import { authenticateRequest } from '@/middlewares/authMiddleware';
 import { v4 as uuidv4 } from 'uuid';
 import { UserRole } from '@/models/User';
 
-// Configure formidable to handle file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 // Initialize Google Cloud Storage
 const initializeStorage = () => {
   try {

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "generate-icons": "node scripts/generate-icons-manifest.js",
-    "dev": "next dev",
+    "dev": "concurrently \"next dev\" \"node server/signaling-server.js\"",
     "build": "tsc && next build",
-    "start": "next start",
+    "start": "concurrently \"next start\" \"node server/signaling-server.js\"",
     "lint": "next lint",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx}'"
   },
@@ -75,6 +75,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^9.2.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "prettier": "^3.3.3",
