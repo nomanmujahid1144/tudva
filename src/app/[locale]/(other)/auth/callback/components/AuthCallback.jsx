@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useParams } from "next/navigation";
-import { LoadingRotating } from "@/components/loader/LoadingRotating";
+import { LoadingRotating } from "../../../../../components/loader/LoadingRotating";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";

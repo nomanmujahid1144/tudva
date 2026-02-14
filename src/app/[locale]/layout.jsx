@@ -14,7 +14,7 @@ import { Toaster } from 'sonner';
 import { saira, merienda } from '../fonts';
 import logoDark from '@/assets/images/logo.svg';
 import FallbackLoading from '@/components/FallbackLoading';
-import Layout from '../components/layout/page';
+import Layout from '../components/layout/Layout';
 import 'flag-icons/css/flag-icons.min.css';
 
 // Dynamic imports

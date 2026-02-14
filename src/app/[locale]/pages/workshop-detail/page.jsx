@@ -1,5 +1,5 @@
 import React from 'react';
-import TopNavigationBar from './components/TopNavigationBar';
+// import TopNavigationBar from './components/TopNavigationBar';
 import Footer from './components/Footer';
 import Banner from './components/Banner';
 import About from './components/About';
@@ -11,7 +11,7 @@ export const metadata = {
 };
 const WorkshopDetailPage = () => {
   return <>
-    <TopNavigationBar />
+    {/* <TopNavigationBar /> */}
     <main>
       <Banner />
       <About />

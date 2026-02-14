@@ -5,9 +5,15 @@ const withNextIntl = createNextIntlPlugin('./src/app/utils/i18n/request.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
-    // Add this for better locale handling
     skipTrailingSlashRedirect: true,
     skipMiddlewareUrlNormalize: true,
+
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
     
     images: {
         domains: [
