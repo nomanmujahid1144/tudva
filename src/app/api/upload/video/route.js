@@ -73,11 +73,3 @@ export async function POST(request) {
     }, { status: 500 });
   }
 }
-
-// Configure the API route to handle large files
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: '50mb',
-  },
-};
