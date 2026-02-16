@@ -42,8 +42,8 @@ export const sendVerificationEmail = async ({ to, username, verificationUrl }) =
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Tudva <onboarding@resend.dev>', // Update with your actual domain
-      to: process.env.RESEND_SENDDER_EMAIL || to,
+      from: 'Tudva <noreply@tudva.net>', // Update with your actual domain
+      to: to,
       subject: 'Verify Your Tudva Account',
       html: html,
     });
@@ -78,7 +78,7 @@ export const sendAccountActivatedEmail = async ({ to, username, loginUrl }) => {
 
   try {
     // Use default login URL if none provided
-    const url = loginUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/sign-in`;
+    const url = loginUrl || `${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || 'http://localhost:3000'}/auth/sign-in`;
     
     // Render the React email template to HTML
     const html = await renderAsync(
@@ -89,8 +89,8 @@ export const sendAccountActivatedEmail = async ({ to, username, loginUrl }) => {
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Tudva <onboarding@resend.dev>', // Using the same sender as verification email
-      to: process.env.RESEND_SENDDER_EMAIL || to, // Using the same receiver logic
+      from: 'Tudva <noreply@tudva.net>', // Using the same sender as verification email
+      to:  to, // Using the same receiver logic
       subject: 'Your Tudva Account is Now Active',
       html: html,
     });
@@ -133,8 +133,8 @@ export const sendPasswordResetEmail = async ({ to, username, resetUrl }) => {
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Tudva <onboarding@resend.dev>',
-      to: process.env.RESEND_SENDDER_EMAIL || to,
+      from: 'Tudva <noreply@tudva.net>',
+      to:  to,
       subject: 'Reset Your Tudva Password',
       html: html,
     });
@@ -169,7 +169,7 @@ export const sendPasswordResetConfirmationEmail = async ({ to, username, loginUr
 
   try {
     // Use default login URL if none provided
-    const url = loginUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/auth/sign-in`;
+    const url = loginUrl || `${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || 'http://localhost:3000'}/auth/sign-in`;
     
     // Render the React email template to HTML
     const html = await renderAsync(
@@ -180,8 +180,8 @@ export const sendPasswordResetConfirmationEmail = async ({ to, username, loginUr
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Tudva <onboarding@resend.dev>',
-      to: process.env.RESEND_SENDDER_EMAIL || to,
+      from: 'Tudva <noreply@tudva.net>',
+      to:  to,
       subject: 'Your Tudva Password Has Been Reset',
       html: html,
     });

@@ -23,7 +23,7 @@ import {
         <Body style={main}>
           <Container style={container}>
             <Img
-              src="https://tudva.vercel.app/_next/static/media/logo.58c53912.svg"
+              src="https://tudva.net/_next/static/media/logo.58c53912.svg"
               width="140"
               height="70"
               alt="Tudva"

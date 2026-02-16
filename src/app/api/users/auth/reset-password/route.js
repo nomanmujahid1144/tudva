@@ -50,7 +50,7 @@ export async function POST(request) {
 
     // Send password reset confirmation email
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || 'http://localhost:3000';
       const loginUrl = `${baseUrl}/${locale}/auth/sign-in`;
 
       await sendPasswordResetConfirmationEmail({

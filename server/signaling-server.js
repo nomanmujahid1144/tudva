@@ -299,6 +299,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`🚀 WebRTC Signaling Server + Chat running on port ${PORT}`);
 });

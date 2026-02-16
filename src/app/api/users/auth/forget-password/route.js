@@ -48,7 +48,7 @@ export async function POST(request) {
 
     // Send password reset email
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || 'http://localhost:3000';
       const verifyResetUrl = `${baseUrl}/${locale}/auth/confirm-change-password?token=${resetToken}`;
 
       await sendPasswordResetEmail({

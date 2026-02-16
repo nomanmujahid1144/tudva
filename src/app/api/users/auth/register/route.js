@@ -79,7 +79,7 @@ export async function POST(request) {
 
     // Send confirmation email
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || 'http://localhost:3000';
       const confirmationUrl = `${baseUrl}/${locale}/auth/confirm-email?token=${token}`;
 
       await sendVerificationEmail({
