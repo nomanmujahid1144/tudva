@@ -1,24 +1,26 @@
 'use client'
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Card, Col, Container, Row } from 'react-bootstrap';
-import { FaSlidersH } from 'react-icons/fa';
+import { FaSlidersH, FaUserGraduate } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
+import { BannerSkeleton } from '@/components/skeletons/BannerSkeleton';
+import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+
 import patternImg from '@/assets/images/pattern/04.png';
 import placeholderAvatar from '../../../../../public/assets/images/avatar/placeholder.svg';
-import { BannerSkeleton } from '@/components/skeletons/BannerSkeleton';
 
 const Banner = ({ toggleOffCanvas }) => {
   const { user, loading } = useAuth();
+  const { locale } = useParams();
+  const t = useTranslations('instructor.banner');
 
-  // Show skeleton while loading
   if (loading) {
     return <BannerSkeleton patternImg={patternImg} />;
   }
 
-  // Safe fallbacks for user data
   const profilePicture = user?.profilePicture;
   const userName = user?.fullName || "Guest Instructor";
 
@@ -39,6 +41,7 @@ const Banner = ({ toggleOffCanvas }) => {
           <Col xs={12}>
             <Card className="bg-transparent card-body pb-0 px-0 mt-2 mt-sm-0">
               <Row className="d-sm-flex justify-sm-content-between mt-2 mt-md-0">
+
                 {/* Profile Avatar */}
                 <Col xs={'auto'}>
                   <div className="avatar avatar-xxl position-relative mt-n3">
@@ -50,13 +53,12 @@ const Banner = ({ toggleOffCanvas }) => {
                         width={100}
                         height={100}
                         onError={(e) => {
-                          console.log('Image failed to load, using default avatar');
                           e.target.src = placeholderAvatar.src || '/assets/images/avatar/placeholder.svg';
                         }}
                         style={{ objectFit: 'cover' }}
                       />
                     ) : (
-                      <div 
+                      <div
                         className="avatar-img rounded-circle border border-white shadow bg-light d-flex align-items-center justify-content-center mx-auto"
                         style={{ fontSize: '4rem', border: '4px solid #f8f9fa' }}
                       >
@@ -66,45 +68,45 @@ const Banner = ({ toggleOffCanvas }) => {
                   </div>
                 </Col>
 
-                {/* Instructor Info & Stats */}
+                {/* Instructor Info & Actions */}
                 <Col className="d-sm-flex justify-content-between align-items-center">
                   <div>
-                    {/* <h1 className="my-1 fs-4">{userName}</h1>
-                    <ul className="list-inline mb-0">
-                      <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                        <span className="h6">255</span>
-                        <span className="text-body fw-light"> points</span>
-                      </li>
-                      <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                        <span className="h6">7</span>
-                        <span className="text-body fw-light"> Created courses</span>
-                      </li>
-                      <li className="list-inline-item me-3 mb-1 mb-sm-0">
-                        <span className="h6">52</span>
-                        <span className="text-body fw-light"> Students enrolled</span>
-                      </li>
-                    </ul> */}
+                    <h1 className="my-1 fs-4">{userName}</h1>
                   </div>
-                  <div className="mt-2 mt-sm-0">
-                    <Link href="/instructor/create-course" className="btn btn-outline-primary mb-0">
-                      Create Course
+
+                  {/* Action buttons */}
+                  <div className="mt-2 mt-sm-0 d-flex gap-2 flex-wrap">
+                    <Link
+                      href={`/${locale}/instructor/create-course`}
+                      className="btn btn-outline-primary mb-0"
+                    >
+                      {t('createCourse')}
                     </Link>
+
+                    {/* Switch to Learner — only for dual-role users (learner + canTeach) */}
+                    {user?.canTeach && user?.role === 'learner' && (
+                      <Link
+                        href={`/${locale}/student/profile`}
+                        className="btn btn-outline-success mb-0"
+                      >
+                        <FaUserGraduate className="me-2" />
+                        {t('switchToLearner')}
+                      </Link>
+                    )}
                   </div>
                 </Col>
+
               </Row>
             </Card>
 
             {/* Mobile Menu Toggle */}
             <hr className="d-xl-none" />
             <Col xs={12} xl={3} className="d-flex justify-content-between align-items-center">
-              <a className="h6 mb-0 fw-bold d-xl-none" href="#">
-                Menu
-              </a>
+              <a className="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
               <button
                 onClick={toggleOffCanvas}
                 className="btn btn-primary d-xl-none"
                 type="button"
-                aria-controls="offcanvasSidebar"
               >
                 <FaSlidersH />
               </button>

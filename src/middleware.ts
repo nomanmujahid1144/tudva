@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken';
 const locales = ['en', 'de', 'hu'];
 const defaultLocale = 'en';
 
-// Create next-intl middleware
 const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
@@ -26,29 +25,22 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check if pathname has locale
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  // If no locale and not root, redirect to default locale version
   if (!pathnameHasLocale && pathname !== '/') {
     return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
   }
 
-  // If root path, redirect to default locale
   if (pathname === '/') {
     return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
   }
 
-  // Extract current locale
   const segments = pathname.split('/').filter(Boolean);
   const currentLocale = segments[0];
-
-  // Get path without locale
   const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/';
 
-  // Define public paths (without locale prefix)
   const publicPaths = [
     '/auth/sign-in',
     '/auth/sign-up',
@@ -63,10 +55,8 @@ export default function middleware(request: NextRequest) {
   const isLearnerPath = pathWithoutLocale.startsWith('/student');
   const isInstructorPath = pathWithoutLocale.startsWith('/instructor');
 
-  // Get auth token
   const token = request.cookies.get('auth_token')?.value;
 
-  // Auth checks - do redirects BEFORE calling intlMiddleware
   if (!token && !isPublicPath && pathWithoutLocale !== '/') {
     return NextResponse.redirect(new URL(`/${currentLocale}/auth/sign-in`, request.url));
   }
@@ -84,20 +74,30 @@ export default function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(`/${currentLocale}/auth/sign-in`, request.url));
       }
 
-      if (decoded.role === 'instructor' && isLearnerPath) {
+      const role = decoded.role as string;
+      // NEW: read canTeach from JWT — this is set during login/register
+      const canTeach = decoded.canTeach === true;
+
+      // Instructor trying to access student routes — redirect to instructor dashboard
+      if (role === 'instructor' && isLearnerPath) {
         return NextResponse.redirect(new URL(`/${currentLocale}/instructor/profile`, request.url));
       }
 
-      if (decoded.role === 'learner' && isInstructorPath) {
-        return NextResponse.redirect(new URL(`/${currentLocale}/student/profile`, request.url));
+      // Learner trying to access instructor routes:
+      // ALLOW if canTeach is true, otherwise redirect to student profile
+      if (role === 'learner' && isInstructorPath) {
+        if (!canTeach) {
+          return NextResponse.redirect(new URL(`/${currentLocale}/student/profile`, request.url));
+        }
+        // canTeach === true → fall through and allow access
       }
+
     } catch (error) {
       console.error('JWT decode error:', error);
       return NextResponse.redirect(new URL(`/${currentLocale}/auth/sign-in`, request.url));
     }
   }
 
-  // Only call intl middleware if we're not redirecting
   return intlMiddleware(request);
 }
 

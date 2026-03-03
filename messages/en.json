@@ -105,7 +105,10 @@
       "invalidEmail": "Please enter a valid email address.",
       "weakPassword": "Password is too weak. Use at least 8 characters.",
       "missingFields": "Please fill in all required fields.",
-      "emailSendFailed": "Failed to send verification email. Please try again."
+      "emailSendFailed": "Failed to send verification email. Please try again.",
+      "languageLabel": "Language",
+      "learnerAndInstructor": "Student & Teacher",
+      "roleHint": "Choose 'Student & Teacher' if you'd like to both learn and teach courses on Tudva."
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -119,19 +122,36 @@
       "resetError": "Please check your email and try again!",
       "noAccount": "Don't have an account?",
       "signupLink": "Signup here",
-      "resetEmailFailed": "Failed to send reset email. Please try again."
+      "resetEmailFailed": "Failed to send reset email. Please try again.",
+      "emailPrefilled": "We've filled in the email from your login attempt."
     },
     "confirmEmail": {
       "title": "Verify Your Email",
-      "subtitle": "Click the button below to verify your email address and activate your account.",
+      "subtitle": "Please wait while we verify your email address.",
       "verifyButton": "Verify Email",
       "verifying": "Verifying...",
+      "verifyingTitle": "Verifying your email address...",
+      "verifyingSubtitle": "Please wait, this will only take a moment.",
       "backToLogin": "Back to Sign In",
+      "goToLogin": "Log In to Your Account",
+      "registerAgain": "Register Again",
       "verifySuccess": "Email verified successfully! You can now log in.",
       "verifyError": "Email verification failed. Please try again.",
       "noToken": "No verification token found in URL",
       "tokenMissing": "Verification token is missing",
-      "invalidToken": "Invalid or expired verification link."
+      "invalidToken": "Invalid or expired verification link.",
+      "errorTitle": "Verification Failed",
+      "errorHint": "The link may have expired or already been used. Please register again or contact support.",
+      "alreadyVerifiedTitle": "Already Verified!",
+      "alreadyVerifiedSubtitle": "Your email address has already been verified. You can log in to your account.",
+      "successTitle": "Your Email is Verified!",
+      "successSubtitle": "Welcome to Tudva! Your account is now active. Here's how to get started:",
+      "step1Title": "Complete your profile",
+      "step1Desc": "Add a photo, bio and your background so others know who you are.",
+      "step2Title": "Browse our course catalogue",
+      "step2Desc": "Explore hundreds of courses across different topics and languages.",
+      "step3Title": "Enroll and start learning",
+      "step3Desc": "Join a course and start your learning journey today."
     },
     "resetPassword": {
       "title": "Change Your Password",
@@ -945,16 +965,41 @@
         "failedToEnd": "Failed to end session in database",
         "uploadingRecording": "Uploading recording... Please wait"
       }
+    },
+    "banner": {
+      "createCourse": "Create Course",
+      "switchToLearner": "Switch to Learner"
     }
   },
   "student": {
+    "settings": {
+      "pageTitle": "Settings",
+      "teachingTitle": "Teaching Settings",
+      "canTeachLabel": "I also want to teach on Tudva",
+      "canTeachDesc": "Enabling this allows you to create and manage courses as an instructor while keeping your student access. You can turn this off at any time.",
+      "notificationsTitle": "Notifications Settings",
+      "notificationsSubtitle": "Choose type of notifications you want to receive",
+      "notifyLogin": "Notify me via email when logging in",
+      "notifySms": "Send SMS confirmation for all online payments",
+      "notifyDevice": "Check which device(s) access your account",
+      "notifyProfile": "Show your profile publicly",
+      "saveSuccess": "Settings saved successfully",
+      "saveError": "Failed to save settings. Please try again.",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
     "menu": {
       "myProfile": "My profile",
       "profile": "Profile",
       "myCourses": "My Courses",
       "mySchedule": "My Schedule",
       "favorites": "Favorite Courses",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "teachingSection": "Teaching",
+      "createCourse": "Create Course",
+      "myCoursesList": "My Courses",
+      "liveSessions": "Live Sessions"
     },
     "profile": {
       "title": "Student Profile",
@@ -1089,6 +1134,13 @@
         "connectionFailed": "Failed to connect to instructor stream",
         "leftSession": "Left the session"
       }
+    },
+    "banner": {
+      "points": "points",
+      "completedCourses": "Completed courses",
+      "completedLessons": "Completed lessons",
+      "viewMyCourses": "View my courses",
+      "switchToInstructor": "Switch to Instructor"
     }
   },
   "courses": {

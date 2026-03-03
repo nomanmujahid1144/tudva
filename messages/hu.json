@@ -105,7 +105,10 @@
       "invalidEmail": "Adj meg egy érvényes e-mail címet.",
       "weakPassword": "A jelszó túl gyenge. Használj legalább 8 karaktert.",
       "missingFields": "Töltsd ki az összes kötelező mezőt.",
-      "emailSendFailed": "Sikertelen a megerősítő e-mail küldése."
+      "emailSendFailed": "Sikertelen a megerősítő e-mail küldése.",
+      "languageLabel": "Nyelv",
+      "learnerAndInstructor": "Tanuló & Tanár",
+      "roleHint": "Válaszd a 'Tanuló & Tanár' lehetőséget, ha a Tudván tanulni és tanítani is szeretnél."
     },
     "forgotPassword": {
       "title": "Elfelejtett jelszó",
@@ -119,19 +122,36 @@
       "resetError": "Kérjük, ellenőrizd az e-mailed és próbáld újra!",
       "noAccount": "Nincs még fiókod?",
       "signupLink": "Regisztrálj itt",
-      "resetEmailFailed": "Sikertelen a visszaállítási e-mail küldése."
+      "resetEmailFailed": "Sikertelen a visszaállítási e-mail küldése.",
+      "emailPrefilled": "Kitöltöttük az e-mail mezőt a bejelentkezési kísérletedből."
     },
     "confirmEmail": {
-      "title": "Erősítsd meg az e-mail címedet",
-      "subtitle": "Kattints az alábbi gombra az e-mail címed megerősítéséhez és a fiókod aktiválásához.",
+      "title": "E-mail megerősítése",
+      "subtitle": "Kérjük, várj, amíg megerősítjük az e-mail címedet.",
       "verifyButton": "E-mail megerősítése",
-      "verifying": "Megerősítés...",
+      "verifying": "Megerősítés folyamatban...",
+      "verifyingTitle": "Az e-mail címed megerősítése folyamatban...",
+      "verifyingSubtitle": "Kérjük, várj egy pillanatot.",
       "backToLogin": "Vissza a bejelentkezéshez",
-      "verifySuccess": "Az e-mail címed sikeresen megerősítve! Most már bejelentkezhetsz.",
+      "goToLogin": "Bejelentkezés a fiókba",
+      "registerAgain": "Újra regisztráció",
+      "verifySuccess": "Az e-mail sikeresen megerősítve! Most már bejelentkezhetsz.",
       "verifyError": "Az e-mail megerősítése sikertelen. Kérjük, próbáld újra.",
-      "noToken": "Nincs megerősítő token az URL-ben",
-      "tokenMissing": "Hiányzik a megerősítő token",
-      "invalidToken": "Érvénytelen vagy lejárt megerősítési link."
+      "noToken": "Nem található megerősítő token az URL-ben",
+      "tokenMissing": "A megerősítő token hiányzik",
+      "invalidToken": "Érvénytelen vagy lejárt megerősítő link.",
+      "errorTitle": "Megerősítés sikertelen",
+      "errorHint": "A link lehet, hogy lejárt vagy már használták. Kérjük, regisztrálj újra, vagy lépj kapcsolatba az ügyfélszolgálattal.",
+      "alreadyVerifiedTitle": "Már megerősítve!",
+      "alreadyVerifiedSubtitle": "Az e-mail címed már megerősítésre került. Bejelentkezhetsz a fiókodba.",
+      "successTitle": "Az e-mail megerősítve!",
+      "successSubtitle": "Üdvözlünk a Tudván! A fiókod most aktív. Így kezdhetsz el:",
+      "step1Title": "Töltsd ki a profilod",
+      "step1Desc": "Adj hozzá egy fotót, életrajzot és háttértörténetet, hogy mások megismerhessenek.",
+      "step2Title": "Böngéssz a kurzusok között",
+      "step2Desc": "Fedezz fel százakat a különböző témájú és nyelvű kurzusok közül.",
+      "step3Title": "Iratkozz be és kezdj el tanulni",
+      "step3Desc": "Csatlakozz egy kurzushoz és kezdd el a tanulást még ma."
     },
     "confirmChangePassword": {
       "title": "A folytatáshoz azonosítsd magad",
@@ -944,16 +964,41 @@
         "failedToEnd": "Munkamenet befejezése az adatbázisban sikertelen",
         "uploadingRecording": "Felvétel feltöltése... Kérjük, várjon"
       }
+    },
+    "banner": {
+      "createCourse": "Kurzus létrehozása",
+      "switchToLearner": "Váltás tanulóra"
     }
   },
   "student": {
+    "settings": {
+      "pageTitle": "Beállítások",
+      "teachingTitle": "Tanítási beállítások",
+      "canTeachLabel": "Szeretnék tanítani is a Tudván",
+      "canTeachDesc": "Ha ezt engedélyezed, oktatóként kurzusokat hozhatsz létre és kezelhetsz, miközben megtartod a hallgatói hozzáférésedet. Ezt bármikor kikapcsolhatod.",
+      "notificationsTitle": "Értesítési beállítások",
+      "notificationsSubtitle": "Válaszd ki, milyen értesítéseket szeretnél kapni",
+      "notifyLogin": "Értesítés e-mailben bejelentkezéskor",
+      "notifySms": "SMS megerősítés küldése minden online fizetésnél",
+      "notifyDevice": "Ellenőrzés, hogy mely eszközök férnek hozzá a fiókhoz",
+      "notifyProfile": "Profilom nyilvános megjelenítése",
+      "saveSuccess": "Beállítások sikeresen mentve",
+      "saveError": "A beállítások mentése sikertelen. Kérjük, próbáld újra.",
+      "saveChanges": "Változtatások mentése",
+      "saving": "Mentés...",
+      "cancel": "Mégse"
+    },
     "menu": {
       "myProfile": "Profilom",
       "profile": "Profil",
       "myCourses": "Kurzusaim",
       "mySchedule": "Időbeosztásom",
       "favorites": "Kedvenc kurzusok",
-      "signOut": "Kijelentkezés"
+      "signOut": "Kijelentkezés",
+      "teachingSection": "Tanítás",
+      "createCourse": "Kurzus létrehozása",
+      "myCoursesList": "Kurzusaim",
+      "liveSessions": "Élő foglalkozások"
     },
     "profile": {
       "title": "Hallgatói profil",
@@ -1088,6 +1133,13 @@
         "connectionFailed": "Nem sikerült csatlakozni az oktató közvetítéséhez",
         "leftSession": "Elhagyta a munkamenetet"
       }
+    },
+    "banner": {
+      "points": "pont",
+      "completedCourses": "Befejezett kurzusok",
+      "completedLessons": "Befejezett leckék",
+      "viewMyCourses": "Kurzusaim megtekintése",
+      "switchToInstructor": "Váltás oktatóra"
     }
   },
   "courses": {

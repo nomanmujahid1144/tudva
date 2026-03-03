@@ -3,23 +3,28 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaGlobe } from 'react-icons/fa';
 import IconTextFormInput from '@/components/form/IconTextFormInput';
 import ChoicesFormInput from '@/components/form/ChoicesFormInput';
 import { registerSchema, UserRole } from '@/validations/userSchema';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+
+// Supported locales with labels
+const LOCALES = [
+  { value: 'en', label: '🇬🇧 English' },
+  { value: 'de', label: '🇩🇪 Deutsch' },
+  { value: 'hu', label: '🇭🇺 Magyar' },
+];
 
 const SignUpForm = () => {
-  // Translations
   const t = useTranslations('auth.signup');
   const tValidation = useTranslations('auth.validation');
   const params = useParams();
-  const locale = params.locale || 'en'; // ✅ Get locale
+  const router = useRouter();
+  const locale = params.locale || 'en';
 
-
-  // Use the register function and loading state from AuthContext
   const { register: registerUser, authLoading: loading } = useAuth();
 
   const { register, handleSubmit, formState: { errors }, control } = useForm({
@@ -40,8 +45,12 @@ const SignUpForm = () => {
         fullName: data.fullName,
         email: data.email,
         password: data.password,
-        role: data.role,
-        locale: locale
+        // If learnerAndInstructor selected → role is learner + canTeach true
+        // If instructor selected → role is instructor + canTeach false
+        // If learner selected → role is learner + canTeach false
+        role: data.role === 'learner_instructor' ? UserRole.Learner : data.role,
+        canTeach: data.role === 'learner_instructor',
+        locale,
       };
 
       await registerUser(userData);
@@ -50,8 +59,36 @@ const SignUpForm = () => {
     }
   };
 
+  const handleLocaleChange = (newLocale) => {
+    if (newLocale !== locale) {
+      router.push(`/${newLocale}/auth/sign-up`);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+
+      {/* Language Selector */}
+      <div className="mb-3">
+        <label className="form-label">
+          <FaGlobe className="me-2" />
+          {t('languageLabel')}
+        </label>
+        <div className="d-flex gap-2 flex-wrap">
+          {LOCALES.map((loc) => (
+            <button
+              key={loc.value}
+              type="button"
+              onClick={() => handleLocaleChange(loc.value)}
+              className={`btn btn-sm ${locale === loc.value ? 'btn-success' : 'btn-outline-secondary'}`}
+            >
+              {loc.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Full Name */}
       <div className="mb-3">
         <IconTextFormInput
           control={control}
@@ -62,6 +99,8 @@ const SignUpForm = () => {
           error={errors.fullName?.message}
         />
       </div>
+
+      {/* Email */}
       <div className="mb-3">
         <IconTextFormInput
           control={control}
@@ -72,6 +111,8 @@ const SignUpForm = () => {
           error={errors.email?.message}
         />
       </div>
+
+      {/* Password */}
       <div className="mb-3">
         <IconTextFormInput
           control={control}
@@ -83,6 +124,8 @@ const SignUpForm = () => {
           error={errors.password?.message}
         />
       </div>
+
+      {/* Confirm Password */}
       <div className="mb-3">
         <IconTextFormInput
           control={control}
@@ -94,6 +137,8 @@ const SignUpForm = () => {
           error={errors.confirmPassword?.message}
         />
       </div>
+
+      {/* Role Selector — 3 options */}
       <div className="mb-3">
         <label htmlFor="role" className="form-label">{t('roleLabel')}</label>
         <Controller
@@ -105,18 +150,26 @@ const SignUpForm = () => {
               {...field}
               className={`form-control ${fieldState.error ? 'is-invalid' : ''}`}
               allowInput={false}
-              options={{
-                removeItemButton: false,
-              }}
+              options={{ removeItemButton: false }}
             >
               <option value="" disabled>{t('selectRole')}</option>
               <option value={UserRole.Learner}>{t('learner')}</option>
+              <option value="learner_instructor">{t('learnerAndInstructor')}</option>
               <option value={UserRole.Instructor}>{t('instructor')}</option>
             </ChoicesFormInput>
           )}
         />
-        {errors.role && <div className="invalid-feedback d-block">{errors.role.message}</div>}
+        {errors.role && (
+          <div className="invalid-feedback d-block">{errors.role.message}</div>
+        )}
+
+        {/* Helper text explaining the learner_instructor option */}
+        <div className="form-text text-muted mt-1">
+          {t('roleHint')}
+        </div>
       </div>
+
+      {/* Agreement */}
       <div className="mb-3">
         <div className="form-check">
           <input
@@ -128,9 +181,13 @@ const SignUpForm = () => {
           <label className="form-check-label" htmlFor="agreement">
             {t('agreement')} <a href="#">{t('termsOfService')}</a>
           </label>
-          {errors.agreement && <div className='invalid-feedback d-block'>{errors.agreement.message}</div>}
+          {errors.agreement && (
+            <div className='invalid-feedback d-block'>{errors.agreement.message}</div>
+          )}
         </div>
       </div>
+
+      {/* Submit */}
       <div className="d-grid">
         <button
           className="btn btn-primary mb-0"

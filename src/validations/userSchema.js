@@ -1,12 +1,13 @@
 import * as yup from 'yup';
 
-// User roles definition
 export const UserRole = {
   Learner: "learner",
   Instructor: "instructor",
 };
 
-// Registration validation schema
+// Form-level role values — includes learner_instructor for UI only
+const FORM_ROLES = ["learner", "instructor", "learner_instructor"];
+
 export const registerSchema = (t) => yup.object({
   fullName: yup.string().required(t('fullNameRequired')),
   email: yup
@@ -23,7 +24,7 @@ export const registerSchema = (t) => yup.object({
     .oneOf([yup.ref('password')], t('passwordsDontMatch')),
   role: yup
     .string()
-    .oneOf(Object.values(UserRole), t('roleInvalid'))
+    .oneOf(FORM_ROLES, t('roleInvalid'))
     .required(t('roleRequired')),
   agreement: yup
     .boolean()
@@ -31,7 +32,7 @@ export const registerSchema = (t) => yup.object({
     .required()
 });
 
-// Login validation schema
+// All other schemas remain exactly the same
 export const loginSchema = (t) => yup.object({
   email: yup
     .string()
@@ -43,8 +44,6 @@ export const loginSchema = (t) => yup.object({
   rememberMe: yup.boolean()
 });
 
-
-// Forgot password validation schema
 export const forgetPasswordSchema = (t) => yup.object({
   email: yup
     .string()
@@ -52,7 +51,6 @@ export const forgetPasswordSchema = (t) => yup.object({
     .required(t('emailRequired')),
 });
 
-// Reset password validation schema
 export const resetPasswordSchema = (t) => yup.object({
   password: yup
     .string()
@@ -64,7 +62,6 @@ export const resetPasswordSchema = (t) => yup.object({
     .oneOf([yup.ref('password')], t('passwordsDontMatch')),
 });
 
-// Profile validation schema
 export const profileSchema = (t) => yup.object({
   fullName: yup.string().required(t('fullNameRequired')),
   email: yup.string().email(t('emailInvalid')).required(t('emailRequired')),
@@ -79,7 +76,6 @@ export const profileSchema = (t) => yup.object({
   ).nullable(),
 });
 
-// Export all schemas
 export default {
   registerSchema,
   loginSchema,

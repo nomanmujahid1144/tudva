@@ -12,8 +12,7 @@ export async function POST(request) {
 
     // Parse request body
     const reqBody = await request.json();
-    console.log(reqBody, 'reqBody')
-    const { email, password, fullName, role = UserRole.LEARNER, locale = 'en' } = reqBody;
+    const { email, password, fullName, role = UserRole.LEARNER, canTeach = false, locale = 'en' } = reqBody;
 
     // Input validation
     if (!email || !password || !fullName) {
@@ -39,9 +38,19 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
+    // Validate role
+    if (!Object.values(UserRole).includes(role)) {
+      return NextResponse.json({
+        success: false,
+        error: "Invalid role selected."
+      }, { status: 400 });
+    }
+
+    // canTeach is only relevant for learners — instructors already have full teaching access
+    const resolvedCanTeach = role === UserRole.LEARNER ? Boolean(canTeach) : false;
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return NextResponse.json({
         success: false,
@@ -53,16 +62,17 @@ export async function POST(request) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Create user (initially inactive)
+    // Create user (initially inactive until email verified)
     const newUser = new User({
       email,
       passwordHash,
       fullName,
       role,
-      isActive: false // Set to inactive initially
+      canTeach: resolvedCanTeach,
+      isActive: false
     });
 
-    // Save the user first to get an ID
+    // Save user to get an ID
     const savedUser = await newUser.save();
 
     // Generate confirmation token
@@ -72,7 +82,7 @@ export async function POST(request) {
       { expiresIn: '1h' }
     );
 
-    // Update user with confirmation token
+    // Update user with confirmation token and expiration
     savedUser.confirmationToken = token;
     savedUser.tokenExpiration = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     await savedUser.save();
@@ -90,7 +100,7 @@ export async function POST(request) {
     } catch (emailError) {
       console.error("Error sending confirmation email:", emailError);
 
-      // Handle email sending failure - delete the user
+      // Delete user if email fails — registration is incomplete without verification
       await User.findByIdAndDelete(savedUser._id);
 
       return NextResponse.json({

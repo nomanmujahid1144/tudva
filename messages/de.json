@@ -105,7 +105,10 @@
       "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
       "weakPassword": "Passwort ist zu schwach. Verwende mindestens 8 Zeichen.",
       "missingFields": "Bitte fülle alle erforderlichen Felder aus.",
-      "emailSendFailed": "Fehler beim Senden der Bestätigungs-E-Mail."
+      "emailSendFailed": "Fehler beim Senden der Bestätigungs-E-Mail.",
+      "languageLabel": "Sprache",
+      "learnerAndInstructor": "Schüler & Lehrer",
+      "roleHint": "Wähle 'Schüler & Lehrer', wenn du auf Tudva sowohl lernen als auch unterrichten möchtest."
     },
     "forgotPassword": {
       "title": "Passwort vergessen",
@@ -119,19 +122,36 @@
       "resetError": "Bitte überprüfe deine E-Mail und versuche es erneut!",
       "noAccount": "Du hast noch kein Konto?",
       "signupLink": "Hier registrieren",
-      "resetEmailFailed": "Fehler beim Senden der Zurücksetz-E-Mail."
+      "resetEmailFailed": "Fehler beim Senden der Zurücksetz-E-Mail.",
+      "emailPrefilled": "Wir haben die E-Mail aus deinem Anmeldeversuch eingetragen."
     },
     "confirmEmail": {
-      "title": "Bestätige deine E-Mail-Adresse",
-      "subtitle": "Klicke auf die Schaltfläche unten, um deine E-Mail-Adresse zu bestätigen und dein Konto zu aktivieren.",
+      "title": "E-Mail bestätigen",
+      "subtitle": "Bitte warte, während wir deine E-Mail-Adresse bestätigen.",
       "verifyButton": "E-Mail bestätigen",
       "verifying": "Bestätigung läuft...",
-      "backToLogin": "Zurück zum Anmelden",
+      "verifyingTitle": "Deine E-Mail-Adresse wird bestätigt...",
+      "verifyingSubtitle": "Bitte warte einen Moment.",
+      "backToLogin": "Zurück zur Anmeldung",
+      "goToLogin": "Zum Login",
+      "registerAgain": "Erneut registrieren",
       "verifySuccess": "E-Mail erfolgreich bestätigt! Du kannst dich jetzt anmelden.",
       "verifyError": "E-Mail-Bestätigung fehlgeschlagen. Bitte versuche es erneut.",
-      "noToken": "Kein Bestätigungs-Token in der URL gefunden",
-      "tokenMissing": "Bestätigungs-Token fehlt",
-      "invalidToken": "Ungültiger oder abgelaufener Bestätigungslink."
+      "noToken": "Kein Bestätigungstoken in der URL gefunden",
+      "tokenMissing": "Bestätigungstoken fehlt",
+      "invalidToken": "Ungültiger oder abgelaufener Bestätigungslink.",
+      "errorTitle": "Bestätigung fehlgeschlagen",
+      "errorHint": "Der Link ist möglicherweise abgelaufen oder wurde bereits verwendet. Bitte registriere dich erneut oder kontaktiere den Support.",
+      "alreadyVerifiedTitle": "Bereits bestätigt!",
+      "alreadyVerifiedSubtitle": "Deine E-Mail-Adresse wurde bereits bestätigt. Du kannst dich in deinem Konto anmelden.",
+      "successTitle": "Deine E-Mail ist bestätigt!",
+      "successSubtitle": "Willkommen bei Tudva! Dein Konto ist jetzt aktiv. So kannst du starten:",
+      "step1Title": "Profil vervollständigen",
+      "step1Desc": "Füge ein Foto, eine Bio und deinen Hintergrund hinzu, damit andere wissen, wer du bist.",
+      "step2Title": "Kursangebot durchstöbern",
+      "step2Desc": "Entdecke hunderte von Kursen zu verschiedenen Themen und Sprachen.",
+      "step3Title": "Einschreiben und lernen",
+      "step3Desc": "Tritt einem Kurs bei und starte noch heute deine Lernreise."
     },
     "confirmChangePassword": {
       "title": "Bestätige deine Identität, um fortzufahren",
@@ -944,16 +964,41 @@
         "failedToEnd": "Sitzung konnte nicht in der Datenbank beendet werden",
         "uploadingRecording": "Aufnahme wird hochgeladen... Bitte warten"
       }
+    },
+    "banner": {
+      "createCourse": "Kurs erstellen",
+      "switchToLearner": "Zur Lernansicht wechseln"
     }
   },
   "student": {
+    "settings": {
+      "pageTitle": "Einstellungen",
+      "teachingTitle": "Lehreinstellungen",
+      "canTeachLabel": "Ich möchte auch auf Tudva unterrichten",
+      "canTeachDesc": "Wenn du dies aktivierst, kannst du als Kursleiter Kurse erstellen und verwalten und behältst gleichzeitig deinen Studentenzugang. Du kannst dies jederzeit deaktivieren.",
+      "notificationsTitle": "Benachrichtigungseinstellungen",
+      "notificationsSubtitle": "Wähle, welche Art von Benachrichtigungen du erhalten möchtest",
+      "notifyLogin": "Per E-Mail benachrichtigen, wenn ich mich anmelde",
+      "notifySms": "SMS-Bestätigung für alle Online-Zahlungen senden",
+      "notifyDevice": "Prüfen, welche Geräte auf mein Konto zugreifen",
+      "notifyProfile": "Mein Profil öffentlich anzeigen",
+      "saveSuccess": "Einstellungen erfolgreich gespeichert",
+      "saveError": "Einstellungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Speichern...",
+      "cancel": "Abbrechen"
+    },
     "menu": {
       "myProfile": "Mein Profil",
       "profile": "Profil",
       "myCourses": "Meine Kurse",
       "mySchedule": "Mein Zeitplan",
       "favorites": "Lieblingskurse",
-      "signOut": "Abmelden"
+      "signOut": "Abmelden",
+      "teachingSection": "Lehren",
+      "createCourse": "Kurs erstellen",
+      "myCoursesList": "Meine Kurse",
+      "liveSessions": "Live-Sitzungen"
     },
     "profile": {
       "title": "Studierendenprofil",
@@ -1088,6 +1133,13 @@
         "connectionFailed": "Verbindung zum Dozenten-Stream fehlgeschlagen",
         "leftSession": "Sitzung verlassen"
       }
+    },
+    "banner": {
+      "points": "Punkte",
+      "completedCourses": "Abgeschlossene Kurse",
+      "completedLessons": "Abgeschlossene Lektionen",
+      "viewMyCourses": "Meine Kurse ansehen",
+      "switchToInstructor": "Zur Lehransicht wechseln"
     }
   },
   "courses": {

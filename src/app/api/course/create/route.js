@@ -33,13 +33,15 @@ export async function POST(request) {
             }, { status: 401 });
         }
 
-        // Check if the user is an instructor
-        if (auth.user.role !== UserRole.INSTRUCTOR) {
-            return NextResponse.json({
-                success: false,
-                error: 'Only instructors can create courses'
-            }, { status: 403 });
-        }
+        console.log(auth, 'auth')
+
+        // // Check if the user is an instructor
+        // if (auth.user.role !== UserRole.INSTRUCTOR) {
+        //     return NextResponse.json({
+        //         success: false,
+        //         error: 'Only instructors can create courses'
+        //     }, { status: 403 });
+        // }
 
         // Parse the request body
         const reqBody = await request.json();

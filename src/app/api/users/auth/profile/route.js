@@ -37,7 +37,7 @@ export async function GET(request) {
       }, { status: 401 });
     }
     
-    // Find user by ID
+    // Find user by ID — never return sensitive fields
     const user = await User.findOne({ 
       _id: decoded.userId,
       isActive: true,
@@ -60,10 +60,12 @@ export async function GET(request) {
           email: user.email,
           fullName: user.fullName,
           role: user.role,
+          canTeach: user.canTeach || false,   // NEW: included so frontend knows teaching access
           phoneNo: user.phoneNo || null,
           aboutMe: user.aboutMe || null,
           profilePicture: user.profilePicture || null,
           education: user.education || [],
+          favorites: user.favorites || [],
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         }

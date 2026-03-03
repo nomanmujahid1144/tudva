@@ -1,7 +1,6 @@
-// src/app/api/users/auth/update-profile/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
+import User, { UserRole } from '@/models/User';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
@@ -10,7 +9,7 @@ export async function POST(request) {
     // Connect to MongoDB
     await connectDB();
     
-    // Get token for authentication
+    // Get token from Authorization header first
     let token = request.headers.get('Authorization')?.replace('Bearer ', '');
     
     // If no token in header, check cookies
@@ -55,17 +54,22 @@ export async function POST(request) {
       }, { status: 404 });
     }
     
-    // Update user fields
+    // Update standard profile fields
     if (userData.fullName) user.fullName = userData.fullName;
     if (userData.phoneNo !== undefined) user.phoneNo = userData.phoneNo;
     if (userData.aboutMe !== undefined) user.aboutMe = userData.aboutMe;
     if (userData.profilePicture !== undefined) user.profilePicture = userData.profilePicture;
     if (userData.education) user.education = userData.education;
+
+    // NEW: Only learners can toggle canTeach — instructors already have full access
+    if (userData.canTeach !== undefined && user.role === UserRole.LEARNER) {
+      user.canTeach = Boolean(userData.canTeach);
+    }
     
     // Save updated user
     await user.save();
     
-    // Return updated user data without sensitive fields
+    // Return updated user data (never return sensitive fields)
     return NextResponse.json({
       success: true,
       message: "Profile updated successfully",
@@ -74,6 +78,7 @@ export async function POST(request) {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        canTeach: user.canTeach,
         phoneNo: user.phoneNo || null,
         aboutMe: user.aboutMe || null,
         profilePicture: user.profilePicture || null,

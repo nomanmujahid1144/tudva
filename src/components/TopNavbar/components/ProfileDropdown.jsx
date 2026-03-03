@@ -66,7 +66,7 @@ const ProfileDropdown = ({ className }) => {
     <Dropdown drop="start" className={`profile-dropdown ${className}`}>
       <DropdownToggle 
         as='a' 
-        className="avatar avatar-sm p-0 arrow-none" 
+        className="avatar avatar-sm p-0 arrow-none btn btn-light btn-round mb-0" 
         id="profileDropdown" 
         role="button" 
         data-bs-auto-close="outside" 
@@ -103,7 +103,7 @@ const ProfileDropdown = ({ className }) => {
             <div className="avatar me-3">
               {profilePicture ? (
                 <img
-                  className="avatar-img border rounded-circle shadow"
+                  className="avatar-img border rounded-circle shadow "
                   src={profilePicture}
                   alt="avatar"
                   width={40}
@@ -113,7 +113,7 @@ const ProfileDropdown = ({ className }) => {
                 />
               ) : (
                 <div
-                  className="avatar-img rounded-circle border border-white shadow bg-light d-flex align-items-center justify-content-center mx-auto"
+                  className="avatar-img rounded-circle btn btn-light btn-round mb-0 d-flex align-items-center justify-content-center mx-auto"
                   style={{ fontSize: '1rem', border: '4px solid #f8f9fa' }}
                 >
                   {(user?.fullName || 'User').charAt(0).toUpperCase()}

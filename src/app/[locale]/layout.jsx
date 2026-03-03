@@ -74,7 +74,7 @@ export default async function LocaleLayout({
 }) {
   // CRITICAL: Await params to get the locale
   const { locale } = await params;
-  
+
   // Validate locale
   const locales = ['en', 'de', 'hu'];
   if (!locale || !locales.includes(locale)) {
@@ -111,7 +111,20 @@ export default async function LocaleLayout({
               <Suspense fallback={<FallbackLoading />}>
                 <Layout>
                   {children}
-                  <Toaster position="top-right" richColors />
+                  <Toaster
+                    position="top-right"
+                    richColors
+                    duration={8000}
+                    toastOptions={{
+                      style: {
+                        fontSize: '15px',
+                        padding: '16px 20px',
+                        minWidth: '320px',
+                        maxWidth: '480px',
+                        lineHeight: '1.5',
+                      },
+                    }}
+                  />
                 </Layout>
               </Suspense>
             </AppProvidersWrapper>

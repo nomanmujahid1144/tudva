@@ -57,7 +57,8 @@ export async function POST(request) {
         userId: user._id.toString(),
         email: user.email,
         fullName: user.fullName ,
-        role: user.role
+        role: user.role,
+        canTeach: user.canTeach || false
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -84,6 +85,7 @@ export async function POST(request) {
           email: user.email,
           fullName: user.fullName,
           role: user.role,
+          canTeach: user.canTeach || false,
           profilePicture: user.profilePicture || null
         },
         token // Include token in response for client-side storage if needed

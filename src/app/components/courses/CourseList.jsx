@@ -344,7 +344,7 @@ const CourseList = () => {
             <Row className="g-3 mb-3">
               <Col md={12} lg={6}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.search.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.search.label')}</Form.Label>
                   <div className="input-group">
                     <FormControl
                       type="search"
@@ -362,7 +362,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.courseType.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.courseType.label')}</Form.Label>
                   <div className="d-flex gap-2" style={{ height: '50px' }}>
                     {courseTypes.map((courseType) => (
                       <div
@@ -389,7 +389,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.level.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.level.label')}</Form.Label>
                   <Form.Select
                     value={level}
                     onChange={(e) => handleFilterChange('level', e.target.value)}
@@ -409,7 +409,7 @@ const CourseList = () => {
             <Row className="g-3">
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.category.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.category.label')}</Form.Label>
                   <Form.Select
                     value={category}
                     onChange={(e) => handleFilterChange('category', e.target.value)}
@@ -426,7 +426,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.subcategory.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.subcategory.label')}</Form.Label>
                   <Form.Select
                     value={subcategory}
                     onChange={(e) => handleFilterChange('subcategory', e.target.value)}
@@ -445,7 +445,7 @@ const CourseList = () => {
 
               <Col md={6} lg={3}>
                 <Form.Group>
-                  <Form.Label className="mb-1 small">{t('filters.sortBy.label')}</Form.Label>
+                  <Form.Label className="mb-1 large">{t('filters.sortBy.label')}</Form.Label>
                   <Form.Select
                     value={sortBy}
                     onChange={(e) => handleFilterChange('sort', e.target.value)}
@@ -482,9 +482,9 @@ const CourseList = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h6 className="mb-0 text-muted">{t('activeFilters.title')}</h6>
-                <small className="text-muted">
+                <large className="text-muted">
                   {t('activeFilters.resultsFound', { count: totalCourses })}
-                </small>
+                </large>
               </div>
               <div className="d-flex flex-wrap gap-2">
                 {searchQuery && (
@@ -589,7 +589,7 @@ const CourseList = () => {
             )}
           </h4>
           {!isLoading && courses.length > 0 && totalPages > 1 && (
-            <div className="text-muted small">
+            <div className="text-muted large">
               {t('results.page', { current: page, total: totalPages })}
             </div>
           )}

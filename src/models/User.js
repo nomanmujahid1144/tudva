@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema({
         enum: Object.values(UserRole),
         default: UserRole.LEARNER
     },
+    // NEW: Allows a learner to also act as an instructor
+    // This avoids breaking existing role-based checks across the app
+    canTeach: {
+        type: Boolean,
+        default: false
+    },
     isActive: {
         type: Boolean,
         default: true
@@ -45,7 +51,6 @@ const userSchema = new mongoose.Schema({
     education: [{
         type: String
     }],
-    // NEW: Favorites field for course favoriting functionality
     favorites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
@@ -72,7 +77,7 @@ const userSchema = new mongoose.Schema({
         type: Date
     }
 }, {
-    timestamps: true // This creates createdAt and updatedAt fields automatically
+    timestamps: true
 });
 
 // Method to compare password
@@ -86,7 +91,12 @@ userSchema.statics.hashPassword = async function(password) {
     return await bcrypt.hash(password, salt);
 };
 
-// NEW: Method to check if a course is in user's favorites
+// NEW: Check if user can teach (either instructor role, or learner with canTeach enabled)
+userSchema.methods.hasTeachingAccess = function() {
+    return this.role === UserRole.INSTRUCTOR || this.canTeach === true;
+};
+
+// Method to check if a course is in user's favorites
 userSchema.methods.hasFavorite = function(courseId) {
     if (!this.favorites || this.favorites.length === 0) {
         return false;
@@ -94,36 +104,32 @@ userSchema.methods.hasFavorite = function(courseId) {
     return this.favorites.some(fav => fav.toString() === courseId.toString());
 };
 
-// NEW: Method to add a course to favorites
+// Method to add a course to favorites
 userSchema.methods.addToFavorites = function(courseId) {
     if (!this.favorites) {
         this.favorites = [];
     }
-    
-    // Check if course is already in favorites
     if (!this.hasFavorite(courseId)) {
         this.favorites.push(courseId);
     }
-    
     return this.save();
 };
 
-// NEW: Method to remove a course from favorites
+// Method to remove a course from favorites
 userSchema.methods.removeFromFavorites = function(courseId) {
     if (!this.favorites || this.favorites.length === 0) {
         return this.save();
     }
-    
     this.favorites = this.favorites.filter(fav => fav.toString() !== courseId.toString());
     return this.save();
 };
 
-// NEW: Method to get favorites count
+// Method to get favorites count
 userSchema.methods.getFavoritesCount = function() {
     return this.favorites ? this.favorites.length : 0;
 };
 
-// NEW: Method to toggle favorite status
+// Method to toggle favorite status
 userSchema.methods.toggleFavorite = function(courseId) {
     if (this.hasFavorite(courseId)) {
         return this.removeFromFavorites(courseId);
@@ -135,7 +141,6 @@ userSchema.methods.toggleFavorite = function(courseId) {
 // Add index for faster favorite lookups
 userSchema.index({ favorites: 1 });
 
-// Add method to ensure model isn't overwritten during hot reloads in development
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User;

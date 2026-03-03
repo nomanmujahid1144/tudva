@@ -162,7 +162,7 @@ export function AuthProvider({ children }) {
 
       if (result.success) {
         if (successMessage) {
-          toast.success(successMessage);
+          toast.success(successMessage, { duration: 8000 });
         }
 
         if (updateUser && result.data?.user) {
@@ -178,7 +178,7 @@ export function AuthProvider({ children }) {
           ? getTranslatedError(result.error, errorTranslation, methodName)
           : result.error || tMessages('unexpectedError');
 
-        toast.error(errorMessage);
+        toast.error(errorMessage, { duration: 8000 });
       }
 
       return result;
@@ -190,7 +190,7 @@ export function AuthProvider({ children }) {
         ? getTranslatedError(null, errorTranslation, methodName)
         : tMessages('unexpectedError');
 
-      toast.error(errorMessage);
+      toast.error(errorMessage, { duration: 8000 });
       return { success: false, error: errorMessage };
     } finally {
       setAuthLoading(false);
