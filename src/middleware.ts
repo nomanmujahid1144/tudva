@@ -58,9 +58,9 @@ export default function middleware(request: NextRequest) {
   // Publicly accessible — no login required
   const publicPaths = [
     ...authPaths,
-    '/courses',       // course listing + individual course pages
-    '/help',          // all /help/* pages
-    '/pages',         // static info pages
+    '/courses',
+    '/help',
+    '/pages',
     '/why-tudva',
     '/how-it-works',
     '/our-mission',
@@ -71,23 +71,21 @@ export default function middleware(request: NextRequest) {
     '/contact-us',
   ];
 
-  // Learner-only routes — must be logged in as learner (or learner+canTeach)
+  // Learner-only routes
   const learnerPaths = [
     '/student',
     '/my-learning',
     '/favorites',
   ];
 
-  // Instructor-only routes — must be logged in as instructor or learner+canTeach
+  // Instructor-only routes
   const instructorPaths = [
     '/instructor',
   ];
 
-  // Any logged-in user can access these (learner OR instructor)
+  // Any logged-in user (no role restriction)
   const authenticatedPaths = [
     '/live-sessions',
-    '/my-learning',
-    '/favorites',
     '/my-profile',
     '/notifications',
     '/settings',

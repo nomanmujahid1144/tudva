@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from '@/assets/images/logo.svg';
+import logo from '@/assets/images/logo.png';
 import logoLight from '@/assets/images/logo-light.svg';
 import { useLocale } from "next-intl";
 const LogoBox = ({

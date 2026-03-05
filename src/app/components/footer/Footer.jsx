@@ -6,6 +6,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useTranslations, useLocale } from "next-intl";
 import { footerLinks } from "@/assets/data/footer-items";
 import logo from '@/assets/images/logo.svg';
+import LogoBox from "@/components/LogoBox";
 
 const Footer = () => {
   const t = useTranslations('footer');
@@ -44,9 +45,7 @@ const Footer = () => {
       <Container>
         <Row className="g-4">
           <Col lg={4}>
-            <Link className="me-0" href={getLocalizedLink("/")}>
-              <Image width={189} height={40} className="h-40px" src={logo} alt="logo" />
-            </Link>
+            <LogoBox height={36} width={170} />
             <p className="my-3 text-body-secondary text-uppercase w-90">
               <span className="font-semibold">{t('tagline.title')}</span>
               <span className="d-block text-md font-normal mt-1">

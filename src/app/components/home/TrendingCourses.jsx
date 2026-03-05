@@ -63,6 +63,8 @@ const CourseCard = ({
 };
 const TrendingCourses = async () => {
   const trendingCourses = []
+  // Don't render section if no courses
+  if (!trendingCourses || trendingCourses.length === 0) return null;
   return <section className="pt-0 pt-lg-5">
     <Container>
       <Row className="mb-4">

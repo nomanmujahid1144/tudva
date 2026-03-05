@@ -1,7 +1,6 @@
 'use client';
 
-import { Button, Card, CardBody, CardTitle, Col, Container, Row, Spinner, Alert } from "react-bootstrap";
-import Image from "next/image";
+import { Button, Col, Container, Row, Spinner, Alert } from "react-bootstrap";
 import CoursePreview from './course-preview/CoursePreview';
 import course1 from '@/assets/images/courses/4by3/01.jpg';
 import { useState } from "react";
@@ -11,29 +10,32 @@ import { useWeekPreview } from '@/hooks/useWeekPreview';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 const CoursesOverview = () => {
   const t = useTranslations('home.coursesOverview');
   const params = useParams();
   const locale = params?.locale || 'en';
-  
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
+
   const [openItemId, setOpenItemId] = useState('headingOne');
-  
-  // Fetch data using hooks
-  const { nextLesson, isLoading: nextLessonLoading, error: nextLessonError } = useNextLesson();
-  const { weekPreview, isLoading: weekPreviewLoading, error: weekPreviewError } = useWeekPreview();
+
+  const { nextLesson, isLoading: nextLessonLoading, error: nextLessonError } = useNextLesson({ skip: !isAuthenticated || authLoading });
+  const { weekPreview, isLoading: weekPreviewLoading, error: weekPreviewError } = useWeekPreview({ skip: !isAuthenticated || authLoading });
 
   const toggleAccordion = (id) => {
     setOpenItemId(openItemId === id ? null : id);
   };
 
-  // Find the next slot with a course
   const getNextScheduledSlot = () => {
     if (!nextLesson?.slots) return null;
     return nextLesson.slots.find(slot => slot.isReserved);
   };
 
   const nextSlot = getNextScheduledSlot();
+
+  // Don't render section at all if not logged in
+  if (!isAuthenticated && !authLoading) return null;
 
   return (
     <section className="pt-0 pt-lg-5">
@@ -46,7 +48,7 @@ const CoursesOverview = () => {
         <Row className="g-4 d-flex justify-content-center">
           <Col xl={11}>
             <div className="accordion" id="accordionExample">
-              
+
               {/* NEXT LESSONS ACCORDION */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingOne">
@@ -64,20 +66,21 @@ const CoursesOverview = () => {
                   id="collapseOne"
                   className={`accordion-collapse collapse ${openItemId === 'headingOne' ? 'show' : ''}`}
                   aria-labelledby="headingOne"
-                  data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
                     <hr className="h-2 w-100" />
-                    
-                    {nextLessonLoading ? (
+                    {authLoading || nextLessonLoading ? (
                       <div className="text-center py-5">
                         <Spinner animation="border" variant="primary" />
                         <p className="mt-3 text-muted">{t('nextLessons.loading')}</p>
                       </div>
                     ) : nextLessonError ? (
-                      <Alert variant="danger">
-                        {nextLessonError}
-                      </Alert>
+                      <div className="text-center py-5">
+                        <p className="text-muted">{t('nextLessons.noScheduled')}</p>
+                        <Link href={`/${locale}/scheduler`}>
+                          <Button variant="primary">{t('nextLessons.scheduleNow')}</Button>
+                        </Link>
+                      </div>
                     ) : !nextSlot ? (
                       <div className="text-center py-5">
                         <p className="text-muted">{t('nextLessons.noScheduled')}</p>
@@ -140,20 +143,21 @@ const CoursesOverview = () => {
                   id="collapseTwo"
                   className={`accordion-collapse collapse ${openItemId === 'headingTwo' ? 'show' : ''}`}
                   aria-labelledby="headingTwo"
-                  data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
                     <hr className="h-2 w-100" />
-                    
-                    {weekPreviewLoading ? (
+                    {authLoading || weekPreviewLoading ? (
                       <div className="text-center py-5">
                         <Spinner animation="border" variant="primary" />
                         <p className="mt-3 text-muted">{t('weekPlan.loading')}</p>
                       </div>
                     ) : weekPreviewError ? (
-                      <Alert variant="danger">
-                        {weekPreviewError}
-                      </Alert>
+                      <div className="text-center py-5">
+                        <p className="text-muted">{t('weekPlan.noCourses')}</p>
+                        <Link href={`/${locale}/scheduler`}>
+                          <Button variant="primary">{t('weekPlan.scheduleNow')}</Button>
+                        </Link>
+                      </div>
                     ) : !weekPreview?.courses || weekPreview.courses.length === 0 ? (
                       <div className="text-center py-5">
                         <p className="text-muted">{t('weekPlan.noCourses')}</p>
@@ -164,9 +168,9 @@ const CoursesOverview = () => {
                     ) : (
                       <>
                         <h5 className="text-center">
-                          {t('weekPlan.learningDay', { 
-                            date: weekPreview.weekDate.formattedDate, 
-                            week: weekPreview.weekDate.weekNumber 
+                          {t('weekPlan.learningDay', {
+                            date: weekPreview.weekDate.formattedDate,
+                            week: weekPreview.weekDate.weekNumber
                           })}
                         </h5>
                         <div className="w-100 d-flex justify-content-center">
@@ -214,14 +218,13 @@ const CoursesOverview = () => {
                   id="collapseThree"
                   className={`accordion-collapse collapse ${openItemId === 'headingThree' ? 'show' : ''}`}
                   aria-labelledby="headingThree"
-                  data-bs-parent="#accordionExample"
                 >
                   <div className="accordion-body">
-                    {/* Content will be added later */}
                     <p className="text-muted text-center py-4">{t('moreAbout.comingSoon')}</p>
                   </div>
                 </div>
               </div>
+
             </div>
           </Col>
         </Row>

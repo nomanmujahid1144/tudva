@@ -1,10 +1,10 @@
-// src/hooks/useNextLesson.js
+// useNextLesson.js
 'use client';
 
 import { useState, useEffect } from 'react';
 import learningService from '@/services/learningService';
 
-export const useNextLesson = () => {
+export const useNextLesson = ({ skip = false } = {}) => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,16 +13,13 @@ export const useNextLesson = () => {
     try {
       setIsLoading(true);
       setError(null);
-
       const response = await learningService.getNextLearningDay();
-
       if (response.success) {
         setData(response.data);
       } else {
         setError(response.error || 'Failed to fetch next lesson');
       }
     } catch (err) {
-      console.error('Error fetching next lesson:', err);
       setError(err.message || 'Failed to fetch next lesson');
     } finally {
       setIsLoading(false);
@@ -30,13 +27,12 @@ export const useNextLesson = () => {
   };
 
   useEffect(() => {
+    if (skip) {
+      setIsLoading(false);
+      return;
+    }
     fetchNextLesson();
-  }, []);
+  }, [skip]);
 
-  return {
-    nextLesson: data,
-    isLoading,
-    error,
-    refetch: fetchNextLesson
-  };
+  return { nextLesson: data, isLoading, error, refetch: fetchNextLesson };
 };

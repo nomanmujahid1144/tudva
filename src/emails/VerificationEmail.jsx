@@ -22,7 +22,7 @@ export const VerificationEmail = ({
       <Body style={main}>
         <Container style={container}>
           <Img
-            src="https://tudva.vercel.app/_next/static/media/logo.58c53912.svg"
+            src={`${process.env.NEXT_PUBLIC_FRONTEND_BASE_URL}/_next/static/media/logo.58c53912.svg`}
             width="140"
             height="70"
             alt="Tudva"

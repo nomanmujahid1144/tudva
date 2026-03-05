@@ -34,27 +34,18 @@ export function AuthProvider({ children }) {
       try {
         setLoading(true);
 
-        // Check if we have a token
-        if (authService.isAuthenticated()) {
+        // Always attempt to fetch profile
+        // Browser automatically sends httpOnly cookie with every request
+        // If no valid cookie → API returns 401 → user stays null
+        const profileResult = await authService.getUserProfile();
 
-          // Fetch user profile from server
-          const profileResult = await authService.getUserProfile();
-
-          if (profileResult.success && profileResult.data?.user) {
-            setUser(profileResult.data.user);
-          } else {
-            console.warn('Failed to load user profile:', profileResult.error);
-            // Clear auth if token is invalid
-            authService.removeAuthToken();
-            setUser(null);
-          }
+        if (profileResult.success && profileResult.data?.user) {
+          setUser(profileResult.data.user);
         } else {
-          console.log('No auth token found');
           setUser(null);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
-        authService.removeAuthToken();
         setUser(null);
       } finally {
         setLoading(false);
@@ -70,19 +61,12 @@ export function AuthProvider({ children }) {
    */
   const refreshUser = async () => {
     try {
-      if (!authService.isAuthenticated()) {
-        console.warn('Cannot refresh user - not authenticated');
-        return { success: false, error: 'Not authenticated' };
-      }
-
-      // Fetch updated user profile from server
       const profileResult = await authService.getUserProfile();
 
       if (profileResult.success && profileResult.data?.user) {
         setUser(profileResult.data.user);
         return { success: true, data: profileResult.data.user };
       } else {
-        console.warn('Failed to refresh user profile:', profileResult.error);
         return { success: false, error: profileResult.error || 'Failed to refresh profile' };
       }
     } catch (error) {
