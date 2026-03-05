@@ -1914,6 +1914,284 @@
       }
     }
   },
+  "help": {
+    "firstSteps": {
+      "metaTitle": "Első lépések – Tudva",
+      "pageTitle": "Első lépések",
+      "heroTitle": "Üdvözlünk a Tudván – Kezdjük el!",
+      "heroSubtitle": "Kövesd ezeket az egyszerű lépéseket, hogy elindulj a tanulási utadon.",
+      "heroCta": "Ingyenes fiók létrehozása",
+      "heroBrowse": "Kurzusok böngészése",
+      "stepsTitle": "Az első lépéseid a Tudván",
+      "stepsSubtitle": "Minden, amit tudnod kell a gyors kezdéshez.",
+      "stepLabel": "Lépés",
+      "step1": {
+        "title": "Fiók létrehozása",
+        "desc": "Regisztrálj másodpercek alatt és csatlakozz tanulói közösségünkhöz.",
+        "item1": "Válaszd ki szerepedet: Tanuló, Tanár vagy mindkettő",
+        "item2": "Erősítsd meg az e-mail címedet",
+        "item3": "Állítsd be a profilodat"
+      },
+      "step2": {
+        "title": "Kurzus keresése",
+        "desc": "Böngéssz több száz kurzust minden kategóriában.",
+        "item1": "Használd a keresőt vagy böngéssz kategória szerint",
+        "item2": "Szűrj nyelv, szint vagy formátum szerint",
+        "item3": "Olvasd el a kurzusleírásokat és értékeléseket"
+      },
+      "step3": {
+        "title": "Beiratkozás és tanulás",
+        "desc": "Iratkozz be egy kattintással és kezdj el azonnal.",
+        "item1": "Kattints a Beiratkozás gombra",
+        "item2": "Azonnal hozzáférhetsz az összes tananyaghoz",
+        "item3": "Tanulj a saját tempódban"
+      },
+      "step4": {
+        "title": "Élő foglalkozások",
+        "desc": "Vegyen részt valós idejű órákon az oktatókkal.",
+        "item1": "Ellenőrizd a kurzus menetrendjét",
+        "item2": "Csatlakozz közvetlenül az irányítópultodról",
+        "item3": "Kérdezz és interakcióba lépj élőben"
+      },
+      "step5": {
+        "title": "Szerezd meg a tanúsítványt",
+        "desc": "Fejezd be a kurzusokat és szerezz elismert tanúsítványokat.",
+        "item1": "Teljesítsd az összes leckét és feladatot",
+        "item2": "Töltsd le a tanúsítványt PDF formátumban",
+        "item3": "Oszd meg a profilodon vagy a LinkedIn-en"
+      },
+      "ctaTitle": "Szeretnél mélyebbre merülni?",
+      "ctaSubtitle": "Nézd meg videó oktatóanyagainkat vagy látogasd meg a Súgóközpontot.",
+      "ctaTutorials": "Oktatóanyagok megtekintése",
+      "ctaHelpCenter": "Súgóközpont"
+    },
+    "tutorials": {
+      "metaTitle": "Oktatóanyagok – Tudva",
+      "pageTitle": "Oktatóanyagok",
+      "heroTitle": "Tanuld meg, hogyan használd a Tudvát",
+      "heroSubtitle": "Lépésről lépésre videós útmutatók a platform legjobb kihasználásához.",
+      "categoriesTitle": "Oktatóanyag-kategóriák",
+      "categoriesSubtitle": "Találj témák szerint rendezett oktatóanyagokat.",
+      "videos": "videó",
+      "viewAll": "Összes megtekintése",
+      "categories": {
+        "gettingStarted": {
+          "title": "Első lépések",
+          "desc": "Minden, amit az első napon tudnod kell.",
+          "tutorial1": "Hogyan hozz létre fiókot",
+          "tutorial2": "Profil beállítása",
+          "tutorial3": "Az irányítópult megismerése"
+        },
+        "courseEnrollment": {
+          "title": "Kurzus beiratkozás",
+          "desc": "Hogyan találj és csatlakozz kurzusokhoz.",
+          "tutorial1": "Kurzusok keresése és szűrése",
+          "tutorial2": "Hogyan iratkozz be egy kurzusra",
+          "tutorial3": "Hozzáférés a beiratkozott kurzusokhoz"
+        },
+        "accountSettings": {
+          "title": "Fiókbeállítások",
+          "desc": "Profil, értesítések és beállítások kezelése.",
+          "tutorial1": "Profilkép frissítése",
+          "tutorial2": "Jelszó megváltoztatása",
+          "tutorial3": "Értesítési beállítások kezelése"
+        },
+        "certificates": {
+          "title": "Tanúsítványok",
+          "desc": "Hogyan szerezd meg és töltsd le a tanúsítványaidat.",
+          "tutorial1": "Kurzus befejezése",
+          "tutorial2": "Tanúsítvány letöltése",
+          "tutorial3": "Eredmények megosztása"
+        }
+      },
+      "moreHelpTitle": "Több segítségre van szükséged?",
+      "moreHelpSubtitle": "Súgóközpontunk választ ad a leggyakoribb kérdésekre.",
+      "visitHelpCenter": "Látogasd meg a Súgóközpontot",
+      "joinCommunity": "Csatlakozz a közösséghez"
+    },
+    "center": {
+      "metaTitle": "Súgóközpont – Tudva",
+      "pageTitle": "Súgóközpont",
+      "banner": {
+        "title": "Találj megoldást. Kapj támogatást",
+        "subtitle": "Keress itt a kérdéseidre adott válaszokért.",
+        "searchPlaceholder": "Kérdés keresése...",
+        "searchButton": "Keresés",
+        "popularQuestions": "Népszerű kérdések",
+        "q1": "Hogyan tudunk segíteni?",
+        "q2": "Hogyan tölthetek fel adatokat a rendszerbe?",
+        "q3": "Telepítési útmutató?",
+        "q4": "Hogyan tekinthetem meg a lejárt kurzusokat?",
+        "viewAll": "Összes kérdés megtekintése",
+        "imageAlt": "Súgóközpont illusztráció"
+      },
+      "topics": {
+        "sectionTitle": "Ajánlott témák",
+        "getStarted": {
+          "title": "Első lépések",
+          "feature1": "Fiók létrehozása",
+          "feature2": "Szerepkör kiválasztása",
+          "feature3": "A platform megismerése",
+          "feature4": "Az első kurzusod",
+          "feature5": "Támogatás kérése"
+        },
+        "accountSetup": {
+          "title": "Fiók beállítása",
+          "feature1": "Csatlakozás a fiókodhoz",
+          "feature2": "Profiladatok szerkesztése",
+          "feature3": "Profilkép hozzáadása",
+          "feature4": "Jelszó megváltoztatása",
+          "feature5": "Értesítési beállítások"
+        },
+        "otherTopics": {
+          "title": "Egyéb témák",
+          "feature1": "Biztonság és adatvédelem",
+          "feature2": "Árazási tervek",
+          "feature3": "Tanúsítványok és eredmények",
+          "feature4": "Akciók és ajánlatok",
+          "feature5": "Kurzus befejezése"
+        },
+        "advancedUsage": {
+          "title": "Haladó használat",
+          "feature1": "Tanítás a Tudván",
+          "feature2": "Az első kurzusod létrehozása",
+          "feature3": "Élő foglalkozások kezelése",
+          "feature4": "Hallgatók kezelése",
+          "feature5": "Bevételek és kifizetések"
+        }
+      }
+    },
+    "centerDetail": {
+      "metaTitle": "Súgóközpont Részletek – Tudva",
+      "pageTitle": "Súgóközpont Részletek",
+      "banner": {
+        "title": "Találj megoldást. Kapj támogatást",
+        "subtitle": "Keress itt a kérdéseidre adott válaszokért.",
+        "searchPlaceholder": "Kérdés keresése...",
+        "searchButton": "Keresés",
+        "popularQuestions": "Népszerű kérdések",
+        "q1": "Hogyan tudunk segíteni?",
+        "q2": "Hogyan tölthetek fel adatokat?",
+        "q3": "Telepítési útmutató?",
+        "q4": "Hogyan tekinthetem meg a lejárt kurzusokat?",
+        "viewAll": "Összes kérdés megtekintése"
+      },
+      "content": {
+        "tabs": {
+          "tab1": "Első lépések",
+          "tab2": "Fiók beállítása",
+          "tab3": "Egyéb témák",
+          "tab4": "Haladó használat"
+        },
+        "helpful": {
+          "question": "Hasznos volt ez a cikk?",
+          "stats": "45-ből 20 találta hasznosnak",
+          "yes": "Igen",
+          "no": "Nem"
+        },
+        "section1": {
+          "title": "Első lépések a Tudván",
+          "lastUpdated": "Utoljára frissítve: 7 hónapja",
+          "author": "a Tudva csapata által",
+          "p1": "Üdvözlünk a Tudván. Ez az útmutató végigvezet mindenen, amit a platform használatának megkezdéséhez tudnod kell.",
+          "tableTitle": "Tartalomjegyzék",
+          "p2": "Kövesd az alábbi lépéseket a fiókod beállításához és a tanulás megkezdéséhez.",
+          "noteLabel": "Megjegyzés:",
+          "note": "A regisztráció után erősítsd meg az e-mail címedet a fiókod aktiválásához.",
+          "p3": "Ha a fiókod aktív, azonnal böngészhetsz és beiratkozhatsz kurzusokra.",
+          "li1": "Hozd létre a fiókodat a regisztrációs oldalon.",
+          "li2": "Válaszd ki a szerepedet: Tanuló, Tanár vagy mindkettő.",
+          "li3": "Erősítsd meg az e-mail címedet.",
+          "li4": "Töltsd ki a profilodat fotóval és bemutatkozással.",
+          "li5": "Böngéssz a kurzusok között és iratkozz be az elsőre."
+        },
+        "section2": {
+          "title": "Fiók beállítása",
+          "p1": "A Tudva fiókodat bármikor kezelheted. Frissítsd a fiókadatokat a profilbeállítások oldalon.",
+          "deactivateTitle": "A fiókod deaktiválásához",
+          "li1": "Menj a profilbeállításokhoz.",
+          "li2": "Görgess le a veszélyes zóna részhez.",
+          "li3": "Kattints a Fiók deaktiválása gombra.",
+          "li4": "Erősítsd meg a jelszavaddal a folytatáshoz.",
+          "afterTitle": "Ha a fiókod deaktiválva van",
+          "afterLi1": "A profilod nem lesz látható más felhasználók számára.",
+          "afterLi2": "Elveszíted a hozzáférést az összes beiratkozott kurzushoz.",
+          "afterLi3": "Újra aktiválhatod a fiókodat, ha ismét bejelentkezel.",
+          "relatedTitle": "Kapcsolódó cikkek",
+          "relatedLink1": "Hogyan jelentkezzek ki a Tudváról?",
+          "relatedLink2": "Hogyan törölhetem véglegesen a fiókomat?",
+          "relatedLink3": "Mi a különbség a deaktiválás és a törlés között?",
+          "relatedLink4": "Miért nem sikerült a fizetésem?"
+        },
+        "section3": {
+          "title": "Egyéb témák",
+          "p1": "Itt találsz információkat olyan témákról, amelyek nem illeszkednek a fő kategóriákba.",
+          "p2": "Ha nem találod, amit keresel, látogasd meg a Súgó közösséget vagy vedd fel a kapcsolatot a támogatási csapatunkkal.",
+          "helpTitle": "Segítségre van szükséged?",
+          "helpLink1": "A kurzusárakról",
+          "helpLink2": "A tanúsítványokról és eredményekről",
+          "helpLink3": "A visszatérítésekről és lemondásokról"
+        },
+        "section4": {
+          "title": "Haladó használat",
+          "p1": "A haladó felhasználók további funkciókat vehetnek igénybe a Tudván, beleértve a tanítási eszközöket és az élő foglalkozások kezelését.",
+          "p2": "Ha engedélyezted a Tanár szerepkört, kurzusokat hozhatsz létre és élő foglalkozásokat kezelhetsz az oktatói irányítópultodról.",
+          "p3": "Részletes útmutatásért látogasd meg az Oktatóanyagok részt vagy vedd fel a kapcsolatot a támogatási csapatunkkal."
+        }
+      }
+    },
+    "community": {
+      "metaTitle": "Súgó közösség – Tudva",
+      "pageTitle": "Súgó közösség",
+      "heroTitle": "Tanuljunk együtt, fejlődjünk együtt",
+      "heroSubtitle": "Csatlakozz több ezer tanulóhoz és oktatóhoz, akik tudást, tippeket és támogatást osztanak meg.",
+      "heroCta": "Csatlakozz a közösséghez",
+      "featuresTitle": "Mit tehetsz a közösségben",
+      "featuresSubtitle": "Kapcsolódj, kérdezz, ossz meg és fejlődj más Tudva tagokkal.",
+      "features": {
+        "discussions": {
+          "title": "Csatlakozz a vitákhoz",
+          "desc": "Vegyél részt témaalapú beszélgetésekben tanulókkal és oktatókkal a világ minden tájáról."
+        },
+        "questions": {
+          "title": "Kérdések feltevése",
+          "desc": "Tedd fel kérdéseidet és kapj válaszokat tapasztalt tagoktól."
+        },
+        "tips": {
+          "title": "Tippek megosztása",
+          "desc": "Oszd meg tudásodat, hasznos linkeket és tanulási forrásokat a közösséggel."
+        },
+        "network": {
+          "title": "Építsd a hálózatodat",
+          "desc": "Kapcsolódj hasonló gondolkodású tanulókhoz és találj tanulópartnereket."
+        }
+      },
+      "guidelinesTitle": "Közösségi irányelvek",
+      "guidelinesSubtitle": "Közösségünket befogadóvá és tiszteletteljessé tartjuk mindenki számára.",
+      "guidelines": {
+        "rule1": {
+          "title": "Legyél tisztelettudó",
+          "desc": "Bánj minden taggal kedvesen és tiszteletteljesen."
+        },
+        "rule2": {
+          "title": "Maradj a témánál",
+          "desc": "Tartsd a vitákat relevánsnak a tanuláshoz és a Tudva platformhoz."
+        },
+        "rule3": {
+          "title": "Nincs spam",
+          "desc": "Kerüld a reklámtartalmakat vagy ismétlődő üzeneteket."
+        },
+        "rule4": {
+          "title": "Segíts egymásnak",
+          "desc": "Ha tudod a választ, oszd meg. A közös tanulás mindenkit jobbá tesz."
+        }
+      },
+      "ctaCardTitle": "Készen állsz csatlakozni?",
+      "ctaCardDesc": "Hozz létre ingyenes fiókot a közösség eléréséhez és kérdések feltevéséhez.",
+      "ctaJoin": "Ingyenes regisztráció",
+      "ctaHelp": "Látogasd meg a Súgóközpontot"
+    }
+  },
   "navbar": {
     "search": {
       "placeholder": "Keresés",

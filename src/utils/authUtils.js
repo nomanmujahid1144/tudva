@@ -12,7 +12,7 @@ export const getAuthTokenFromRequest = (request) => {
 
   // If no token in header, try to get it from cookies
   const cookies = request.cookies;
-  const tokenCookie = cookies.get('auth_token') || cookies.get('token');
+  const tokenCookie = cookies.get('auth_token') || cookies.get('auth_token');
   if (tokenCookie) {
     return tokenCookie.value;
   }
@@ -29,7 +29,7 @@ export const getAuthTokenFromLocalStorage = () => {
     return null;
   }
   
-  return localStorage.getItem('auth_token') || localStorage.getItem('token');
+  return localStorage.getItem('auth_token') || localStorage.getItem('auth_token');
 };
 
 /**

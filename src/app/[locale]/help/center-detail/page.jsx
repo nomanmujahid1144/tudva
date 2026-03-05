@@ -1,17 +1,25 @@
-import React from 'react';
-import HelpCenterDetails from './components/HelpCenterDetails';
+import { getTranslations } from 'next-intl/server';
 import HelpCenterBanner from './components/HelpCenterBanner';
+import HelpCenterDetails from './components/HelpCenterDetails';
 import PageBanner from '@/app/components/banner/PageBanner';
-export const metadata = {
-  title: 'Help Center Details'
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'help.centerDetail' });
+  return { title: t('metaTitle') };
+}
+
+const CenterDetailPage = async ({ params }) => {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'help.centerDetail' });
+
+  return (
+    <>
+      <PageBanner bannerHeadline={t('pageTitle')} />
+      <HelpCenterBanner locale={locale} />
+      <HelpCenterDetails />
+    </>
+  );
 };
-const CenterDetailPage = () => {
-  return (<>
-    <PageBanner
-      bannerHeadline="help center details"
-    />
-    <HelpCenterBanner />
-    <HelpCenterDetails />
-  </>)
-};
+
 export default CenterDetailPage;

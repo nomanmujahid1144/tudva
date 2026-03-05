@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
 
         const response = NextResponse.json({
@@ -8,10 +8,13 @@ export async function GET(request: NextRequest) {
             success: true
         });
 
-        response.cookies.set('token', '', {
+        response.cookies.set('auth_token', '', {
             httpOnly: true,
-            expires: new Date(0)
-        })
+            path: '/',
+            expires: new Date(0),
+            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production'
+        });
 
         return response;
 

@@ -640,3 +640,9 @@ button {
 .cursor-pointer {
   cursor: pointer;
 }
+
+
+section[aria-label="Notifications alt+T"] {
+      padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+}

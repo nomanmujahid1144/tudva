@@ -1915,6 +1915,284 @@
       }
     }
   },
+  "help": {
+    "firstSteps": {
+      "metaTitle": "First Steps – Tudva",
+      "pageTitle": "First Steps",
+      "heroTitle": "Welcome to Tudva – Let's Get You Started",
+      "heroSubtitle": "Follow these simple steps to begin your learning journey on Tudva.",
+      "heroCta": "Create Free Account",
+      "heroBrowse": "Browse Courses",
+      "stepsTitle": "Your First Steps on Tudva",
+      "stepsSubtitle": "Everything you need to know to get up and running quickly.",
+      "stepLabel": "Step",
+      "step1": {
+        "title": "Create Your Account",
+        "desc": "Sign up in seconds and join our learning community.",
+        "item1": "Choose your role: Student, Teacher, or both",
+        "item2": "Verify your email address",
+        "item3": "Set up your profile"
+      },
+      "step2": {
+        "title": "Find Your Course",
+        "desc": "Browse hundreds of courses across all categories.",
+        "item1": "Use the search bar or browse by category",
+        "item2": "Filter by language, level, or format",
+        "item3": "Read course descriptions and reviews"
+      },
+      "step3": {
+        "title": "Enroll & Start Learning",
+        "desc": "Enroll with one click and start immediately.",
+        "item1": "Click Enroll on any course page",
+        "item2": "Access all course materials instantly",
+        "item3": "Learn at your own pace"
+      },
+      "step4": {
+        "title": "Join Live Sessions",
+        "desc": "Participate in real-time classes with instructors.",
+        "item1": "Check your course schedule",
+        "item2": "Join directly from your student dashboard",
+        "item3": "Ask questions and interact live"
+      },
+      "step5": {
+        "title": "Earn Your Certificate",
+        "desc": "Complete courses and earn recognised certificates.",
+        "item1": "Finish all lessons and assignments",
+        "item2": "Download your certificate as PDF",
+        "item3": "Share it on your profile or LinkedIn"
+      },
+      "ctaTitle": "Ready to dive deeper?",
+      "ctaSubtitle": "Explore our video tutorials or visit the Help Center for more guidance.",
+      "ctaTutorials": "Watch Tutorials",
+      "ctaHelpCenter": "Help Center"
+    },
+    "tutorials": {
+      "metaTitle": "Tutorials – Tudva",
+      "pageTitle": "Tutorials",
+      "heroTitle": "Learn How to Use Tudva",
+      "heroSubtitle": "Step-by-step video guides to help you get the most out of the platform.",
+      "categoriesTitle": "Tutorial Categories",
+      "categoriesSubtitle": "Find tutorials organised by topic.",
+      "videos": "videos",
+      "viewAll": "View all",
+      "categories": {
+        "gettingStarted": {
+          "title": "Getting Started",
+          "desc": "Everything you need to know on day one.",
+          "tutorial1": "How to create your account",
+          "tutorial2": "Setting up your profile",
+          "tutorial3": "Navigating the dashboard"
+        },
+        "courseEnrollment": {
+          "title": "Course Enrollment",
+          "desc": "How to find and join courses on Tudva.",
+          "tutorial1": "Searching and filtering courses",
+          "tutorial2": "How to enroll in a course",
+          "tutorial3": "Accessing your enrolled courses"
+        },
+        "accountSettings": {
+          "title": "Account Settings",
+          "desc": "Manage your profile, notifications, and preferences.",
+          "tutorial1": "Updating your profile picture",
+          "tutorial2": "Changing your password",
+          "tutorial3": "Managing notification settings"
+        },
+        "certificates": {
+          "title": "Certificates",
+          "desc": "How to earn and download your certificates.",
+          "tutorial1": "Completing a course",
+          "tutorial2": "Downloading your certificate",
+          "tutorial3": "Sharing your achievements"
+        }
+      },
+      "moreHelpTitle": "Need more help?",
+      "moreHelpSubtitle": "Our Help Center has answers to the most common questions.",
+      "visitHelpCenter": "Visit Help Center",
+      "joinCommunity": "Join Community"
+    },
+    "center": {
+      "metaTitle": "Help Center – Tudva",
+      "pageTitle": "Help Center",
+      "banner": {
+        "title": "Search Solution. Get Support",
+        "subtitle": "Search here to get answers to your questions.",
+        "searchPlaceholder": "Search question...",
+        "searchButton": "Search",
+        "popularQuestions": "Popular questions",
+        "q1": "How can we help?",
+        "q2": "How to upload data to the system?",
+        "q3": "Installation Guide?",
+        "q4": "How to view expired course?",
+        "viewAll": "View all questions",
+        "imageAlt": "Help center illustration"
+      },
+      "topics": {
+        "sectionTitle": "Recommended Topics",
+        "getStarted": {
+          "title": "Get Started",
+          "feature1": "Creating your account",
+          "feature2": "Choosing your role",
+          "feature3": "Navigating the platform",
+          "feature4": "Your first course",
+          "feature5": "Getting support"
+        },
+        "accountSetup": {
+          "title": "Account Setup",
+          "feature1": "Connecting to your account",
+          "feature2": "Edit your profile information",
+          "feature3": "Adding your profile picture",
+          "feature4": "Changing your password",
+          "feature5": "Notification settings"
+        },
+        "otherTopics": {
+          "title": "Other Topics",
+          "feature1": "Security & Privacy",
+          "feature2": "Pricing plans",
+          "feature3": "Certificates & achievements",
+          "feature4": "Promotions & Deals",
+          "feature5": "Course completion"
+        },
+        "advancedUsage": {
+          "title": "Advanced Usage",
+          "feature1": "Teaching on Tudva",
+          "feature2": "Creating your first course",
+          "feature3": "Managing live sessions",
+          "feature4": "Student management",
+          "feature5": "Earnings & payouts"
+        }
+      }
+    },
+    "centerDetail": {
+      "metaTitle": "Help Center Detail – Tudva",
+      "pageTitle": "Help Center Detail",
+      "banner": {
+        "title": "Search Solution. Get Support",
+        "subtitle": "Search here to get answers to your questions.",
+        "searchPlaceholder": "Search question...",
+        "searchButton": "Search",
+        "popularQuestions": "Popular questions",
+        "q1": "How can we help?",
+        "q2": "How to upload data to the system?",
+        "q3": "Installation Guide?",
+        "q4": "How to view expired course?",
+        "viewAll": "View all questions"
+      },
+      "content": {
+        "tabs": {
+          "tab1": "Get Started",
+          "tab2": "Account Setup",
+          "tab3": "Other Topics",
+          "tab4": "Advanced Usage"
+        },
+        "helpful": {
+          "question": "Was this article helpful?",
+          "stats": "20 out of 45 found this helpful",
+          "yes": "Yes",
+          "no": "No"
+        },
+        "section1": {
+          "title": "Getting Started with Tudva",
+          "lastUpdated": "Last updated: 7 months ago",
+          "author": "by Tudva Team",
+          "p1": "Welcome to Tudva. This guide will walk you through everything you need to know to get started on the platform.",
+          "tableTitle": "Table of Contents",
+          "p2": "Follow the steps below to set up your account and start learning.",
+          "noteLabel": "Note:",
+          "note": "Make sure to verify your email address after registration to activate your account.",
+          "p3": "Once your account is active you can browse and enroll in courses immediately.",
+          "li1": "Create your account by visiting the sign-up page.",
+          "li2": "Choose your role: Student, Teacher, or both.",
+          "li3": "Verify your email address.",
+          "li4": "Complete your profile with a photo and bio.",
+          "li5": "Browse courses and enroll in your first one."
+        },
+        "section2": {
+          "title": "Account Setup",
+          "p1": "You can manage the settings for your Tudva account at any time. Update your account information from your profile settings page.",
+          "deactivateTitle": "To deactivate your account",
+          "li1": "Go to your profile settings.",
+          "li2": "Scroll down to the danger zone section.",
+          "li3": "Click Deactivate Account.",
+          "li4": "Confirm your password to proceed.",
+          "afterTitle": "When your account is deactivated",
+          "afterLi1": "Your profile will no longer be visible to other users.",
+          "afterLi2": "You will lose access to all enrolled courses.",
+          "afterLi3": "You can reactivate your account by logging in again.",
+          "relatedTitle": "Related Articles",
+          "relatedLink1": "How do I log out of Tudva?",
+          "relatedLink2": "How do I permanently delete my account?",
+          "relatedLink3": "What is the difference between deactivating and deleting my account?",
+          "relatedLink4": "Why did my payment fail?"
+        },
+        "section3": {
+          "title": "Other Topics",
+          "p1": "Here you will find information on topics that do not fit into the main categories but are still important for using Tudva effectively.",
+          "p2": "If you cannot find what you are looking for, please visit the Help Community or contact our support team.",
+          "helpTitle": "Need Help?",
+          "helpLink1": "About course pricing",
+          "helpLink2": "About certificates and achievements",
+          "helpLink3": "About refunds and cancellations"
+        },
+        "section4": {
+          "title": "Advanced Usage",
+          "p1": "Advanced users can take advantage of additional features on Tudva including teaching tools, live session management, and analytics.",
+          "p2": "If you have enabled the Teacher role you can create courses, manage students, and host live sessions from your instructor dashboard.",
+          "p3": "For detailed guidance on advanced features please visit the Tutorials section or contact our support team directly."
+        }
+      }
+    },
+    "community": {
+      "metaTitle": "Help Community – Tudva",
+      "pageTitle": "Help Community",
+      "heroTitle": "Learn Together, Grow Together",
+      "heroSubtitle": "Join thousands of learners and instructors sharing knowledge, tips, and support.",
+      "heroCta": "Join the Community",
+      "featuresTitle": "What You Can Do in the Community",
+      "featuresSubtitle": "Connect, ask, share and grow with fellow Tudva members.",
+      "features": {
+        "discussions": {
+          "title": "Join Discussions",
+          "desc": "Participate in topic-based conversations with learners and instructors from around the world."
+        },
+        "questions": {
+          "title": "Ask Questions",
+          "desc": "Post your questions and get answers from experienced members and the Tudva support team."
+        },
+        "tips": {
+          "title": "Share Tips & Resources",
+          "desc": "Share your knowledge, helpful links and learning resources with the community."
+        },
+        "network": {
+          "title": "Build Your Network",
+          "desc": "Connect with like-minded learners and find study partners or potential collaborators."
+        }
+      },
+      "guidelinesTitle": "Community Guidelines",
+      "guidelinesSubtitle": "We keep our community welcoming and respectful for everyone.",
+      "guidelines": {
+        "rule1": {
+          "title": "Be Respectful",
+          "desc": "Treat every member with kindness and respect, regardless of background or experience level."
+        },
+        "rule2": {
+          "title": "Stay On Topic",
+          "desc": "Keep discussions relevant to learning, courses, and the Tudva platform."
+        },
+        "rule3": {
+          "title": "No Spam or Self-Promotion",
+          "desc": "Avoid posting promotional content or repetitive messages."
+        },
+        "rule4": {
+          "title": "Help Each Other",
+          "desc": "If you know the answer, share it. Collaborative learning makes everyone better."
+        }
+      },
+      "ctaCardTitle": "Ready to Join?",
+      "ctaCardDesc": "Create a free account to access the community, ask questions and connect with fellow learners.",
+      "ctaJoin": "Sign Up Free",
+      "ctaHelp": "Visit Help Center"
+    }
+  },
   "navbar": {
     "search": {
       "placeholder": "Search",

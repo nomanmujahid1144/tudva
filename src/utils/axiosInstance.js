@@ -25,7 +25,7 @@ const addTokenToRequest = async (config) => {
     }
 
     // Then try localStorage
-    const localToken = localStorage.getItem('token');
+    const localToken = localStorage.getItem('auth_token');
     if (localToken) {
       config.headers.Authorization = `Bearer ${localToken}`;
       return config;
@@ -37,7 +37,7 @@ const addTokenToRequest = async (config) => {
       const data = await response.json();
       if (data.success && data.token) {
         // Store token in localStorage for future requests
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('auth_token', data.token);
         config.headers.Authorization = `Bearer ${data.token}`;
       }
     } catch (error) {

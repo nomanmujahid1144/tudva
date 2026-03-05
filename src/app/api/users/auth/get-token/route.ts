@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     try {
         // Try to get token from HTTP-only cookie first
-        const httpOnlyToken = request.cookies.get('token');
+        const httpOnlyToken = request.cookies.get('auth_token');
 
         // Then try client-accessible cookie
         const clientToken = request.cookies.get('auth_token');

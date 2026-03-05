@@ -55,7 +55,7 @@ export const getAuthToken = () => {
  * Remove authentication token from cookies
  */
 export const removeAuthToken = () => {
-  Cookies.remove(TOKEN_NAME);
+  // Cookies.remove(TOKEN_NAME);
 
   // Remove from axios headers
   delete api.defaults.headers.common['Authorization'];

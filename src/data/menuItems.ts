@@ -135,34 +135,34 @@ export const otherPagesMenuItem = [
     },
     {
         menuItem: 'menuItems.other.myCurriculum',
-        menuLink: 'courses?search=&category=my',
+        menuLink: '/my-learning',
         submenuItems: []
     },
     {
         menuItem: 'menuItems.other.myDocuments',
-        menuLink: 'courses?search=&category=my',
+        menuLink: '/courses?search=&category=my',
         submenuItems: []
     },
     {
         menuItem: 'menuItems.other.mySupport',
-        menuLink: 'courses?search=&category=my',
+        menuLink: '/my-learning',
         submenuItems: [
             {
                 menuItem: 'menuItems.other.firstSteps',
-                menuLink: 'courses?search=&category=First',
+                menuLink: '/help/first-steps',
             },
             {
                 menuItem: 'menuItems.other.tutorials',
-                menuLink: 'courses?search=&category=Tutorials',
+                menuLink: '/help/tutorials',
             },
             {
                 menuItem: 'menuItems.other.helpCenter',
-                menuLink: 'courses?search=&category=/help',
+                menuLink: '/help/center',
             },
             {
                 menuItem: 'menuItems.other.helpCommunity',
-                menuLink: 'courses?search=&category=help',
+                menuLink: '/help/community',
             },
         ]
     },
-]
+];

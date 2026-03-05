@@ -88,7 +88,7 @@ export async function GET(request) {
     await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const token = searchParams.get('token');
+    const token = searchParams.get('auth_token');
     const locale = searchParams.get('locale') || 'en';
 
     const result = await verifyEmailToken(token, locale);

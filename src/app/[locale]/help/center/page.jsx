@@ -1,23 +1,25 @@
-import React from 'react';
+import { getTranslations } from 'next-intl/server';
 import HelpCenterBanner from './components/HelpCenterBanner';
 import RecommendedTopics from './components/RecommendedTopics';
-import PopularArticles from './components/PopularArticles';
-import ActionBox from './components/ActionBox';
 import PageBanner from '@/app/components/banner/PageBanner';
-export const metadata = {
-  title: 'Help Center'
-};
-const HelpCenterPage = () => {
+
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'help.center' });
+  return { title: t('metaTitle') };
+}
+
+const HelpCenterPage = async ({ params }) => {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'help.center' });
+
   return (
     <>
-      <PageBanner
-        bannerHeadline="help center"
-      />
-      <HelpCenterBanner />
-      <RecommendedTopics />
-      <PopularArticles />
-      <ActionBox />
+      <PageBanner bannerHeadline={t('pageTitle')} />
+      <HelpCenterBanner locale={locale} />
+      <RecommendedTopics locale={locale} />
     </>
-  )
+  );
 };
+
 export default HelpCenterPage;
