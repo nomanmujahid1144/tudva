@@ -591,7 +591,15 @@ const uploadChunkXHR = (formData, chunk, onProgress) => {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     }
 
-    xhr.open('POST', '/api/course/upload/chunk');
+    // ========================================================================
+    // ✅ THE FIX: Route based on file type
+    // ========================================================================
+    const fileType = formData.get('fileType');
+    const endpoint = fileType === 'video'
+      ? '/api/course/upload-peertube/chunk'  // Videos → PeerTube
+      : '/api/course/upload/chunk';           // Materials → GCS
+
+    xhr.open('POST', endpoint);
     xhr.send(formData);
   });
 };
@@ -642,7 +650,7 @@ const uploadMaterial = async (file, courseId, onProgress) => {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     }
 
-    xhr.open('POST', '/api/course/upload');
+    xhr.open('POST', '/api/course/upload-peertube');
     xhr.send(formData);
   });
 };
